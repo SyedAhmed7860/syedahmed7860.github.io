@@ -7,12 +7,13 @@ I am a Web & App Developer specializing in modern UI/UX design and high-performa
 - 🌐 Business Websites
 - 📱 Mobile Applications
 - 🎨 UI/UX Design
-- ⚡ High-End Interactive Interfaces
+- ⚡ Interactive & Animated Interfaces
 
-## 🔥 Featured Projects
-- Crownz Barber Shop Website
-- Clip Kings Barber Shop
-- Portfolio System (Quantum UI)
+## 🔥 Portfolio Highlights
+- Business Website Development
+- Service-Based Websites
+- Custom UI/UX Projects
+- Interactive Portfolio Systems
 
 ## 📍 Location
 Hyderabad, India
@@ -20,11 +21,6 @@ Hyderabad, India
 ## 📞 Contact
 Email: syedahmed.sa43@gmail.com  
 Phone: +91 8019416016  
-
----
-
-## 🌐 Live Website
-👉 https://crownzbarbershop.github.io
 
 ---
 
