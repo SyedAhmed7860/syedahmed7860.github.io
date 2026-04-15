@@ -12,19 +12,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-base: #010205;
+            --bg-base: #010308;
             --accent-core: #00f0ff;
+            --accent-purple: #b026ff;
             --accent-glow: rgba(0, 240, 255, 0.8);
-            --accent-mute: rgba(0, 240, 255, 0.15);
             --accent-warn: #ff9f00;
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --hud-bg: rgba(3, 7, 14, 0.75);
-            --hud-border: rgba(0, 240, 255, 0.35);
+            --hud-bg: rgba(5, 8, 16, 0.4);
+            --hud-border: rgba(0, 240, 255, 0.2);
         }
 
         * { box-sizing: border-box; }
@@ -37,135 +36,130 @@
             margin: 0;
             cursor: none; 
             -webkit-font-smoothing: antialiased;
-            background-image: radial-gradient(circle at 50% 0%, #040914 0%, var(--bg-base) 100%);
         }
 
         h1, h2, h3, h4, h5, .font-display { font-family: 'Syncopate', sans-serif; letter-spacing: -0.02em; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* Initial Hide for Smooth GSAP Reveal */
-        .gs-reveal { opacity: 0; transform: translateY(30px); }
+        /* Floating Ambient Orbs */
+        .ambient-orb {
+            position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.4; z-index: -8; pointer-events: none;
+            animation: floatOrb 20s infinite ease-in-out alternate; mix-blend-mode: screen;
+        }
+        .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, var(--accent-core), transparent 70%); top: -10%; left: -10%; }
+        .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, var(--accent-purple), transparent 70%); bottom: -10%; right: -5%; animation-delay: -5s; animation-duration: 25s; }
+        .orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, var(--accent-warn), transparent 70%); top: 40%; left: 40%; opacity: 0.15; animation-duration: 30s; }
 
-        /* AAA Global HUD Decor */
-        .hud-vignette { position: fixed; inset: 0; background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.8) 100%); pointer-events: none; z-index: 9900; }
-        .hud-noise { position: fixed; inset: 0; background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E'); pointer-events: none; z-index: 9901; opacity: 0.6; }
-        .corner-brkt { position: fixed; width: 40px; height: 40px; border: 2px solid var(--accent-core); opacity: 0.5; z-index: 9902; pointer-events: none; transition: all 0.3s; }
-        .c-tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
-        .c-tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
-        .c-bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
-        .c-br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5%, 10%) scale(1.1); }
+            100% { transform: translate(-5%, 5%) scale(0.9); }
+        }
+
+        /* Background Noise & Overlay */
+        .hud-vignette { position: fixed; inset: 0; background: radial-gradient(circle at center, transparent 30%, rgba(1,2,5,0.95) 100%); pointer-events: none; z-index: 9900; }
+        .hud-noise { position: fixed; inset: 0; background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E'); pointer-events: none; z-index: 9901; }
 
         /* Custom Fluid Cursor */
         #fluid-cursor { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 12000; }
         #cursor-dot { 
-            position: fixed; width: 6px; height: 6px; background: #fff; 
+            position: fixed; width: 5px; height: 5px; background: #fff; 
             pointer-events: none; z-index: 12001; transform: translate(-50%, -50%); 
-            box-shadow: 0 0 15px var(--accent-core), 0 0 30px var(--accent-core); 
+            box-shadow: 0 0 10px var(--accent-core), 0 0 20px var(--accent-core), 0 0 40px var(--accent-purple); 
             transition: width 0.2s, height 0.2s, background 0.2s; 
-            border-radius: 50%; mix-blend-mode: difference;
+            border-radius: 50%; mix-blend-mode: exclusion;
         }
-        .cursor-active { width: 40px !important; height: 40px !important; background: transparent !important; border: 1px dashed var(--accent-warn); mix-blend-mode: normal !important; box-shadow: inset 0 0 10px rgba(255,159,0,0.5) !important; animation: spin-slow 4s linear infinite; }
+        .cursor-active { width: 50px !important; height: 50px !important; background: transparent !important; border: 1px solid var(--accent-core); mix-blend-mode: normal !important; box-shadow: inset 0 0 15px rgba(0,240,255,0.3) !important; animation: spin-slow 4s linear infinite; }
 
-        /* 3D Background & Dynamic Floor */
-        #webgl-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; pointer-events: none; opacity: 0.8; }
-        .tech-grid-floor {
-            position: fixed; bottom: -20%; left: -50%; width: 200%; height: 80vh;
-            background-image: linear-gradient(to top, rgba(0,240,255,0.1) 2px, transparent 2px), linear-gradient(to right, rgba(0,240,255,0.1) 2px, transparent 2px);
-            background-size: 80px 80px; transform: perspective(800px) rotateX(75deg);
-            animation: gridMove 3s linear infinite; z-index: -9; pointer-events: none;
-            mask-image: linear-gradient(to top, black 5%, transparent 60%); -webkit-mask-image: linear-gradient(to top, black 5%, transparent 60%);
-        }
-        @keyframes gridMove { from { transform: perspective(800px) rotateX(75deg) translateY(0); } to { transform: perspective(800px) rotateX(75deg) translateY(80px); } }
-
-        /* TRUE 3D POP-OUT CARDS */
+        /* 3D Background */
+        #webgl-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; pointer-events: none; opacity: 0.6; mix-blend-mode: screen; }
+        
+        /* Cyber-Glassmorphism Cards */
         .hud-panel {
             background: var(--hud-bg);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--hud-border);
-            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+            border-top: 1px solid rgba(0, 240, 255, 0.5);
+            border-left: 1px solid rgba(0, 240, 255, 0.4);
+            clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);
             position: relative; transform-style: preserve-3d; 
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s, box-shadow 0.4s;
-            box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.05);
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.4s, box-shadow 0.4s, background 0.4s;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 0 20px rgba(0, 240, 255, 0.05);
         }
         
         .transform-3d-layer {
-            transform: translateZ(40px); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            transform-style: preserve-3d; width: 100%; height: 100%;
+            transform: translateZ(40px); transition: transform 0.4s ease-out; transform-style: preserve-3d; width: 100%; height: 100%;
         }
+        .layer-base { transform: translateZ(20px); transition: transform 0.4s ease-out; transform-style: preserve-3d; width: 100%; height: 100%; }
+        .layer-mid { transform: translateZ(50px); transition: transform 0.4s ease-out; }
+        .layer-top { transform: translateZ(80px); transition: transform 0.4s ease-out; }
 
         .hud-panel:hover { 
             border-color: var(--accent-core); z-index: 50;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.95), inset 0 0 40px rgba(0, 240, 255, 0.2); 
-            background: rgba(4, 10, 20, 0.98); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 0 30px rgba(0, 240, 255, 0.15); 
+            background: rgba(10, 15, 30, 0.65); 
         }
-        .hud-panel:hover .transform-3d-layer { transform: translateZ(80px) scale(1.05); }
-
-        .hud-panel::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--accent-core); opacity: 0; box-shadow: 0 0 15px var(--accent-core); z-index: 10; pointer-events: none; }
-        .hud-panel:hover::before { animation: scanLaser 2s linear infinite; opacity: 1; }
-        @keyframes scanLaser { 0% { top: 0; opacity: 1; } 50% { opacity: 0.2; } 100% { top: 100%; opacity: 0; } }
+        
+        .hud-panel::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-core), transparent); opacity: 0; box-shadow: 0 0 20px var(--accent-core); z-index: 10; pointer-events: none; }
+        .hud-panel:hover::before { animation: scanLaser 2s ease-in-out infinite; opacity: 1; }
+        @keyframes scanLaser { 0% { top: 0; opacity: 1; } 50% { opacity: 0.3; } 100% { top: 100%; opacity: 0; } }
 
         /* Target Lock Brackets */
-        .target-bracket { position: absolute; width: 25px; height: 25px; border: 2px solid transparent; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); z-index: 20; pointer-events: none; transform: translateZ(30px); }
-        .hud-panel .tl { top: 15px; left: 15px; border-top-color: var(--accent-core); border-left-color: var(--accent-core); transform: translate(-20px, -20px) translateZ(30px); opacity: 0; }
-        .hud-panel .tr { top: 15px; right: 15px; border-top-color: var(--accent-core); border-right-color: var(--accent-core); transform: translate(20px, -20px) translateZ(30px); opacity: 0; }
-        .hud-panel .bl { bottom: 15px; left: 15px; border-bottom-color: var(--accent-core); border-left-color: var(--accent-core); transform: translate(-20px, 20px) translateZ(30px); opacity: 0; }
-        .hud-panel .br { bottom: 15px; right: 15px; border-bottom-color: var(--accent-core); border-right-color: var(--accent-core); transform: translate(20px, 20px) translateZ(30px); opacity: 0; }
-        .hud-panel:hover .target-bracket { transform: translate(0, 0) translateZ(60px); opacity: 1; box-shadow: 0 0 15px rgba(0, 240, 255, 0.6) inset; }
+        .target-bracket { position: absolute; width: 30px; height: 30px; border: 2px solid transparent; transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 20; pointer-events: none; }
+        .hud-panel .tl { top: 10px; left: 10px; border-top-color: var(--accent-core); border-left-color: var(--accent-core); transform: translate(-20px, -20px) translateZ(40px); opacity: 0; }
+        .hud-panel .tr { top: 10px; right: 10px; border-top-color: var(--accent-core); border-right-color: var(--accent-core); transform: translate(20px, -20px) translateZ(40px); opacity: 0; }
+        .hud-panel .bl { bottom: 10px; left: 10px; border-bottom-color: var(--accent-core); border-left-color: var(--accent-core); transform: translate(-20px, 20px) translateZ(40px); opacity: 0; }
+        .hud-panel .br { bottom: 10px; right: 10px; border-bottom-color: var(--accent-core); border-right-color: var(--accent-core); transform: translate(20px, 20px) translateZ(40px); opacity: 0; }
+        .hud-panel:hover .target-bracket { transform: translate(0, 0) translateZ(70px); opacity: 1; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) inset; }
 
-        /* Premium Buttons */
-        .btn-elite {
-            background: rgba(0, 240, 255, 0.05); color: var(--text-main); border: 1px solid var(--hud-border);
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em;
-            padding: 16px 32px; position: relative; overflow: hidden; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center;
+        /* Dynamic Mouse Glare */
+        .holographic-glare {
+            position: absolute; inset: 0; border-radius: inherit;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1), transparent 50%);
+            opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 5; mix-blend-mode: overlay;
         }
-        .btn-elite::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--accent-core); transform: scaleX(0); transform-origin: right; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: -1; }
+        .tilt-card:hover .holographic-glare { opacity: 1; }
+
+        /* Premium Elite Buttons */
+        .btn-elite {
+            background: rgba(0, 240, 255, 0.05); color: var(--text-main); border: 1px solid var(--accent-core);
+            box-shadow: 0 0 15px rgba(0,240,255,0.1) inset;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.15em;
+            padding: 18px 40px; position: relative; overflow: hidden; transition: all 0.4s ease; display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn-elite::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, var(--accent-core), var(--accent-purple)); transform: scaleX(0); transform-origin: right; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: -1; }
         .btn-elite:hover::before { transform: scaleX(1); transform-origin: left; }
-        .btn-elite:hover { color: #000; border-color: var(--accent-core); box-shadow: 0 0 30px var(--accent-glow); }
+        .btn-elite:hover { color: #fff; border-color: transparent; box-shadow: 0 0 40px rgba(0, 240, 255, 0.6); text-shadow: 0 0 10px rgba(255,255,255,0.8); }
 
         .btn-warn { border-color: rgba(255,159,0,0.4); color: var(--accent-warn); background: rgba(255,159,0,0.08); }
         .btn-warn::before { background: var(--accent-warn); }
         .btn-warn:hover { border-color: var(--accent-warn); color: #000; box-shadow: 0 0 30px rgba(255,159,0,0.5); }
 
-        /* AAA Title Effect */
-        .aaa-title { color: #fff; position: relative; display: inline-block; text-shadow: 0 0 40px rgba(0, 240, 255, 0.6); }
-        .aaa-title::before, .aaa-title::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8; pointer-events: none; }
-        .aaa-title::before { color: #00f0ff; z-index: -1; mix-blend-mode: screen; animation: glitch-anim-1 4s infinite linear alternate-reverse; }
-        .aaa-title::after { color: #ff003c; z-index: -2; mix-blend-mode: screen; animation: glitch-anim-2 3s infinite linear alternate-reverse; }
-        
-        @keyframes glitch-anim-1 { 0% { clip-path: inset(20% 0 80% 0); transform: translate(-4px, 2px); } 20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -2px); } 40% { clip-path: inset(40% 0 50% 0); transform: translate(-3px, 0); } 60% { clip-path: inset(80% 0 5% 0); transform: translate(3px, 1px); } 80% { clip-path: inset(10% 0 70% 0); transform: translate(-2px, -1px); } 100% { clip-path: inset(30% 0 50% 0); transform: translate(2px, 3px); } }
-        @keyframes glitch-anim-2 { 0% { clip-path: inset(10% 0 60% 0); transform: translate(3px, -2px); } 20% { clip-path: inset(30% 0 20% 0); transform: translate(-2px, 2px); } 40% { clip-path: inset(70% 0 10% 0); transform: translate(4px, 0); } 60% { clip-path: inset(20% 0 50% 0); transform: translate(-3px, -1px); } 80% { clip-path: inset(50% 0 30% 0); transform: translate(2px, 2px); } 100% { clip-path: inset(5% 0 80% 0); transform: translate(-2px, -3px); } }
+        /* AAA Title Effect (Outline + Glow) */
+        .aaa-title { color: #fff; position: relative; display: inline-block; }
+        .title-outline {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            -webkit-text-stroke: 2px rgba(0, 240, 255, 0.4); color: transparent;
+            transform: translate(8px, 8px); pointer-events: none;
+        }
+        .text-glow { text-shadow: 0 0 30px rgba(0, 240, 255, 0.5), 0 0 60px rgba(176, 38, 255, 0.3); }
+        .neon-text-red { text-shadow: 0 0 15px rgba(255,0,60,0.8), 0 0 40px rgba(255,0,60,0.5); color: #ff003c; }
 
-        .neon-text { text-shadow: 0 0 10px var(--accent-glow), 0 0 30px var(--accent-glow); }
-        .neon-text-red { text-shadow: 0 0 10px rgba(255,0,60,0.8), 0 0 30px rgba(255,0,60,0.6); color: #ff003c; }
-
-        /* Orbit Tech Stack */
-        .orbit-container { position: relative; width: 300px; height: 300px; margin: 0 auto; }
-        .orbit-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; background: var(--accent-mute); border: 2px solid var(--accent-core); box-shadow: 0 0 30px var(--accent-glow); display: flex; align-items: center; justify-content: center; font-family: 'Syncopate'; font-weight: bold; color: #fff; z-index: 10; animation: pulse 2s infinite; }
-        .orbit-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px dashed rgba(0,240,255,0.3); border-radius: 50%; }
-        .orbit-ring-1 { width: 180px; height: 180px; animation: spin 15s linear infinite; }
-        .orbit-ring-2 { width: 280px; height: 280px; animation: spin 25s linear infinite reverse; }
-        .orbit-node { position: absolute; width: 40px; height: 40px; background: #050912; border: 1px solid var(--accent-core); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono'; font-size: 8px; color: #fff; transform: translate(-50%, -50%); box-shadow: 0 0 10px rgba(0,240,255,0.5); }
-        
-        .ring-1-node-1 { top: 0%; left: 50%; } .ring-1-node-2 { top: 75%; left: 93%; } .ring-1-node-3 { top: 75%; left: 7%; }
-        .ring-2-node-1 { top: 15%; left: 15%; } .ring-2-node-2 { top: 15%; left: 85%; } .ring-2-node-3 { top: 85%; left: 50%; }
-
-        /* General SPA */
+        /* General SPA & Animations */
+        .gs-reveal { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(10px); }
         .view-section { display: none; opacity: 0; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; padding-top: 100px; padding-bottom: 100px; pointer-events: none; }
         .view-section.active { display: flex; flex-direction: column; opacity: 1; pointer-events: auto; position: relative; }
-        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: var(--bg-base); } ::-webkit-scrollbar-thumb { background: var(--accent-core); border-radius: 0; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-base); } ::-webkit-scrollbar-thumb { background: var(--accent-core); border-radius: 10px; }
 
-        /* Transitions & Modals */
-        #quantum-transition { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); z-index: 9900; opacity: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-        .transition-line { width: 0; height: 3px; background: var(--accent-core); box-shadow: 0 0 30px var(--accent-core), 0 0 60px var(--accent-core); }
+        /* Transitions */
+        #quantum-transition { position: fixed; inset: 0; background: var(--bg-base); z-index: 9900; opacity: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); }
+        .transition-line { width: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-core), var(--accent-purple), transparent); box-shadow: 0 0 40px var(--accent-core); }
         
         /* Initialization Screen */
-        #loader { position: fixed; inset: 0; background: rgba(2,4,9,1); z-index: 11000; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes spin-slow { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-        .progress-container { width: 300px; height: 3px; background: rgba(255,255,255,0.1); overflow: hidden; margin-top: 30px; max-width: 80vw; }
-        #progress-bar { width: 0%; height: 100%; background: var(--accent-core); box-shadow: 0 0 15px var(--accent-core); }
-        #loader-flash { position: fixed; inset: 0; background: #fff; z-index: 11001; opacity: 0; pointer-events: none; mix-blend-mode: overlay; }
+        #loader { position: fixed; inset: 0; background: var(--bg-base); z-index: 11000; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(30px); }
+        .progress-container { width: 300px; height: 2px; background: rgba(255,255,255,0.05); overflow: hidden; margin-top: 40px; max-width: 80vw; position: relative; }
+        #progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-core), var(--accent-purple)); box-shadow: 0 0 20px var(--accent-core); }
 
         /* Command Terminal */
         #cmd-terminal {
@@ -184,15 +178,21 @@
         @media (max-width: 768px) {
             body, .btn-elite, .hud-panel, .magnetic, a, button, input, textarea { cursor: auto !important; }
             #fluid-cursor, #cursor-dot { display: none !important; }
-            .transform-3d-layer { transform: translateZ(0) !important; transition: none !important; }
+            .transform-3d-layer, .layer-base, .layer-mid, .layer-top { transform: translateZ(0) !important; transition: none !important; }
             .hud-panel:hover .transform-3d-layer { transform: translateZ(0) scale(1) !important; }
-            .hud-panel { transform-style: flat; }
+            .hud-panel { transform-style: flat; backdrop-filter: blur(10px); }
             .target-bracket { display: none !important; }
             .aaa-title { text-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+            .ambient-orb { filter: blur(60px); opacity: 0.3; } 
         }
     </style>
 </head>
 <body>
+
+    <!-- AAA Floating Background Orbs -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
 
     <!-- AAA HUD Decors -->
     <div class="hud-vignette"></div>
@@ -200,53 +200,48 @@
     <div class="corner-brkt c-tl"></div><div class="corner-brkt c-tr"></div>
     <div class="corner-brkt c-bl"></div><div class="corner-brkt c-br"></div>
 
-    <!-- Cinematic Loader with High-Tech Pure CSS Logo -->
+    <!-- Cinematic Biometric Loader with High-End SVG Sci-Fi Logo -->
     <div id="loader">
-        <div class="relative flex flex-col items-center justify-center mb-8 md:mb-12 z-10 group">
-            <div class="absolute inset-0 bg-[#00f0ff] blur-[60px] opacity-20 group-hover:opacity-40 transition-opacity duration-700 rounded-full"></div>
+        <div class="relative flex flex-col items-center justify-center mb-10 z-10 group">
+            <div class="absolute inset-0 bg-[var(--accent-purple)] blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity duration-1000 rounded-full"></div>
             
-            <div class="w-32 h-32 md:w-40 md:h-40 flex items-center justify-center relative transition-all duration-500">
-                <!-- Rotating Tech Rings -->
-                <div class="absolute inset-0 border-[2px] border-dashed border-[#00f0ff]/40 rounded-full animate-[spin_15s_linear_infinite]"></div>
-                <div class="absolute inset-2 border-[1px] border-[#ff9f00]/40 rounded-full animate-[spin_10s_linear_infinite_reverse]"></div>
-                
-                <!-- Inner Hexagon Shield -->
-                <div class="absolute inset-4 bg-gradient-to-br from-[#00f0ff]/10 to-transparent border border-[#00f0ff]/60 backdrop-blur-sm flex items-center justify-center shadow-[0_0_30px_rgba(0,240,255,0.4)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);">
-                    <div class="absolute w-full h-full bg-[#00f0ff] opacity-10 animate-pulse"></div>
+            <!-- High-End SVG Logo -->
+            <div class="relative w-32 h-32 md:w-48 md:h-48 flex items-center justify-center">
+                <svg viewBox="0 0 100 100" class="absolute inset-0 w-full h-full animate-[spin_25s_linear_infinite]">
+                    <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(0,240,255,0.3)" stroke-width="0.5" stroke-dasharray="2 4"/>
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(176,38,255,0.4)" stroke-width="1" stroke-dasharray="15 5 5 5"/>
+                </svg>
+                <svg viewBox="0 0 100 100" class="absolute inset-0 w-full h-full animate-[spin_20s_linear_infinite_reverse]">
+                    <polygon points="50,4 90,27 90,73 50,96 10,73 10,27" fill="rgba(10,15,30,0.7)" stroke="#00f0ff" stroke-width="1" filter="drop-shadow(0 0 5px rgba(0,240,255,0.5))"/>
+                    <polygon points="50,12 80,29 80,71 50,88 20,71 20,29" fill="none" stroke="#b026ff" stroke-width="1" stroke-dasharray="5 2"/>
+                </svg>
+                <div class="relative z-10 flex items-center justify-center font-display font-black text-5xl md:text-7xl tracking-tighter text-white drop-shadow-[0_0_15px_rgba(0,240,255,0.8)]">
+                    S<span class="text-transparent bg-clip-text bg-gradient-to-b from-[#00f0ff] to-[var(--accent-purple)]">A</span>
                 </div>
-                
-                <!-- Stylized Logo Text -->
-                <div class="relative z-10 flex items-center justify-center">
-                    <span class="font-display font-black text-5xl md:text-6xl tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]" style="line-height: 1;">
-                        S<span class="text-transparent bg-clip-text bg-gradient-to-b from-[#00f0ff] to-[#007acc] drop-shadow-[0_0_15px_rgba(0,240,255,0.8)]">A</span>
-                    </span>
-                </div>
-                
-                <!-- Accents -->
-                <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-1.5 bg-[#00f0ff] shadow-[0_0_10px_#00f0ff]"></div>
-                <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 h-1.5 bg-[#ff9f00] shadow-[0_0_10px_#ff9f00]"></div>
             </div>
             
             <div class="mt-8 flex flex-col items-center">
-                <span class="font-display font-bold text-2xl md:text-3xl text-white tracking-[0.4em] uppercase aaa-title" data-text="SYED AHMED">SYED AHMED</span>
-                <span class="font-mono text-[9px] md:text-[11px] text-[#ff9f00] tracking-[0.6em] mt-2 font-bold">SYS_ARCHITECT</span>
+                <span class="font-display font-bold text-2xl md:text-4xl text-white tracking-[0.5em] uppercase text-glow">SYED AHMED</span>
+                <span class="font-mono text-[10px] md:text-[12px] text-[#00f0ff] tracking-[0.8em] mt-3 font-bold opacity-70">SYSTEM_ARCHITECT</span>
             </div>
         </div>
         
-        <button id="init-btn" class="btn-elite magnetic !border-[#00f0ff] !text-[#00f0ff] hover:!bg-[#00f0ff] hover:!text-black transition-all text-sm md:text-lg px-6 py-3 md:px-8 md:py-4 z-10">INITIALIZE UPLINK</button>
+        <button id="init-btn" class="btn-elite magnetic">INITIALIZE UPLINK</button>
         
         <div class="progress-container hidden z-10" id="progress-wrapper"><div id="progress-bar"></div></div>
-        <div class="font-mono text-[10px] text-[#00f0ff] mt-4 tracking-[0.4em] uppercase hidden animate-pulse z-10" id="loader-text">DECRYPTING ARCHITECTURE...</div>
+        <div class="font-mono text-[10px] text-[#00f0ff] mt-6 tracking-[0.5em] uppercase hidden animate-pulse z-10" id="loader-text">ESTABLISHING SECURE CONNECTION...</div>
     </div>
-    <div id="loader-flash"></div>
 
     <!-- Magical Transition Overlay -->
     <div id="quantum-transition"><div class="transition-line" id="t-line"></div></div>
 
     <!-- Hidden Terminal -->
-    <div id="cmd-terminal">
-        <div id="cmd-output">QUANTUM OS v3.0.0<br>Enter 'help' for available commands.</div>
-        <div id="cmd-input-line"><span class="text-gray-500">root@sys.op:~#</span><input type="text" id="cmd-input" autocomplete="off" spellcheck="false"></div>
+    <div id="cmd-terminal" class="fixed top-0 left-0 w-full h-[40vh] bg-[rgba(3,7,14,0.98)] backdrop-blur-xl border-b-2 border-[#00f0ff] z-[10001] -translate-y-full transition-all duration-500 opacity-0 invisible font-mono p-5 text-[#00f0ff] flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+        <div id="cmd-output" class="flex-grow overflow-y-auto mb-3 text-sm whitespace-pre-wrap" style="text-shadow: 0 0 5px rgba(0,229,255,0.5);">QUANTUM OS v4.0.0 (AAA EDITION)<br>Enter 'help' for available commands.</div>
+        <div id="cmd-input-line" class="flex items-center border-t border-[#00f0ff]/20 pt-3">
+            <span class="text-gray-500">root@sys.op:~#</span>
+            <input type="text" id="cmd-input" autocomplete="off" spellcheck="false" class="bg-transparent border-none text-white flex-grow outline-none font-inherit text-sm ml-3">
+        </div>
     </div>
 
     <!-- Fluid Cursor & Overlays -->
@@ -255,112 +250,154 @@
     
     <!-- 3D Environment -->
     <canvas id="webgl-bg"></canvas>
-    <div class="tech-grid-floor"></div>
 
     <!-- AAA Global Header -->
-    <header class="fixed top-0 w-full z-50 bg-[rgba(2,4,9,0.85)] backdrop-blur-lg border-b border-white/10" id="main-header">
-        <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
+    <header class="fixed top-0 w-full z-50 bg-[rgba(1,2,5,0.6)] backdrop-blur-xl border-b border-white/5" id="main-header">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
             <!-- Header High-Tech SA Logo -->
-            <div class="flex items-center gap-3 md:gap-4 group magnetic cursor-pointer" onclick="returnToHub()">
-                <div class="relative w-12 h-12 md:w-14 md:h-14 flex items-center justify-center transition-all duration-300 z-10 hover:scale-105">
-                    <div class="absolute inset-0 border-[1px] border-dashed border-[#00f0ff]/50 rounded-full animate-[spin_15s_linear_infinite]"></div>
-                    <div class="absolute inset-1.5 bg-gradient-to-br from-[#00f0ff]/20 to-transparent border border-[#00f0ff]/70 backdrop-blur-sm flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.4)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"></div>
-                    <div class="relative z-10 flex items-center justify-center">
-                        <span class="font-display font-black text-lg md:text-xl tracking-tighter text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]" style="line-height: 1;">
-                            S<span class="text-transparent bg-clip-text bg-gradient-to-b from-[#00f0ff] to-[#007acc] drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]">A</span>
-                        </span>
+            <div class="flex items-center gap-4 group magnetic cursor-pointer" onclick="returnToHub()">
+                <div class="relative w-12 h-12 flex items-center justify-center transition-all duration-300 z-10">
+                    <svg viewBox="0 0 100 100" class="absolute inset-0 w-full h-full animate-[spin_10s_linear_infinite]">
+                        <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(0,240,255,0.4)" stroke-width="1" stroke-dasharray="5 5"/>
+                    </svg>
+                    <svg viewBox="0 0 100 100" class="absolute inset-1.5 w-[88%] h-[88%] animate-[spin_8s_linear_infinite_reverse]">
+                        <polygon points="50,5 89,27 89,72 50,95 11,72 11,27" fill="rgba(10,15,30,0.8)" stroke="#b026ff" stroke-width="1.5"/>
+                    </svg>
+                    <div class="relative z-10 flex items-center justify-center font-display font-black text-xl tracking-tighter text-white drop-shadow-[0_0_5px_rgba(0,240,255,0.9)]">
+                        S<span class="text-transparent bg-clip-text bg-gradient-to-b from-[#00f0ff] to-[var(--accent-purple)]">A</span>
                     </div>
                 </div>
-                <div class="font-mono text-[9px] md:text-[10px] text-gray-400 tracking-[0.2em] hidden sm:block" id="geo-greeting">ANALYZING UPLINK...</div>
+                <div class="font-mono text-[10px] text-[#00f0ff]/70 tracking-[0.3em] hidden md:block">SYS_ACTIVE</div>
             </div>
-            <div class="font-mono text-[10px] md:text-xs text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-3 py-1.5 md:px-4 md:py-2 flex items-center gap-2 md:gap-3 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
-                <div class="w-2 h-2 bg-[#00f0ff] animate-pulse"></div> HUD_ONLINE
+            <div class="font-mono text-[10px] md:text-xs text-white bg-white/5 border border-white/10 px-4 py-2 flex items-center gap-3 rounded-full backdrop-blur-md">
+                <div class="w-2 h-2 rounded-full bg-[#00f0ff] shadow-[0_0_10px_#00f0ff] animate-pulse"></div> UPLINK STABLE
             </div>
         </div>
     </header>
 
     <!-- Global Return Button -->
-    <button id="back-to-hub" class="fixed bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-[8000] btn-elite btn-warn magnetic opacity-0 pointer-events-none invisible text-xs md:text-sm px-4 py-2 md:px-6 md:py-3" onclick="returnToHub()">
-        [ ABORT / RETURN TO CORE ]
+    <button id="back-to-hub" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[8000] btn-elite magnetic opacity-0 pointer-events-none invisible text-xs md:text-sm shadow-[0_0_30px_rgba(0,0,0,0.8)]" onclick="returnToHub()" style="border-color: var(--accent-core);">
+        [ RETURN TO CORE ]
     </button>
 
     <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-4 md:px-6 w-full relative z-10" id="spa-wrapper">
         
         <!-- 1. DASHBOARD HUB SCENE -->
-        <section id="home-hub" class="view-section active flex-col justify-center items-center pt-16 md:pt-20 min-h-screen">
+        <section id="home-hub" class="view-section active flex-col justify-center items-center pt-24 min-h-screen">
             
-            <div class="text-center mb-8 md:mb-12 relative z-10 w-full pt-8 md:pt-10 gs-reveal">
-                <p class="font-mono text-[#00f0ff] tracking-[0.3em] md:tracking-[0.5em] text-[9px] sm:text-xs uppercase mb-4 md:mb-6">> ARCHITECT IDENTIFIED</p>
-                <h1 class="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-display font-bold uppercase tracking-tighter mb-6 md:mb-8 aaa-title leading-none" data-text="SYED AHMED">SYED AHMED</h1>
+            <div class="text-center mb-16 relative z-10 w-full pt-10 gs-reveal">
+                <p class="font-mono text-[#00f0ff] tracking-[0.5em] text-[10px] sm:text-xs uppercase mb-6">> ARCHITECT IDENTIFIED</p>
+                <div class="relative inline-block">
+                    <!-- Layered Typography for WOW effect -->
+                    <h1 class="text-5xl sm:text-7xl md:text-9xl lg:text-[11rem] font-display font-black uppercase tracking-tighter aaa-title text-glow relative z-10 m-0" data-text="SYED AHMED">SYED AHMED</h1>
+                    <h1 class="text-5xl sm:text-7xl md:text-9xl lg:text-[11rem] font-display font-black uppercase tracking-tighter title-outline absolute top-0 left-0 m-0">SYED AHMED</h1>
+                </div>
                 
-                <div class="mt-8 md:mt-12 font-mono text-xs sm:text-sm md:text-base text-gray-300 max-w-4xl mx-auto leading-relaxed hud-panel p-6 md:p-10 text-left border-l-4 border-l-[#00f0ff] shadow-[0_10px_30px_rgba(0,0,0,0.5)] md:shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 gap-3">
-                        <div class="flex items-center gap-2 md:gap-3">
-                            <svg class="w-4 h-4 md:w-5 md:h-5 text-[#00f0ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            <span class="text-[#00f0ff] font-bold tracking-[0.1em] md:tracking-[0.2em] text-sm md:text-lg">SYSTEM_SUMMARY</span>
+                <div class="mt-16 font-mono text-sm md:text-base text-gray-300 max-w-4xl mx-auto leading-relaxed hud-panel p-8 md:p-12 text-left">
+                    <div class="layer-base">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4 layer-top">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-[#00f0ff]/10 rounded border border-[#00f0ff]/30">
+                                    <svg class="w-5 h-5 text-[#00f0ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                </div>
+                                <span class="text-white font-bold tracking-[0.2em] text-lg">SYSTEM_SUMMARY</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-[#00f0ff] text-xs tracking-[0.2em] border border-[#00f0ff]/30 px-3 py-1.5 bg-[#00f0ff]/10 rounded-full">
+                                <div class="w-2 h-2 rounded-full bg-[#00f0ff] shadow-[0_0_10px_#00f0ff] animate-pulse"></div> READY FOR COMMISSION
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2 text-green-400 text-[10px] md:text-xs tracking-widest border border-green-500/30 px-2 py-1 md:px-3 md:py-1 bg-green-500/10">
-                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 animate-pulse"></div> READY FOR COMMISSION
+                        <div class="layer-mid text-gray-400">
+                            A highly optimized development entity specializing in the architecture of robust, scalable digital platforms. Operating across the full technological stack, executing end-to-end deployment of <strong class="text-[#00f0ff] font-medium">Enterprise Websites</strong>, intricate <strong class="text-[var(--accent-purple)] font-medium">Web Applications</strong>, and natively compiled <strong class="text-white font-medium">Mobile Software</strong> architectures.
                         </div>
                     </div>
-                    <span>A highly optimized development entity specializing in the architecture of robust, scalable digital platforms. Operating across the full technological stack, executing end-to-end deployment of <strong class="text-white">Enterprise Websites</strong>, intricate <strong class="text-white">Web Applications</strong>, and natively compiled <strong class="text-white">Mobile Software</strong> architectures.</span>
                 </div>
             </div>
 
             <!-- SCANNER LEAD MAGNET -->
-            <div class="w-full max-w-3xl mx-auto mb-10 md:mb-12 gs-reveal">
-                <div class="hud-panel p-5 md:p-6 flex flex-col md:flex-row items-center gap-4">
-                    <div class="flex-grow w-full">
-                        <p class="font-mono text-[9px] md:text-[10px] text-gray-500 mb-2">RUN ARCHITECTURE DIAGNOSTIC ON CURRENT URL</p>
-                        <input type="text" id="scan-url" placeholder="https://your-current-website.com" class="w-full bg-black/50 border border-white/20 p-2.5 md:p-3 font-mono text-[10px] md:text-xs text-white outline-none focus:border-[#00f0ff]">
+            <div class="w-full max-w-4xl mx-auto mb-16 gs-reveal">
+                <div class="hud-panel p-6 md:p-8 flex flex-col md:flex-row items-center gap-5 rounded-2xl">
+                    <div class="layer-base flex-grow w-full">
+                        <p class="font-mono text-[10px] text-[#00f0ff] mb-3 tracking-widest uppercase">Run Architecture Diagnostic On URL</p>
+                        <input type="text" id="scan-url" placeholder="https://your-current-website.com" class="w-full bg-[rgba(1,2,5,0.8)] border border-white/20 rounded-lg p-4 font-mono text-xs text-white outline-none focus:border-[#00f0ff] focus:shadow-[0_0_20px_rgba(0,240,255,0.2)] transition-all">
                     </div>
-                    <button class="btn-elite magnetic w-full md:w-auto h-[40px] md:h-[46px] mt-4 md:mt-0 text-xs" onclick="runScanner()">SCAN SYSTEM</button>
+                    <div class="layer-top w-full md:w-auto">
+                        <button class="btn-elite magnetic w-full md:w-auto h-[50px] mt-4 md:mt-0 text-xs rounded-lg" onclick="runScanner()">SCAN SYSTEM</button>
+                    </div>
                 </div>
-                <div id="scan-result" class="font-mono text-[9px] md:text-[10px] mt-4 hidden"></div>
+                <div id="scan-result" class="font-mono text-[10px] mt-6 hidden"></div>
             </div>
 
-            <!-- Core 4 Nodes -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8 w-full max-w-6xl relative z-20 gs-reveal mb-10 md:mb-14">
-                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-48 md:h-72" onclick="openNode('identity', event)">
-                    <div class="transform-3d-layer flex flex-col items-center justify-center p-6 md:p-8">
+            <!-- Core 4 Nodes (Gehrai Parallax Effect) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 w-full max-w-7xl relative z-20 mb-16">
+                <!-- Node 1 -->
+                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-64 md:h-80 rounded-2xl gs-reveal" onclick="openNode('identity', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8 h-full">
+                        <div class="holographic-glare"></div>
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="w-16 h-16 md:w-20 md:h-20 mb-4 md:mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-xl md:text-2xl text-white group-hover:text-black">01</span></div>
-                        <h3 class="font-display text-lg md:text-xl text-white tracking-widest uppercase relative z-10">Identity</h3>
+                        <div class="layer-base w-full h-full flex flex-col items-center justify-center">
+                            <div class="layer-top w-20 h-20 md:w-24 md:h-24 mb-6 border-[2px] border-white/10 flex items-center justify-center bg-gradient-to-br from-white/5 to-transparent group-hover:border-[#00f0ff] group-hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-all duration-500 rounded-2xl rotate-45 group-hover:rotate-0">
+                                <span class="font-display font-black text-2xl md:text-3xl text-white group-hover:text-[#00f0ff] -rotate-45 group-hover:rotate-0 transition-all duration-500">01</span>
+                            </div>
+                            <h3 class="layer-mid font-display text-xl md:text-2xl text-gray-300 tracking-[0.2em] uppercase group-hover:text-white group-hover:text-glow transition-all">Identity</h3>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-48 md:h-72" onclick="openNode('skills', event)">
-                    <div class="transform-3d-layer flex flex-col items-center justify-center p-6 md:p-8">
+                <!-- Node 2 -->
+                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-64 md:h-80 rounded-2xl gs-reveal" onclick="openNode('skills', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8 h-full">
+                        <div class="holographic-glare"></div>
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="w-16 h-16 md:w-20 md:h-20 mb-4 md:mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-xl md:text-2xl text-white group-hover:text-black">02</span></div>
-                        <h3 class="font-display text-lg md:text-xl text-white tracking-widest uppercase relative z-10">Tech</h3>
+                        <div class="layer-base w-full h-full flex flex-col items-center justify-center">
+                            <div class="layer-top w-20 h-20 md:w-24 md:h-24 mb-6 border-[2px] border-white/10 flex items-center justify-center bg-gradient-to-br from-white/5 to-transparent group-hover:border-[var(--accent-purple)] group-hover:shadow-[0_0_30px_rgba(176,38,255,0.4)] transition-all duration-500 rounded-2xl rotate-45 group-hover:rotate-0">
+                                <span class="font-display font-black text-2xl md:text-3xl text-white group-hover:text-[var(--accent-purple)] -rotate-45 group-hover:rotate-0 transition-all duration-500">02</span>
+                            </div>
+                            <h3 class="layer-mid font-display text-xl md:text-2xl text-gray-300 tracking-[0.2em] uppercase group-hover:text-white group-hover:text-glow transition-all">Tech</h3>
+                        </div>
                     </div>
                 </div>
 
-                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-48 md:h-72" onclick="openNode('work-hub', event)">
-                    <div class="transform-3d-layer flex flex-col items-center justify-center p-6 md:p-8">
+                <!-- Node 3 -->
+                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-64 md:h-80 rounded-2xl gs-reveal" onclick="openNode('work-hub', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8 h-full">
+                        <div class="holographic-glare"></div>
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="w-16 h-16 md:w-20 md:h-20 mb-4 md:mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-xl md:text-2xl text-white group-hover:text-black">03</span></div>
-                        <h3 class="font-display text-lg md:text-xl text-white tracking-widest uppercase relative z-10">Work</h3>
+                        <div class="layer-base w-full h-full flex flex-col items-center justify-center">
+                            <div class="layer-top w-20 h-20 md:w-24 md:h-24 mb-6 border-[2px] border-white/10 flex items-center justify-center bg-gradient-to-br from-white/5 to-transparent group-hover:border-[#00f0ff] group-hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-all duration-500 rounded-2xl rotate-45 group-hover:rotate-0">
+                                <span class="font-display font-black text-2xl md:text-3xl text-white group-hover:text-[#00f0ff] -rotate-45 group-hover:rotate-0 transition-all duration-500">03</span>
+                            </div>
+                            <h3 class="layer-mid font-display text-xl md:text-2xl text-gray-300 tracking-[0.2em] uppercase group-hover:text-white group-hover:text-glow transition-all">Work</h3>
+                        </div>
                     </div>
                 </div>
 
-                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-48 md:h-72" onclick="openNode('certificates', event)">
-                    <div class="transform-3d-layer flex flex-col items-center justify-center p-6 md:p-8">
+                <!-- Node 4 -->
+                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-64 md:h-80 rounded-2xl gs-reveal" onclick="openNode('certificates', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8 h-full">
+                        <div class="holographic-glare"></div>
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="w-16 h-16 md:w-20 md:h-20 mb-4 md:mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-xl md:text-2xl text-white group-hover:text-black">04</span></div>
-                        <h3 class="font-display text-lg md:text-xl text-white tracking-widest uppercase relative z-10">Records</h3>
+                        <div class="layer-base w-full h-full flex flex-col items-center justify-center">
+                            <div class="layer-top w-20 h-20 md:w-24 md:h-24 mb-6 border-[2px] border-white/10 flex items-center justify-center bg-gradient-to-br from-white/5 to-transparent group-hover:border-[var(--accent-purple)] group-hover:shadow-[0_0_30px_rgba(176,38,255,0.4)] transition-all duration-500 rounded-2xl rotate-45 group-hover:rotate-0">
+                                <span class="font-display font-black text-2xl md:text-3xl text-white group-hover:text-[var(--accent-purple)] -rotate-45 group-hover:rotate-0 transition-all duration-500">04</span>
+                            </div>
+                            <h3 class="layer-mid font-display text-xl md:text-2xl text-gray-300 tracking-[0.2em] uppercase group-hover:text-white group-hover:text-glow transition-all">Records</h3>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Direct Gmail Link -->
-            <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Contract+Inquiry" class="block w-full max-w-6xl gs-reveal magnetic tilt-card" onclick="playAudio('click')">
-                <div class="hud-panel p-0 group bg-[rgba(0,240,255,0.05)] border-[#00f0ff]/40 hover:border-[#00f0ff] hover:bg-[#00f0ff]/15 text-center h-32 md:h-40">
-                    <div class="transform-3d-layer flex flex-col items-center justify-center w-full h-full p-4">
-                        <h2 class="font-display text-xl sm:text-3xl md:text-5xl text-[#00f0ff] tracking-[0.1em] md:tracking-[0.2em] uppercase mb-2 md:mb-3 group-hover:animate-pulse relative z-10 font-bold" style="text-shadow: 0 0 20px rgba(0,240,255,0.5);">INITIATE CONTRACT</h2>
-                        <p class="font-mono text-[9px] md:text-sm text-white relative z-10 tracking-widest">> ESTABLISH DIRECT SECURE COMM_LINK (GMAIL)</p>
+            <a href="mailto:Syedahmed.sa43@gmail.com?subject=Contract+Inquiry" class="block w-full max-w-7xl gs-reveal magnetic tilt-card" onclick="playAudio('click')">
+                <div class="hud-panel p-0 group border-[#00f0ff]/30 hover:border-[#00f0ff] text-center h-40 md:h-48 rounded-3xl overflow-hidden">
+                    <!-- Dynamic Glowing Gradient Background for Button -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#00f0ff]/5 via-[var(--accent-purple)]/10 to-[#00f0ff]/5 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="transform-3d-layer flex flex-col items-center justify-center w-full h-full p-4 relative z-10">
+                        <div class="layer-top">
+                            <h2 class="font-display text-2xl sm:text-4xl md:text-6xl text-white tracking-[0.1em] md:tracking-[0.2em] uppercase mb-2 md:mb-4 group-hover:text-[#00f0ff] group-hover:drop-shadow-[0_0_20px_rgba(0,240,255,0.8)] transition-all duration-300 font-black">INITIATE CONTRACT</h2>
+                        </div>
+                        <p class="layer-mid font-mono text-[9px] md:text-sm text-gray-400 group-hover:text-white tracking-widest">> ESTABLISH DIRECT SECURE COMM_LINK (GMAIL)</p>
                     </div>
                 </div>
             </a>
@@ -368,46 +405,46 @@
 
         <!-- 2. IDENTITY SCENE -->
         <section id="identity" class="view-section">
-            <div class="flex items-center gap-4 md:gap-6 mb-10 md:mb-16 gs-reveal">
-                <h2 class="text-2xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Identity Core</h2>
-                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50"></div>
+            <div class="flex items-center gap-4 md:gap-8 mb-12 md:mb-20 gs-reveal">
+                <h2 class="text-3xl md:text-6xl font-display font-black text-white tracking-widest uppercase text-glow">Identity Core</h2>
+                <div class="h-px bg-gradient-to-r from-[#00f0ff] via-[var(--accent-purple)] to-transparent flex-grow opacity-60"></div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
                 <!-- High-End Graphical Profile -->
-                <div class="lg:col-span-5 hud-panel tilt-card p-0 relative min-h-[400px] md:min-h-[500px] gs-reveal border-l-4 border-l-[#00f0ff]">
-                    <div class="transform-3d-layer p-6 md:p-8 flex flex-col items-center justify-center">
+                <div class="lg:col-span-5 hud-panel tilt-card p-0 relative min-h-[450px] md:min-h-[600px] gs-reveal border-l-4 border-l-[var(--accent-purple)] rounded-3xl">
+                    <div class="transform-3d-layer p-6 md:p-10 flex flex-col items-center justify-center h-full">
+                        <div class="holographic-glare"></div>
                         
-                        <div class="w-40 h-40 md:w-56 md:h-56 border border-white/20 absolute animate-[spin_20s_linear_infinite] z-0" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); top: 8%;"></div>
-                        <div class="w-32 h-32 md:w-48 md:h-48 border-[3px] border-[#00f0ff]/70 absolute animate-[spin_10s_linear_infinite_reverse] z-0" style="clip-path: polygon(20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%, 0% 20%); top: 12%;"></div>
-                        
-                        <div class="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden relative shadow-[0_0_30px_rgba(0,240,255,0.7)] md:shadow-[0_0_50px_rgba(0,240,255,0.7)] z-10 border-4 border-[#00f0ff]">
-                            <img src="assets/images/profile.jpg" alt="Syed Ahmed" class="w-full h-full object-cover filter brightness-125 contrast-150 saturate-150 relative z-0" onerror="this.style.display='none'">
-                            <div class="absolute inset-0 bg-[#00f0ff] mix-blend-overlay opacity-40 z-10 pointer-events-none"></div>
-                            <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,240,255,0.3)_50%)] bg-[length:100%_4px] pointer-events-none z-20"></div>
-                        </div>
-                        
-                        <!-- Technical Grid Stats -->
-                        <div class="mt-8 md:mt-10 w-full relative z-20 text-left border border-[#00f0ff]/40 bg-[#00f0ff]/10 p-5 md:p-6" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px); backdrop-filter: blur(5px);">
-                            <div class="flex flex-col gap-3 md:gap-4 font-mono text-[10px] sm:text-xs md:text-sm text-gray-200">
-                                <div class="flex justify-between border-b border-white/10 pb-1.5 md:pb-2">
-                                    <span class="text-[#00f0ff] font-bold">AGE</span> <span>UNKNOWN</span>
+                        <div class="layer-base w-full flex flex-col items-center">
+                            <!-- Complex Glowing Profile Image -->
+                            <div class="relative w-48 h-48 md:w-72 md:h-72 mb-10 layer-top">
+                                <!-- Rotating decorative rings -->
+                                <div class="absolute inset-[-10%] border-2 border-dashed border-[#00f0ff]/30 rounded-full animate-[spin_20s_linear_infinite]"></div>
+                                <div class="absolute inset-[-20%] border border-[var(--accent-purple)]/30 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
+                                
+                                <div class="w-full h-full rounded-full overflow-hidden relative shadow-[0_0_40px_rgba(176,38,255,0.5)] border-4 border-[var(--accent-purple)] z-10">
+                                    <img src="assets/images/profile.jpg" alt="Syed Ahmed" class="w-full h-full object-cover filter brightness-110 contrast-125 saturate-120" onerror="this.style.display='none'">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-[var(--accent-purple)]/40 to-transparent mix-blend-overlay"></div>
                                 </div>
-                                <div class="flex justify-between border-b border-white/10 pb-1.5 md:pb-2">
-                                    <span class="text-[#00f0ff] font-bold">LOCATION</span> <span>HYDERABAD</span>
-                                </div>
-                                <div class="flex justify-between border-b border-white/10 pb-1.5 md:pb-2">
-                                    <span class="text-[#00f0ff] font-bold">ROLE</span> <span class="font-bold text-white">WEB & APP DEV</span>
-                                </div>
-                                <div class="flex justify-between border-b border-white/10 pb-1.5 md:pb-2">
-                                    <span class="text-[#00f0ff] font-bold">SPECIALTY</span> <span>UI/UX + HIGH-END</span>
-                                </div>
-                                <div class="flex justify-between border-b border-white/10 pb-1.5 md:pb-2">
-                                    <span class="text-[#00f0ff] font-bold">SERVICES</span> <span>WEBSITES | APPS</span>
-                                </div>
-                                <div class="flex justify-between items-center mt-2 md:mt-3 p-2 md:p-3 bg-[#ff9f00]/15 border border-[#ff9f00]/50 text-[#ff9f00]">
-                                    <span class="flex items-center gap-2 md:gap-3"><span class="w-2 h-2 md:w-3 md:h-3 bg-[#ff9f00] rounded-sm animate-pulse shadow-[0_0_15px_#ff9f00]"></span> <span class="font-bold tracking-widest text-[10px] md:text-sm">STATUS</span></span>
-                                    <span class="font-bold text-[10px] md:text-sm">AVAILABLE</span>
+                            </div>
+                            
+                            <!-- Technical Grid Stats -->
+                            <div class="w-full relative z-20 text-left border border-white/10 bg-black/40 rounded-2xl p-6 md:p-8 backdrop-blur-md layer-mid shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                                <div class="flex flex-col gap-4 md:gap-5 font-mono text-[10px] sm:text-xs md:text-sm text-gray-300">
+                                    <div class="flex justify-between border-b border-white/10 pb-2">
+                                        <span class="text-[#00f0ff] font-bold tracking-widest">LOCATION</span> <span class="text-white">HYDERABAD</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/10 pb-2">
+                                        <span class="text-[#00f0ff] font-bold tracking-widest">ROLE</span> <span class="font-bold text-white">WEB & APP DEV</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/10 pb-2">
+                                        <span class="text-[#00f0ff] font-bold tracking-widest">SPECIALTY</span> <span class="text-white">UI/UX + HIGH-END</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mt-4 p-3 md:p-4 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400">
+                                        <span class="flex items-center gap-3"><span class="w-2 h-2 md:w-3 md:h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_15px_#00ff00]"></span> <span class="font-bold tracking-widest">STATUS</span></span>
+                                        <span class="font-bold tracking-widest">AVAILABLE</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -415,38 +452,38 @@
                 </div>
 
                 <!-- Academic Data & Comms -->
-                <div class="lg:col-span-7 flex flex-col gap-8 md:gap-10">
-                    <div class="hud-panel tilt-card p-0 gs-reveal">
-                        <div class="transform-3d-layer p-6 md:p-10">
-                            <p class="font-mono text-[10px] md:text-xs text-[#00f0ff] uppercase tracking-widest mb-6 md:mb-8 relative z-10 border-b border-white/10 pb-2 md:pb-3">> ACADEMIC_ARCHITECTURE</p>
-                            <div class="space-y-6 md:space-y-8 relative z-10">
-                                <div class="bg-white/5 p-5 md:p-6 border-l-4 border-[#00f0ff] shadow-[0_0_20px_rgba(0,240,255,0.1)]">
-                                    <h4 class="font-display text-sm md:text-lg text-white mb-2 font-bold">MASTER OF COMPUTER APPLICATIONS</h4>
-                                    <p class="font-mono text-[10px] md:text-xs text-[#00f0ff] tracking-widest">> PURSUING</p>
+                <div class="lg:col-span-7 flex flex-col gap-8 md:gap-12">
+                    <div class="hud-panel tilt-card p-0 gs-reveal rounded-3xl">
+                        <div class="transform-3d-layer p-8 md:p-12">
+                            <p class="font-mono text-xs md:text-sm text-[#00f0ff] uppercase tracking-[0.3em] mb-8 relative z-10 border-b border-white/10 pb-4 layer-mid">> ACADEMIC_ARCHITECTURE</p>
+                            <div class="space-y-6 md:space-y-8 relative z-10 layer-top">
+                                <div class="bg-gradient-to-r from-[#00f0ff]/10 to-transparent p-6 md:p-8 border-l-4 border-[#00f0ff] rounded-r-xl shadow-[0_5px_20px_rgba(0,0,0,0.3)]">
+                                    <h4 class="font-display text-base md:text-xl text-white mb-3 font-bold tracking-wide">MASTER OF COMPUTER APPLICATIONS</h4>
+                                    <p class="font-mono text-xs text-[#00f0ff] tracking-[0.2em] font-bold">> PURSUING</p>
                                 </div>
-                                <div class="bg-white/5 p-5 md:p-6 border-l-4 border-gray-600">
-                                    <h4 class="font-display text-sm md:text-lg text-gray-400 mb-2 font-bold">BACHELOR OF COMMERCE</h4>
-                                    <p class="font-mono text-[10px] md:text-xs text-gray-500 tracking-widest">> COMPLETED: 2023</p>
+                                <div class="bg-gradient-to-r from-white/5 to-transparent p-6 md:p-8 border-l-4 border-gray-500 rounded-r-xl shadow-[0_5px_20px_rgba(0,0,0,0.3)]">
+                                    <h4 class="font-display text-base md:text-xl text-gray-300 mb-3 font-bold tracking-wide">BACHELOR OF COMMERCE</h4>
+                                    <p class="font-mono text-xs text-gray-500 tracking-[0.2em]">> COMPLETED: 2023</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="hud-panel tilt-card p-0 bg-[#02050a] gs-reveal border-t-4 border-t-[#00f0ff]">
-                        <div class="transform-3d-layer p-6 md:p-10">
-                            <p class="font-mono text-[10px] md:text-xs text-gray-400 uppercase tracking-[0.2em] md:tracking-[0.3em] mb-6 md:mb-8 relative z-10 border-b border-white/10 pb-2 md:pb-3">Comms_Link</p>
-                            <div class="flex flex-col gap-4 md:gap-5 relative z-10">
-                                <a href="tel:+918019416016" class="magnetic flex flex-col sm:flex-row items-start sm:items-center justify-between group bg-[rgba(0,240,255,0.05)] border border-[#00f0ff]/30 p-4 md:p-6 hover:bg-[#00f0ff]/20 transition-colors gap-2" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">
-                                    <span class="font-mono text-xs md:text-sm text-gray-300 group-hover:text-white font-bold tracking-widest">MOBILE_UPLINK</span>
-                                    <span class="font-mono text-[10px] md:text-sm text-[#00f0ff] font-bold break-all">+91 8019416016</span>
+                    <div class="hud-panel tilt-card p-0 bg-[#02050a]/80 gs-reveal border-t-4 border-t-[var(--accent-purple)] rounded-3xl">
+                        <div class="transform-3d-layer p-8 md:p-12">
+                            <p class="font-mono text-xs md:text-sm text-gray-400 uppercase tracking-[0.3em] mb-8 relative z-10 border-b border-white/10 pb-4 layer-mid">Comms_Link</p>
+                            <div class="flex flex-col gap-5 relative z-10 layer-top">
+                                <a href="tel:+918019416016" class="magnetic flex flex-col sm:flex-row items-start sm:items-center justify-between group bg-white/5 border border-white/10 p-5 md:p-6 hover:bg-[#00f0ff]/10 hover:border-[#00f0ff]/50 transition-all rounded-xl gap-3" onclick="playAudio('click')">
+                                    <span class="font-mono text-xs md:text-sm text-gray-400 group-hover:text-white font-bold tracking-widest">MOBILE_UPLINK</span>
+                                    <span class="font-mono text-sm md:text-base text-white group-hover:text-[#00f0ff] font-bold tracking-widest">+91 8019416016</span>
                                 </a>
-                                <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com" class="magnetic flex flex-col sm:flex-row items-start sm:items-center justify-between group bg-[rgba(0,240,255,0.05)] border border-[#00f0ff]/30 p-4 md:p-6 hover:bg-[#00f0ff]/20 transition-colors gap-2" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">
-                                    <span class="font-mono text-xs md:text-sm text-gray-300 group-hover:text-white font-bold tracking-widest">SECURE_MAIL</span>
-                                    <span class="font-mono text-[10px] md:text-sm text-[#00f0ff] font-bold break-all">SYEDAHMED.SA43@GMAIL.COM</span>
+                                <a href="mailto:Syedahmed.sa43@gmail.com?subject=Contract+Inquiry" class="magnetic flex flex-col sm:flex-row items-start sm:items-center justify-between group bg-white/5 border border-white/10 p-5 md:p-6 hover:bg-[var(--accent-purple)]/10 hover:border-[var(--accent-purple)]/50 transition-all rounded-xl gap-3" onclick="playAudio('click')">
+                                    <span class="font-mono text-xs md:text-sm text-gray-400 group-hover:text-white font-bold tracking-widest">SECURE_MAIL</span>
+                                    <span class="font-mono text-xs md:text-sm text-white group-hover:text-[var(--accent-purple)] font-bold tracking-widest break-all">SYEDAHMED.SA43@GMAIL.COM</span>
                                 </a>
-                                <div class="flex gap-4 md:gap-5 mt-2">
-                                    <a href="https://wa.me/918019416016" target="_blank" class="magnetic flex-1 text-center font-mono text-[10px] md:text-sm font-bold tracking-widest text-black hover:bg-green-400 bg-green-500 py-3 md:py-4 transition-colors" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">WHATSAPP</a>
-                                    <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="magnetic flex-1 text-center font-mono text-[10px] md:text-sm font-bold tracking-widest text-black hover:bg-[#00f0ff] bg-[#007acc] py-3 md:py-4 transition-colors" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">LINKEDIN</a>
+                                <div class="flex flex-col sm:flex-row gap-4 md:gap-5 mt-4">
+                                    <a href="https://wa.me/918019416016" target="_blank" class="magnetic flex-1 text-center font-display text-xs md:text-sm font-bold tracking-[0.2em] text-black hover:bg-white bg-[#00f0ff] py-4 md:py-5 rounded-xl transition-all shadow-[0_0_20px_rgba(0,240,255,0.4)]" onclick="playAudio('click')">WHATSAPP</a>
+                                    <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="magnetic flex-1 text-center font-display text-xs md:text-sm font-bold tracking-[0.2em] text-white hover:text-black hover:bg-white bg-[var(--accent-purple)] py-4 md:py-5 rounded-xl transition-all shadow-[0_0_20px_rgba(176,38,255,0.4)]" onclick="playAudio('click')">LINKEDIN</a>
                                 </div>
                             </div>
                         </div>
@@ -457,57 +494,66 @@
 
         <!-- 3. SKILLS SCENE -->
         <section id="skills" class="view-section">
-            <div class="flex items-center gap-4 md:gap-6 mb-10 md:mb-12 gs-reveal">
-                <h2 class="text-3xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Capabilities</h2>
-                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50"></div>
+            <div class="flex items-center gap-4 md:gap-8 mb-12 md:mb-20 gs-reveal">
+                <h2 class="text-3xl md:text-6xl font-display font-black text-white tracking-widest uppercase text-glow">Capabilities</h2>
+                <div class="h-px bg-gradient-to-r from-[var(--accent-purple)] via-[#00f0ff] to-transparent flex-grow opacity-60"></div>
             </div>
 
-            <!-- Tech Orbit System -->
-            <div class="w-full py-10 md:py-16 gs-reveal mb-10 md:mb-16 flex justify-center hud-panel bg-[rgba(0,240,255,0.02)] border-[#00f0ff]/20 overflow-hidden">
-                <div class="orbit-container transform scale-75 md:scale-110">
-                    <div class="orbit-core font-display text-sm md:text-lg tracking-widest text-[#00f0ff]">CORE</div>
-                    <div class="orbit-ring orbit-ring-1 border-[#00f0ff]/40">
-                        <div class="orbit-node ring-1-node-1 text-[8px] md:text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">REACT</div>
-                        <div class="orbit-node ring-1-node-2 text-[8px] md:text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">NODE</div>
-                        <div class="orbit-node ring-1-node-3 text-[8px] md:text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">DB</div>
+            <!-- Tech Orbit System (Enhanced 3D) -->
+            <div class="w-full py-16 md:py-24 gs-reveal mb-16 md:mb-20 flex justify-center hud-panel bg-gradient-to-b from-transparent to-white/5 border-t-0 border-b-0 overflow-hidden rounded-[40px]">
+                <div class="orbit-container transform scale-90 md:scale-125 layer-base">
+                    <div class="orbit-core font-display text-sm md:text-lg tracking-widest text-white shadow-[0_0_40px_var(--accent-purple)] bg-[var(--accent-purple)]/20 border-[var(--accent-purple)]">CORE</div>
+                    <div class="orbit-ring orbit-ring-1 border-[#00f0ff]/50 border-solid">
+                        <div class="orbit-node ring-1-node-1 text-[8px] md:text-[10px] font-bold bg-[#00f0ff]/20 backdrop-blur-sm shadow-[0_0_20px_#00f0ff]">REACT</div>
+                        <div class="orbit-node ring-1-node-2 text-[8px] md:text-[10px] font-bold bg-[#00f0ff]/20 backdrop-blur-sm shadow-[0_0_20px_#00f0ff]">NODE</div>
+                        <div class="orbit-node ring-1-node-3 text-[8px] md:text-[10px] font-bold bg-[#00f0ff]/20 backdrop-blur-sm shadow-[0_0_20px_#00f0ff]">DB</div>
                     </div>
-                    <div class="orbit-ring orbit-ring-2 border-[#ff9f00]/30">
-                        <div class="orbit-node ring-2-node-1 text-[8px] md:text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">UI/UX</div>
-                        <div class="orbit-node ring-2-node-2 text-[8px] md:text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">AWS</div>
-                        <div class="orbit-node ring-2-node-3 text-[8px] md:text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">THREE</div>
+                    <div class="orbit-ring orbit-ring-2 border-[#ff9f00]/40 border-dashed">
+                        <div class="orbit-node ring-2-node-1 text-[8px] md:text-[10px] border-[#ff9f00] text-white bg-[#ff9f00]/20 backdrop-blur-sm shadow-[0_0_20px_#ff9f00]">UI/UX</div>
+                        <div class="orbit-node ring-2-node-2 text-[8px] md:text-[10px] border-[#ff9f00] text-white bg-[#ff9f00]/20 backdrop-blur-sm shadow-[0_0_20px_#ff9f00]">AWS</div>
+                        <div class="orbit-node ring-2-node-3 text-[8px] md:text-[10px] border-[#ff9f00] text-white bg-[#ff9f00]/20 backdrop-blur-sm shadow-[0_0_20px_#ff9f00]">THREE</div>
                     </div>
                 </div>
             </div>
             
-            <div id="skills-container" class="space-y-12 md:space-y-20"></div>
+            <div id="skills-container" class="space-y-16 md:space-y-24"></div>
         </section>
 
         <!-- 4. WORK HUB SCENE -->
         <section id="work-hub" class="view-section flex-col justify-center items-center pt-20 md:pt-24 min-h-screen">
-            <div class="text-center mb-12 md:mb-20 relative z-10 gs-reveal w-full">
-                <p class="font-mono text-[#00f0ff] tracking-[0.3em] md:tracking-[0.5em] text-[10px] md:text-xs uppercase mb-4 md:mb-6">> SELECT_DOMAIN</p>
-                <h2 class="text-4xl sm:text-5xl md:text-7xl font-display font-bold text-white tracking-widest uppercase aaa-title" data-text="ARCHITECTURE">ARCHITECTURE</h2>
+            <div class="text-center mb-16 md:mb-24 relative z-10 gs-reveal w-full">
+                <p class="font-mono text-[var(--accent-purple)] tracking-[0.4em] md:tracking-[0.6em] text-xs md:text-sm uppercase mb-6 md:mb-8 font-bold">> SELECT_DOMAIN</p>
+                <div class="relative inline-block">
+                    <h2 class="text-5xl sm:text-7xl md:text-8xl lg:text-[9rem] font-display font-black text-white tracking-widest uppercase aaa-title text-glow relative z-10 m-0" data-text="ARCHITECTURE">ARCHITECTURE</h2>
+                    <h2 class="text-5xl sm:text-7xl md:text-8xl lg:text-[9rem] font-display font-black uppercase tracking-widest title-outline absolute top-0 left-0 m-0">ARCHITECTURE</h2>
+                </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 w-full max-w-5xl relative z-20 gs-reveal">
-                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-64 md:h-96" onclick="openNode('deployments', event)">
-                    <div class="transform-3d-layer p-8 md:p-12 flex flex-col items-center justify-center h-full">
-                        <div class="target-bracket tl" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket tr" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket bl" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket br" style="width:30px; height:30px; border-width: 2px;"></div>
-                        <div class="w-20 h-20 md:w-32 md:h-32 mb-6 md:mb-8 border-2 border-[#00f0ff]/40 flex items-center justify-center bg-[#00f0ff]/10 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_20px_rgba(0,240,255,0.3)]" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
-                            <svg class="w-10 h-10 md:w-14 md:h-14 text-[#00f0ff] group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 w-full max-w-6xl relative z-20 gs-reveal">
+                
+                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-[400px] md:h-[500px] rounded-[30px]" onclick="openNode('deployments', event)">
+                    <div class="transform-3d-layer p-8 md:p-12 flex flex-col items-center justify-center h-full relative overflow-hidden">
+                        <!-- Huge ambient glow inside card -->
+                        <div class="absolute inset-0 bg-gradient-to-b from-[#00f0ff]/0 to-[#00f0ff]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <div class="holographic-glare"></div>
+                        
+                        <div class="layer-top w-28 h-28 md:w-40 md:h-40 mb-8 md:mb-12 border-2 border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-500 rounded-3xl rotate-12 group-hover:rotate-0 shadow-[0_20px_40px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_50px_rgba(0,240,255,0.6)]">
+                            <svg class="w-12 h-12 md:w-16 md:h-16 text-white group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
                         </div>
-                        <h3 class="font-display text-2xl md:text-3xl text-white tracking-widest uppercase relative z-10 font-bold">Websites</h3>
-                        <p class="font-mono text-[10px] md:text-xs text-[#00f0ff] mt-3 md:mt-4 tracking-widest relative z-10">> VIEW DEPLOYMENTS</p>
+                        <h3 class="layer-mid font-display text-3xl md:text-5xl text-white tracking-widest uppercase font-black">Websites</h3>
+                        <p class="layer-base font-mono text-xs md:text-sm text-gray-500 group-hover:text-[#00f0ff] mt-5 md:mt-6 tracking-[0.3em] font-bold transition-colors">> VIEW DEPLOYMENTS</p>
                     </div>
                 </div>
                 
-                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-64 md:h-96" onclick="openNode('applications', event)">
-                    <div class="transform-3d-layer p-8 md:p-12 flex flex-col items-center justify-center h-full">
-                        <div class="target-bracket tl" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket tr" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket bl" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket br" style="width:30px; height:30px; border-width: 2px;"></div>
-                        <div class="w-20 h-20 md:w-32 md:h-32 mb-6 md:mb-8 border-2 border-[#ff9f00]/40 flex items-center justify-center bg-[#ff9f00]/10 group-hover:bg-[#ff9f00] group-hover:border-[#ff9f00] transition-all duration-300 relative z-10 shadow-[0_0_20px_rgba(255,159,0,0.3)]" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
-                            <svg class="w-10 h-10 md:w-14 md:h-14 text-[#ff9f00] group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-[400px] md:h-[500px] rounded-[30px]" onclick="openNode('applications', event)">
+                    <div class="transform-3d-layer p-8 md:p-12 flex flex-col items-center justify-center h-full relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-b from-[var(--accent-purple)]/0 to-[var(--accent-purple)]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <div class="holographic-glare"></div>
+                        
+                        <div class="layer-top w-28 h-28 md:w-40 md:h-40 mb-8 md:mb-12 border-2 border-white/10 flex items-center justify-center bg-white/5 group-hover:bg-[var(--accent-purple)] group-hover:border-[var(--accent-purple)] transition-all duration-500 rounded-3xl -rotate-12 group-hover:rotate-0 shadow-[0_20px_40px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_50px_rgba(176,38,255,0.6)]">
+                            <svg class="w-12 h-12 md:w-16 md:h-16 text-white group-hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h3 class="font-display text-2xl md:text-3xl text-white tracking-widest uppercase relative z-10 font-bold">Applications</h3>
-                        <p class="font-mono text-[10px] md:text-xs text-[#ff9f00] mt-3 md:mt-4 tracking-widest relative z-10">> RESTRICTED ACCESS</p>
+                        <h3 class="layer-mid font-display text-3xl md:text-5xl text-white tracking-widest uppercase font-black">Apps</h3>
+                        <p class="layer-base font-mono text-xs md:text-sm text-gray-500 group-hover:text-[var(--accent-purple)] mt-5 md:mt-6 tracking-[0.3em] font-bold transition-colors">> RESTRICTED ACCESS</p>
                     </div>
                 </div>
             </div>
@@ -515,67 +561,75 @@
 
         <!-- 5. APPLICATIONS SCENE -->
         <section id="applications" class="view-section flex-col justify-center items-center min-h-screen">
-            <div class="hud-panel tilt-card p-0 max-w-3xl w-full border-t-4 border-t-[#ff9f00] gs-reveal relative z-20">
-                <div class="transform-3d-layer p-8 md:p-16 flex flex-col items-center text-center">
-                    <div id="app-wireframe-canvas" class="w-48 h-48 md:w-64 md:h-64 mb-6 md:mb-8 pointer-events-none relative z-10 shadow-[0_0_50px_rgba(255,159,0,0.2)] rounded-full"></div>
-                    <h2 class="text-2xl md:text-5xl font-display font-bold text-[#ff9f00] tracking-widest uppercase mb-4 md:mb-6 neon-text-red relative z-10">RESTRICTED_AREA</h2>
-                    <p class="font-mono text-gray-200 text-xs md:text-lg mb-8 md:mb-12 leading-relaxed relative z-10">
-                        Custom iOS/Android architectures are built strictly on commission. Current proprietary modules are classified.
+            <div class="hud-panel tilt-card p-0 max-w-4xl w-full border-t-8 border-t-[var(--accent-purple)] rounded-[40px] gs-reveal overflow-hidden">
+                <div class="transform-3d-layer p-10 md:p-24 flex flex-col items-center text-center relative">
+                    <div class="absolute inset-0 bg-[var(--accent-purple)] opacity-5 blur-[100px]"></div>
+                    <div class="holographic-glare"></div>
+                    
+                    <div id="app-wireframe-canvas" class="layer-top w-48 h-48 md:w-72 md:h-72 mb-10 pointer-events-none relative shadow-[0_0_80px_rgba(176,38,255,0.3)] rounded-full border border-white/10 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                        <!-- ThreeJS goes here -->
+                    </div>
+                    <h2 class="layer-mid text-3xl md:text-6xl font-display font-black text-white tracking-widest uppercase mb-6 md:mb-8 drop-shadow-[0_0_15px_rgba(176,38,255,0.8)]">RESTRICTED_AREA</h2>
+                    <p class="layer-base font-mono text-gray-400 text-sm md:text-xl mb-12 md:mb-16 leading-relaxed max-w-2xl">
+                        Custom iOS/Android architectures are built strictly on commission. Current proprietary modules are <span class="text-[var(--accent-purple)] font-bold">CLASSIFIED</span>.
                     </p>
-                    <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Custom+App+Build+Inquiry" class="btn-elite btn-warn magnetic block w-full md:w-auto text-center relative z-10 text-sm md:text-lg py-4 md:py-5 px-6 md:px-10" onclick="playAudio('click')">REQUEST CUSTOM APP BUILD</a>
+                    <a href="mailto:Syedahmed.sa43@gmail.com?subject=Custom+App+Build+Inquiry" class="layer-top btn-elite magnetic block w-full md:w-auto text-center text-sm md:text-xl py-5 md:py-6 px-8 md:px-14 rounded-2xl bg-white/5 border border-[var(--accent-purple)] hover:bg-[var(--accent-purple)] hover:text-black shadow-[0_0_30px_rgba(176,38,255,0.2)]" onclick="playAudio('click')">REQUEST CUSTOM APP BUILD</a>
                 </div>
             </div>
         </section>
 
         <!-- 6. DEPLOYMENTS SCENE (Websites) -->
         <section id="deployments" class="view-section">
-            <div class="flex items-center gap-4 md:gap-6 mb-10 md:mb-12 gs-reveal">
-                <h2 class="text-3xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Websites</h2>
-                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50"></div>
+            <div class="flex items-center gap-4 md:gap-8 mb-12 md:mb-20 gs-reveal">
+                <h2 class="text-3xl md:text-6xl font-display font-black text-white tracking-widest uppercase text-glow">Websites</h2>
+                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-60"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic" onclick="openProjectLog('Crownz Barbershop', 'Enhance digital presence and booking flow.', 'React, Tailwind CSS', '40% increase in user retention.', 'https://crownzbarbershop.github.io')">
-                    <div class="transform-3d-layer p-6 md:p-8">
-                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="h-48 md:h-64 w-full mb-6 md:mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
-                             <img src="assets/images/crownz.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-70 group-hover:opacity-100 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80';">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic rounded-[30px]" onclick="openProjectLog('Crownz Barbershop', 'Enhance digital presence and booking flow.', 'React, Tailwind CSS', '40% increase in user retention.', 'https://crownzbarbershop.github.io')">
+                    <div class="transform-3d-layer p-6 md:p-10 flex flex-col h-full">
+                        <div class="holographic-glare"></div>
+                        <div class="layer-top h-56 md:h-80 w-full mb-6 md:mb-10 bg-black relative overflow-hidden rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] border border-white/10 group-hover:border-[#00f0ff]/50 transition-colors">
+                             <img src="assets/images/crownz.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-60 group-hover:opacity-100 group-hover:scale-110 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80';">
+                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                         </div>
-                        <h4 class="text-xl md:text-2xl font-display font-bold mb-3 md:mb-4 text-white relative z-10">Crownz Barbershop</h4>
-                        <p class="font-mono text-[10px] md:text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
+                        <h4 class="layer-mid text-2xl md:text-4xl font-display font-black mb-3 md:mb-5 text-white group-hover:text-[#00f0ff] transition-colors">Crownz Barbershop</h4>
+                        <p class="layer-base font-mono text-xs md:text-sm tracking-[0.2em] text-gray-500 font-bold mt-auto">> ACCESS DATA LOG</p>
                     </div>
                 </div>
 
-                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic" onclick="openProjectLog('Clip Kings', 'Premium digital experience showcase.', 'GSAP, Custom JS', 'Elevated brand authority.', 'https://clipkings.github.io/clip-kings-website/')">
-                    <div class="transform-3d-layer p-6 md:p-8">
-                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="h-48 md:h-64 w-full mb-6 md:mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
-                             <img src="assets/images/clipkings.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-70 group-hover:opacity-100 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80';">
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic rounded-[30px]" onclick="openProjectLog('Clip Kings', 'Premium digital experience showcase.', 'GSAP, Custom JS', 'Elevated brand authority.', 'https://clipkings.github.io/clip-kings-website/')">
+                    <div class="transform-3d-layer p-6 md:p-10 flex flex-col h-full">
+                        <div class="holographic-glare"></div>
+                        <div class="layer-top h-56 md:h-80 w-full mb-6 md:mb-10 bg-black relative overflow-hidden rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] border border-white/10 group-hover:border-[#00f0ff]/50 transition-colors">
+                             <img src="assets/images/clipkings.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-60 group-hover:opacity-100 group-hover:scale-110 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80';">
+                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                         </div>
-                        <h4 class="text-xl md:text-2xl font-display font-bold mb-3 md:mb-4 text-white relative z-10">Clip Kings</h4>
-                        <p class="font-mono text-[10px] md:text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
+                        <h4 class="layer-mid text-2xl md:text-4xl font-display font-black mb-3 md:mb-5 text-white group-hover:text-[#00f0ff] transition-colors">Clip Kings</h4>
+                        <p class="layer-base font-mono text-xs md:text-sm tracking-[0.2em] text-gray-500 font-bold mt-auto">> ACCESS DATA LOG</p>
                     </div>
                 </div>
 
-                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic" onclick="openProjectLog('Opus Al Qudsi', 'Corporate portal for specialized services.', 'Enterprise CMS', 'Enhanced security and load times.', 'https://opusalqudsi.com')">
-                    <div class="transform-3d-layer p-6 md:p-8">
-                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="h-48 md:h-64 w-full mb-6 md:mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
-                             <img src="assets/images/opus.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-70 group-hover:opacity-100 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80';">
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic rounded-[30px]" onclick="openProjectLog('Opus Al Qudsi', 'Corporate portal for specialized services.', 'Enterprise CMS', 'Enhanced security and load times.', 'https://opusalqudsi.com')">
+                    <div class="transform-3d-layer p-6 md:p-10 flex flex-col h-full">
+                        <div class="holographic-glare"></div>
+                        <div class="layer-top h-56 md:h-80 w-full mb-6 md:mb-10 bg-black relative overflow-hidden rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] border border-white/10 group-hover:border-[#00f0ff]/50 transition-colors">
+                             <img src="assets/images/opus.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-60 group-hover:opacity-100 group-hover:scale-110 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80';">
+                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                         </div>
-                        <h4 class="text-xl md:text-2xl font-display font-bold mb-3 md:mb-4 text-white relative z-10">Opus Al Qudsi</h4>
-                        <p class="font-mono text-[10px] md:text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
+                        <h4 class="layer-mid text-2xl md:text-4xl font-display font-black mb-3 md:mb-5 text-white group-hover:text-[#00f0ff] transition-colors">Opus Al Qudsi</h4>
+                        <p class="layer-base font-mono text-xs md:text-sm tracking-[0.2em] text-gray-500 font-bold mt-auto">> ACCESS DATA LOG</p>
                     </div>
                 </div>
                 
-                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic" onclick="openProjectLog('Quantum OS Portfolio', 'Create an immersive AAA experience.', 'Three.js, WebGL, GSAP', 'Ultimate client retention.', '#')">
-                    <div class="transform-3d-layer p-6 md:p-8">
-                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="h-48 md:h-64 w-full mb-6 md:mb-8 bg-[rgba(0,240,255,0.05)] relative overflow-hidden flex items-center justify-center z-10 border-2 border-[#00f0ff]/50 shadow-[0_0_30px_rgba(0,240,255,0.3)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic rounded-[30px]" onclick="openProjectLog('Quantum OS Portfolio', 'Create an immersive AAA experience.', 'Three.js, WebGL, GSAP', 'Ultimate client retention.', '#')">
+                    <div class="transform-3d-layer p-6 md:p-10 flex flex-col h-full">
+                        <div class="holographic-glare"></div>
+                        <div class="layer-top h-56 md:h-80 w-full mb-6 md:mb-10 bg-gradient-to-br from-white/5 to-transparent relative overflow-hidden flex items-center justify-center rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] border border-[#00f0ff]/30 group-hover:border-[#00f0ff] transition-colors">
                             <div class="project-3d-canvas absolute inset-0" data-type="cube"></div>
                         </div>
-                        <h4 class="text-xl md:text-2xl font-display font-bold mb-3 md:mb-4 text-[#00f0ff] relative z-10">Quantum OS Portfolio</h4>
-                        <p class="font-mono text-[10px] md:text-xs tracking-widest text-gray-400 relative z-10">> CURRENT SYSTEM ACTIVE</p>
+                        <h4 class="layer-mid text-2xl md:text-4xl font-display font-black mb-3 md:mb-5 text-[#00f0ff] text-glow">Quantum OS</h4>
+                        <p class="layer-base font-mono text-xs md:text-sm tracking-[0.2em] text-white font-bold mt-auto">> CURRENT SYSTEM ACTIVE</p>
                     </div>
                 </div>
             </div>
@@ -583,56 +637,63 @@
 
         <!-- 7. CERTIFICATES SCENE -->
         <section id="certificates" class="view-section">
-            <div class="flex flex-col sm:flex-row sm:items-center gap-4 md:gap-6 mb-10 md:mb-12 gs-reveal">
-                <h2 class="text-3xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Verified Records</h2>
-                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50 hidden sm:block"></div>
-                <span class="font-mono text-[10px] md:text-xs text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-3 py-1.5 md:px-4 md:py-2 shadow-[0_0_10px_rgba(0,240,255,0.2)] self-start sm:self-auto">RECORDS: <span id="cert-count-display" class="font-bold">0</span></span>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 md:gap-8 mb-12 md:mb-20 gs-reveal">
+                <h2 class="text-3xl md:text-6xl font-display font-black text-white tracking-widest uppercase text-glow">Verified Records</h2>
+                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-60 hidden sm:block"></div>
+                <span class="font-mono text-xs md:text-sm text-black bg-[#00f0ff] font-bold px-5 py-3 rounded-xl shadow-[0_0_20px_rgba(0,240,255,0.4)] self-start sm:self-auto">RECORDS_LOADED: <span id="cert-count-display">0</span></span>
             </div>
-            <div id="cert-container" class="space-y-12 md:space-y-20"></div>
+            <div id="cert-container" class="space-y-16 md:space-y-24"></div>
         </section>
 
     </main>
 
     <!-- FULLSCREEN DATA LOG MODAL -->
     <div id="project-modal" class="fixed inset-0 z-[105] hidden flex items-center justify-center opacity-0 pointer-events-none">
-        <div class="absolute inset-0 bg-black/95 backdrop-blur-2xl" onclick="closeProjectLog()"></div>
-        <div class="hud-panel p-6 md:p-12 max-w-3xl w-full mx-4 relative z-10 border-[3px] border-[#00f0ff]/60 shadow-[0_0_100px_rgba(0,240,255,0.2)]" id="project-modal-content">
-            <button onclick="closeProjectLog()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white font-mono text-[10px] md:text-xs magnetic px-4 py-2 md:px-6 md:py-3 border border-[#00f0ff] bg-[#00f0ff]/20 hover:bg-[#00f0ff] hover:text-black uppercase transition-all" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);"> [ CLOSE_LOG ] </button>
-            <p class="font-mono text-[#00f0ff] text-[9px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] mb-3 md:mb-4 mt-8 md:mt-0">> DECLASSIFIED_DATA_LOG</p>
-            <h3 id="plog-title" class="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-white mb-6 md:mb-10 uppercase aaa-title">Project Title</h3>
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-2xl" onclick="closeProjectLog()"></div>
+        <div class="hud-panel p-8 md:p-14 max-w-4xl w-full mx-4 relative z-10 border border-white/20 rounded-[30px] shadow-[0_30px_100px_rgba(0,0,0,0.9),inset_0_0_50px_rgba(0,240,255,0.1)] bg-[rgba(10,15,25,0.85)]" id="project-modal-content">
+            <button onclick="closeProjectLog()" class="absolute top-6 right-6 md:top-8 md:right-8 text-white font-mono text-xs magnetic px-5 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white hover:text-black uppercase transition-all font-bold tracking-widest z-20"> [ CLOSE_LOG ] </button>
             
-            <div class="space-y-6 md:space-y-8 font-mono text-xs md:text-base text-gray-300 mb-8 md:mb-12 bg-black/50 p-5 md:p-8 border border-white/10" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
-                <div class="border-b border-white/10 pb-3 md:pb-4"><span class="text-[#00f0ff] font-bold block mb-1 md:mb-2">> OBJECTIVE:</span> <span id="plog-obj" class="text-white">...</span></div>
-                <div class="border-b border-white/10 pb-3 md:pb-4"><span class="text-[#00f0ff] font-bold block mb-1 md:mb-2">> TECH_STACK:</span> <span id="plog-tech" class="text-white">...</span></div>
-                <div><span class="text-[#00f0ff] font-bold block mb-1 md:mb-2">> RESULT:</span> <span id="plog-res" class="text-green-400 font-bold text-sm md:text-lg">...</span></div>
+            <p class="font-mono text-[#00f0ff] text-[10px] md:text-xs tracking-[0.3em] md:tracking-[0.4em] mb-4 md:mb-6 mt-10 md:mt-0 font-bold">> DECLASSIFIED_DATA_LOG</p>
+            <h3 id="plog-title" class="text-3xl sm:text-5xl md:text-6xl font-display font-black text-white mb-10 md:mb-14 uppercase tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">Project Title</h3>
+            
+            <div class="space-y-6 md:space-y-8 font-mono text-sm md:text-lg text-gray-300 mb-10 md:mb-14 bg-black/40 p-6 md:p-10 border border-white/10 rounded-2xl">
+                <div class="border-b border-white/10 pb-4 md:pb-6"><span class="text-gray-500 font-bold block mb-2 text-xs md:text-sm tracking-widest">> OBJECTIVE</span> <span id="plog-obj" class="text-white leading-relaxed">...</span></div>
+                <div class="border-b border-white/10 pb-4 md:pb-6"><span class="text-gray-500 font-bold block mb-2 text-xs md:text-sm tracking-widest">> TECH_STACK</span> <span id="plog-tech" class="text-[#00f0ff] font-bold tracking-wide">...</span></div>
+                <div><span class="text-gray-500 font-bold block mb-2 text-xs md:text-sm tracking-widest">> RESULT</span> <span id="plog-res" class="text-green-400 font-bold text-lg md:text-2xl drop-shadow-[0_0_10px_#00ff00]">...</span></div>
             </div>
             
-            <a id="plog-link" href="#" target="_blank" class="btn-elite w-full text-center py-4 md:py-6 text-sm md:text-xl tracking-widest bg-[#00f0ff]/10" onclick="playAudio('click')">INITIALIZE LIVE PREVIEW</a>
+            <a id="plog-link" href="#" target="_blank" class="btn-elite w-full text-center py-5 md:py-6 text-sm md:text-xl tracking-[0.2em] bg-white/5 rounded-2xl" onclick="playAudio('click')">INITIALIZE LIVE PREVIEW</a>
         </div>
     </div>
 
     <!-- FULLSCREEN PDF MODAL -->
     <div id="cert-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none">
-        <div class="absolute inset-0 bg-black/95 backdrop-blur-2xl" onclick="closeModal()"></div>
-        <div class="hud-panel p-4 md:p-12 max-w-6xl w-full mx-2 md:mx-4 relative transform scale-95 transition-transform duration-500 bg-[rgba(5,9,18,0.98)] border-2 border-[#00f0ff]/60 shadow-[0_0_100px_rgba(0,240,255,0.2)] z-10" id="cert-modal-content">
-            <button onclick="closeModal()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white font-mono text-[10px] md:text-xs magnetic px-4 py-2 md:px-6 md:py-3 border border-[#00f0ff] bg-[#00f0ff]/20 hover:bg-[#00f0ff] hover:text-black uppercase transition-all z-30" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);"> 
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-2xl" onclick="closeModal()"></div>
+        <div class="hud-panel p-6 md:p-10 max-w-6xl w-full mx-2 md:mx-4 relative transform scale-95 transition-transform duration-500 border border-white/20 rounded-[30px] shadow-[0_30px_100px_rgba(0,0,0,0.9),inset_0_0_50px_rgba(0,240,255,0.1)] bg-[rgba(10,15,25,0.95)] z-10" id="cert-modal-content">
+            <button onclick="closeModal()" class="absolute top-6 right-6 md:top-8 md:right-8 text-white font-mono text-xs magnetic px-5 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white hover:text-black uppercase transition-all font-bold tracking-widest z-30"> 
                 [ CLOSE_LOG ]
             </button>
-            <div class="mb-6 md:mb-8 border-b border-white/10 pb-4 md:pb-6 pr-20 md:pr-32 mt-10 md:mt-0">
-                <p class="font-mono text-[#00f0ff] text-[9px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] mb-2 md:mb-3">> DECRYPTION_SUCCESS</p>
-                <h3 id="modal-cert-title" class="text-lg md:text-4xl font-display font-bold text-white mb-2 md:mb-3 leading-tight uppercase truncate aaa-title">Title</h3>
-                <p id="modal-cert-category" class="font-mono text-gray-500 text-[9px] md:text-xs uppercase tracking-widest bg-white/5 inline-block px-2 py-1 md:px-3 md:py-1">DOMAIN: </p>
+            
+            <div class="mb-8 md:mb-10 border-b border-white/10 pb-6 md:pb-8 pr-24 md:pr-40 mt-12 md:mt-0">
+                <p class="font-mono text-[#00f0ff] text-[10px] md:text-xs tracking-[0.3em] mb-3 font-bold">> DECRYPTION_SUCCESS</p>
+                <h3 id="modal-cert-title" class="text-2xl md:text-5xl font-display font-black text-white mb-4 leading-tight uppercase truncate drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">Title</h3>
+                <p id="modal-cert-category" class="font-mono text-black font-bold text-[10px] md:text-xs uppercase tracking-widest bg-[#00f0ff] inline-block px-4 py-2 rounded-lg shadow-[0_0_15px_rgba(0,240,255,0.5)]">DOMAIN: </p>
             </div>
-            <div class="w-full h-[50vh] md:h-[650px] border-2 border-[#00f0ff]/30 bg-black flex items-center justify-center relative overflow-hidden shadow-[0_0_30px_rgba(0,240,255,0.1)inset]" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
+            
+            <div class="w-full h-[55vh] md:h-[650px] border border-white/10 bg-[#020409] flex items-center justify-center relative overflow-hidden rounded-2xl shadow-inner">
                 <iframe id="modal-cert-iframe" src="" class="w-full h-full relative z-20 hidden bg-white" frameborder="0"></iframe>
                 <div id="cert-loading" class="z-30 text-center flex flex-col items-center">
-                    <div class="w-16 h-16 md:w-24 md:h-24 border-[3px] border-transparent border-t-[#00f0ff] border-b-[#00f0ff] rounded-full animate-spin mb-4 md:mb-8 shadow-[0_0_20px_#00f0ff]"></div>
-                    <p class="font-mono text-[#00f0ff] tracking-[0.2em] md:tracking-[0.3em] text-xs md:text-sm animate-pulse font-bold">DECRYPTING DATABANK...</p>
+                    <!-- High-End Circular Loader -->
+                    <div class="relative w-20 h-20 md:w-28 md:h-28 mb-6 md:mb-8">
+                        <div class="absolute inset-0 border-4 border-t-[#00f0ff] border-b-[var(--accent-purple)] border-l-transparent border-r-transparent rounded-full animate-spin"></div>
+                        <div class="absolute inset-2 border-2 border-l-[#00f0ff] border-r-transparent border-t-transparent border-b-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
+                    </div>
+                    <p class="font-mono text-white tracking-[0.4em] text-xs md:text-sm animate-pulse font-bold">DECRYPTING DATABANK...</p>
                 </div>
-                <div id="cert-error" class="hidden z-30 text-center flex flex-col items-center bg-black/90 p-8 md:p-12 border-t-4 border-t-red-500 shadow-[0_0_50px_rgba(255,0,0,0.2)] w-full mx-4">
-                    <span class="text-red-500 font-display text-4xl md:text-6xl font-bold mb-4 md:mb-6 animate-pulse" style="text-shadow: 0 0 30px red;">!</span>
-                    <p class="font-mono text-red-500 tracking-[0.1em] md:tracking-[0.2em] text-sm md:text-xl font-bold uppercase mb-2 md:mb-4 text-center">FILE NOT FOUND</p>
-                    <p id="missing-file-path" class="font-mono text-gray-400 tracking-widest text-[9px] md:text-xs mt-2 md:mt-4 select-all text-center bg-white/5 p-3 md:p-4 border border-white/10 break-all w-full">assets/certificates/filename.pdf</p>
+                <div id="cert-error" class="hidden z-30 text-center flex flex-col items-center bg-[rgba(255,0,0,0.05)] p-10 md:p-16 border border-red-500/30 rounded-3xl w-11/12 max-w-xl mx-auto backdrop-blur-md">
+                    <span class="text-red-500 font-display text-5xl md:text-7xl font-black mb-6 animate-pulse" style="text-shadow: 0 0 40px red;">!</span>
+                    <p class="font-mono text-white tracking-[0.2em] text-lg md:text-2xl font-bold uppercase mb-4 text-center">FILE CORRUPTED</p>
+                    <p id="missing-file-path" class="font-mono text-red-400 tracking-widest text-[10px] md:text-xs mt-4 select-all text-center bg-black/50 p-4 border border-red-500/20 break-all w-full rounded-lg">assets/certificates/filename.pdf</p>
                 </div>
             </div>
         </div>
@@ -810,31 +871,30 @@
             if(skillContainer) {
                 skillsData.forEach(cat => {
                     let html = `
-                    <div class="mb-10 md:mb-14 gs-reveal">
-                        <div class="flex items-center gap-3 md:gap-5 mb-4 md:mb-6">
-                            <div class="w-2 h-6 md:w-3 md:h-8 bg-${cat.theme}-500 shadow-[0_0_20px_var(--${cat.theme}-core)]"></div>
-                            <h4 class="font-display text-lg sm:text-2xl md:text-3xl text-white uppercase tracking-widest aaa-title" data-text="${cat.title}">${cat.title}</h4>
-                            <div class="h-px flex-grow bg-gradient-to-r from-white/30 to-transparent ml-2 md:ml-4"></div>
+                    <div class="mb-14 md:mb-20 gs-reveal">
+                        <div class="flex items-center gap-4 md:gap-6 mb-6 md:mb-8">
+                            <div class="w-3 h-10 md:w-4 md:h-12 bg-${cat.theme}-500 shadow-[0_0_30px_var(--${cat.theme}-core)] rounded-full"></div>
+                            <h4 class="font-display text-2xl md:text-5xl text-white uppercase tracking-widest font-black drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">${cat.title}</h4>
+                            <div class="h-px flex-grow bg-gradient-to-r from-white/40 to-transparent ml-4 md:ml-6"></div>
                         </div>
-                        <div class="mb-6 md:mb-8 max-w-md pl-4 md:pl-8">
-                            <div class="flex justify-between font-mono text-[9px] md:text-xs text-[#00f0ff] mb-2 md:mb-3 font-bold tracking-widest"><span>SYS_PROFICIENCY</span><span>${cat.percent}</span></div>
-                            <div class="h-1.5 md:h-2 w-full bg-white/5 overflow-hidden border border-white/10" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);">
-                                <div class="h-full bg-[#00f0ff] w-0 gs-skill-bar shadow-[0_0_15px_#00f0ff]" data-width="${cat.percent}"></div>
+                        <div class="mb-8 md:mb-12 max-w-lg pl-6 md:pl-10">
+                            <div class="flex justify-between font-mono text-[10px] md:text-sm text-[#00f0ff] mb-3 md:mb-4 font-bold tracking-[0.2em] uppercase"><span>System_Proficiency</span><span class="text-white">${cat.percent}</span></div>
+                            <div class="h-2 md:h-3 w-full bg-white/5 overflow-hidden rounded-full border border-white/10 shadow-inner">
+                                <div class="h-full bg-gradient-to-r from-[#00f0ff] to-[var(--accent-purple)] w-0 gs-skill-bar shadow-[0_0_20px_#00f0ff] rounded-full" data-width="${cat.percent}"></div>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pl-4 md:pl-8">`;
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pl-6 md:pl-10">`;
                     
                     cat.items.forEach((skill, i) => {
-                        let tags = skill.tags.map(t => `<span class="font-mono text-[7px] md:text-[9px] uppercase tracking-[0.1em] md:tracking-[0.2em] px-2 py-1 md:px-3 md:py-1.5 bg-white/5 text-gray-300 font-bold border border-white/10 shadow-[0_0_10px_rgba(255,255,255,0.05)inset]" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);">${t}</span>`).join('');
+                        let tags = skill.tags.map(t => `<span class="font-mono text-[8px] md:text-[10px] uppercase tracking-[0.1em] md:tracking-[0.2em] px-3 py-1 md:px-4 md:py-2 bg-black/40 text-gray-300 font-bold border border-white/10 rounded-lg shadow-inner">${t}</span>`).join('');
                         html += `
-                            <div class="hud-panel tilt-card p-0 flex flex-col justify-between magnetic cursor-none group hover:border-${cat.theme}-500 min-h-[140px] md:min-h-[160px]">
-                                <div class="transform-3d-layer p-4 md:p-6 flex flex-col h-full">
+                            <div class="hud-panel tilt-card p-0 flex flex-col justify-between magnetic cursor-none group hover:border-${cat.theme}-500 min-h-[160px] md:min-h-[200px] rounded-2xl">
+                                <div class="transform-3d-layer p-6 md:p-8 flex flex-col h-full">
                                     <div class="holographic-glare"></div>
-                                    <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                                    <div class="relative z-10 flex-grow">
-                                        <p class="font-mono text-[7px] md:text-[9px] text-[#00f0ff] uppercase mb-2 md:mb-4 tracking-widest border-b border-white/10 pb-1 md:pb-2">ID_${(i+1).toString().padStart(2,'0')}</p>
-                                        <h5 class="font-display text-[10px] md:text-sm font-bold text-white mb-3 md:mb-6 leading-snug tracking-wide">${skill.name}</h5>
-                                        <div class="flex flex-wrap gap-1 md:gap-1.5 mt-auto">${tags}</div>
+                                    <div class="layer-base relative z-10 flex-grow flex flex-col">
+                                        <p class="layer-top font-mono text-[8px] md:text-[10px] text-gray-500 group-hover:text-[#00f0ff] uppercase mb-3 md:mb-5 tracking-widest border-b border-white/10 pb-2 transition-colors font-bold">ID_${(i+1).toString().padStart(2,'0')}</p>
+                                        <h5 class="layer-mid font-display text-sm md:text-lg font-black text-white mb-5 md:mb-8 leading-snug tracking-wide group-hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">${skill.name}</h5>
+                                        <div class="layer-base flex flex-wrap gap-2 md:gap-3 mt-auto">${tags}</div>
                                     </div>
                                 </div>
                             </div>`;
@@ -851,13 +911,13 @@
                 certCategoryData.forEach(cat => {
                     certCount += cat.items.length;
                     let html = `
-                    <div class="mb-12 md:mb-16 gs-reveal">
-                        <div class="flex items-center gap-3 md:gap-5 mb-6 md:mb-8">
-                            <div class="w-2 h-6 md:w-3 md:h-8 bg-${cat.theme}-500 shadow-[0_0_20px_var(--${cat.theme}-core)]"></div>
-                            <h4 class="font-display text-lg sm:text-2xl md:text-3xl text-white uppercase tracking-widest aaa-title" data-text="${cat.title}">${cat.title}</h4>
-                            <div class="h-px flex-grow bg-gradient-to-r from-white/30 to-transparent ml-2 md:ml-4"></div>
+                    <div class="mb-16 md:mb-24 gs-reveal">
+                        <div class="flex items-center gap-4 md:gap-6 mb-8 md:mb-12">
+                            <div class="w-3 h-10 md:w-4 md:h-12 bg-${cat.theme}-500 shadow-[0_0_30px_var(--${cat.theme}-core)] rounded-full"></div>
+                            <h4 class="font-display text-2xl md:text-5xl text-white uppercase tracking-widest font-black drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">${cat.title}</h4>
+                            <div class="h-px flex-grow bg-gradient-to-r from-white/40 to-transparent ml-4 md:ml-6"></div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 pl-4 md:pl-8">`;
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 pl-6 md:pl-10">`;
                     
                     cat.items.forEach((cert) => {
                         const safeName = cert.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -865,18 +925,17 @@
                         const safeFileName = cert.file.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                         
                         html += `
-                            <div class="hud-panel tilt-card p-0 flex flex-col h-full cursor-none magnetic group hover:border-${cat.theme}-400 min-h-[160px] md:min-h-[200px]" onclick="viewCertificate('${safeName}', '${safeCategory}', '${safeFileName}')">
-                                <div class="transform-3d-layer p-4 md:p-6 flex flex-col h-full">
+                            <div class="hud-panel tilt-card p-0 flex flex-col h-full cursor-none magnetic group hover:border-${cat.theme}-400 min-h-[180px] md:min-h-[240px] rounded-2xl" onclick="viewCertificate('${safeName}', '${safeCategory}', '${safeFileName}')">
+                                <div class="transform-3d-layer p-6 md:p-8 flex flex-col h-full">
                                     <div class="holographic-glare"></div>
-                                    <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                                    <div class="relative z-10 flex flex-col h-full">
+                                    <div class="layer-base relative z-10 flex flex-col h-full">
                                         <div class="flex-grow">
-                                            <p class="font-mono text-[7px] md:text-[9px] text-[#00f0ff] uppercase mb-2 md:mb-3 tracking-widest truncate">> ${cat.title.split('/')[0].replace(/[^\w\s]/gi, '').trim()}</p>
-                                            <h5 class="font-display text-[9px] md:text-[11px] font-bold text-gray-200 group-hover:text-white transition-colors leading-relaxed mb-3 md:mb-5">${cert.name}</h5>
+                                            <p class="layer-top font-mono text-[8px] md:text-[10px] text-[#00f0ff] uppercase mb-3 md:mb-4 tracking-widest truncate font-bold">> ${cat.title.split('/')[0].replace(/[^\w\s]/gi, '').trim()}</p>
+                                            <h5 class="layer-mid font-display text-[10px] md:text-sm font-bold text-gray-300 group-hover:text-white transition-colors leading-relaxed mb-4 md:mb-6">${cert.name}</h5>
                                         </div>
-                                        <div class="mt-auto flex justify-between items-end border-t border-white/10 pt-2 md:pt-4">
-                                            <p class="font-mono text-[7px] md:text-[9px] text-gray-500 uppercase tracking-widest">SYS_${(globalCertId++).toString().padStart(2,'0')}</p>
-                                            <span class="text-[7px] md:text-[9px] text-gray-400 font-mono group-hover:text-[#00f0ff] transition-colors font-bold tracking-widest">DECRYPT</span>
+                                        <div class="layer-base mt-auto flex justify-between items-end border-t border-white/10 pt-4 md:pt-5">
+                                            <p class="font-mono text-[8px] md:text-[10px] text-gray-500 uppercase tracking-widest">SYS_${(globalCertId++).toString().padStart(2,'0')}</p>
+                                            <span class="text-[9px] md:text-xs text-[#00f0ff] font-mono font-bold tracking-widest bg-[#00f0ff]/10 px-3 py-1.5 rounded-md group-hover:bg-[#00f0ff] group-hover:text-black transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)]">DECRYPT</span>
                                         </div>
                                     </div>
                                 </div>
@@ -890,7 +949,7 @@
             if(certCountDisplay) certCountDisplay.innerText = certCount;
         }
 
-        // Custom External Audio System Setup
+        // 2. LUXURY CINEMATIC AUDIO ENGINE
         const AudioEngine = {
             ctx: null,
             unlocked: false,
@@ -932,7 +991,6 @@
             },
             play(type) {
                 if (!this.unlocked) return;
-                
                 if (this.sounds[type]) {
                     this.playExternal(type, false);
                 } else {
@@ -1003,6 +1061,7 @@
 
         window.playAudio = (t) => AudioEngine.play(t);
 
+        // 3. CURSOR & INTERACTIVITY
         const initFluidCursor = () => {
             if(window.innerWidth <= 768) return; 
             
@@ -1072,6 +1131,7 @@
             });
         };
 
+        // NEW MULTI-LAYER PARALLAX FUNCTION
         const init3DTilt = () => {
             document.querySelectorAll('.tilt-card').forEach(card => {
                 card.addEventListener('mousemove', e => {
@@ -1081,22 +1141,40 @@
                     const y = e.clientY - rect.top;
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
-                    const rotateX = ((y - centerY) / centerY) * -12;
-                    const rotateY = ((x - centerX) / centerX) * 12;
+                    const rotateX = ((y - centerY) / centerY) * -15; // Increased depth
+                    const rotateY = ((x - centerX) / centerX) * 15;
                     
+                    // Main Card Tilt
                     gsap.to(card, { rotateX, rotateY, transformPerspective: 1000, duration: 0.4, ease: "power2.out" });
+                    
+                    // Inner Layers Deep Parallax
+                    const layerTop = card.querySelector('.layer-top');
+                    const layerMid = card.querySelector('.layer-mid');
+                    const layerBase = card.querySelector('.layer-base');
+                    
+                    if(layerTop) gsap.to(layerTop, { x: rotateY * -1.5, y: rotateX * 1.5, duration: 0.4, ease: "power2.out" });
+                    if(layerMid) gsap.to(layerMid, { x: rotateY * -0.8, y: rotateX * 0.8, duration: 0.4, ease: "power2.out" });
+                    if(layerBase) gsap.to(layerBase, { x: rotateY * -0.3, y: rotateX * 0.3, duration: 0.4, ease: "power2.out" });
                     
                     const glare = card.querySelector('.holographic-glare');
                     if(glare) {
-                        glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(0, 240, 255, 0.4), transparent 60%)`;
+                        glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.15), transparent 60%)`;
                     }
                 });
                 card.addEventListener('mouseleave', () => {
                     if (window.innerWidth <= 768) return;
                     gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.7, ease: "power3.out" });
+                    
+                    const layerTop = card.querySelector('.layer-top');
+                    const layerMid = card.querySelector('.layer-mid');
+                    const layerBase = card.querySelector('.layer-base');
+                    if(layerTop) gsap.to(layerTop, { x: 0, y: 0, duration: 0.7, ease: "power3.out" });
+                    if(layerMid) gsap.to(layerMid, { x: 0, y: 0, duration: 0.7, ease: "power3.out" });
+                    if(layerBase) gsap.to(layerBase, { x: 0, y: 0, duration: 0.7, ease: "power3.out" });
+
                     const glare = card.querySelector('.holographic-glare');
                     if(glare) {
-                        glare.style.background = `radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.15), transparent 60%)`;
+                        glare.style.background = `radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05), transparent 50%)`;
                     }
                 });
             });
@@ -1128,7 +1206,7 @@
             sceneGroup.add(stars);
 
             const coreGeo = new THREE.IcosahedronGeometry(12, 1); 
-            const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.3 });
+            const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.1 });
             const core = new THREE.Mesh(coreGeo, coreMat);
             
             const innerGeo = new THREE.IcosahedronGeometry(9, 0);
@@ -1145,7 +1223,7 @@
             sceneGroup.add(ring1);
 
             const ring2Geo = new THREE.TorusGeometry(30, 0.1, 16, 100);
-            const ring2Mat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.05 });
+            const ring2Mat = new THREE.MeshBasicMaterial({ color: 0xb026ff, transparent: true, opacity: 0.1 });
             const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
             ring2.rotation.y = Math.PI / 3;
             sceneGroup.add(ring2);
@@ -1205,8 +1283,8 @@
                 scene.add(cube);
 
                 let isHovered = false;
-                container.parentElement.addEventListener('mouseenter', () => { isHovered = true; mat.color.setHex(0xffffff); });
-                container.parentElement.addEventListener('mouseleave', () => { isHovered = false; mat.color.setHex(0x00f0ff); });
+                container.parentElement.parentElement.addEventListener('mouseenter', () => { isHovered = true; mat.color.setHex(0xffffff); });
+                container.parentElement.parentElement.addEventListener('mouseleave', () => { isHovered = false; mat.color.setHex(0x00f0ff); });
 
                 const anim = () => {
                     if(isHovered) {
@@ -1235,7 +1313,7 @@
 
             const geo = new THREE.BoxGeometry(2, 4, 0.2); 
             const edges = new THREE.EdgesGeometry(geo);
-            const mat = new THREE.LineBasicMaterial({ color: 0xff9f00, linewidth: 2 });
+            const mat = new THREE.LineBasicMaterial({ color: 0xb026ff, linewidth: 2 });
             const phone = new THREE.LineSegments(edges, mat);
             scene.add(phone);
 
@@ -1248,7 +1326,7 @@
             anim();
         };
 
-        // 6. SPA LOGIC
+        // 6. SPA LOGIC WITH CINEMATIC FOCUS PULL
         window.openNode = (targetId, event) => {
             playAudio('warp');
             if(window.glSceneGroup) {
@@ -1257,10 +1335,10 @@
             }
 
             const tLine = document.getElementById('t-line');
-            gsap.to(tLine, {width: '100%', duration: 0.4, ease: "power3.inOut"});
+            gsap.to(tLine, {width: '100%', duration: 0.5, ease: "power3.inOut"});
 
             gsap.to('#quantum-transition', {
-                opacity: 1, duration: 0.4, ease: "power3.in",
+                opacity: 1, duration: 0.5, ease: "power3.in",
                 onComplete: () => {
                     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
                     const target = document.getElementById(targetId);
@@ -1277,16 +1355,16 @@
                         gsap.to(window.glSceneGroup.position, {z: 0, duration: 2.0, ease: "power4.out"});
                     }
 
-                    gsap.to(tLine, {width: '0%', duration: 0.4, delay: 0.1});
+                    gsap.to(tLine, {width: '0%', duration: 0.5, delay: 0.1});
                     
-                    // Fixed: Ensures opacity and reveal logic only happens after the black screen goes away
-                    gsap.to('#quantum-transition', {opacity: 0, duration: 0.6, ease: "power3.out", delay: 0.1, onComplete: () => {
+                    gsap.to('#quantum-transition', {opacity: 0, duration: 0.8, ease: "power3.out", delay: 0.1, onComplete: () => {
                         if(target) {
-                            gsap.to(target.querySelectorAll('.gs-reveal'), {y: 0, opacity: 1, duration: 0.8, stagger: 0.05, ease: "power3.out"});
+                            // Cinematic Reveal
+                            gsap.fromTo(target.querySelectorAll('.gs-reveal'), {y: 60, scale: 0.9, opacity: 0, filter: "blur(20px)"}, {y: 0, scale: 1, opacity: 1, filter: "blur(0px)", duration: 1.2, stagger: 0.1, ease: "power4.out"});
                             if(targetId === 'skills') {
                                 target.querySelectorAll('.gs-skill-bar').forEach(bar => {
                                     const width = bar.getAttribute('data-width');
-                                    gsap.fromTo(bar, {width: "0%"}, {width: width, duration: 1.5, ease: "power4.out", delay: 0.2});
+                                    gsap.fromTo(bar, {width: "0%"}, {width: width, duration: 1.5, ease: "power4.out", delay: 0.4});
                                 });
                             }
                         }
@@ -1320,10 +1398,9 @@
                     
                     gsap.to(tLine, {width: '0%', duration: 0.4, delay: 0.1});
                     
-                    // Fixed: Ensures opacity and reveal logic only happens after the black screen goes away
                     gsap.to('#quantum-transition', {opacity: 0, duration: 0.6, ease: "power3.out", delay: 0.1, onComplete: () => {
                         if(homeHub) {
-                            gsap.to(homeHub.querySelectorAll('.gs-reveal'), {scale: 1, opacity: 1, y: 0, duration: 0.8, stagger: 0.05, ease: "back.out(1.2)"});
+                            gsap.fromTo(homeHub.querySelectorAll('.gs-reveal'), {scale: 0.85, opacity: 0, filter: "blur(15px)"}, {scale: 1, opacity: 1, filter: "blur(0px)", duration: 1.2, stagger: 0.05, ease: "back.out(1.2)"});
                         }
                     }});
                 }
@@ -1346,18 +1423,18 @@
             setTimeout(() => {
                 playAudio('error');
                 res.innerHTML = `
-                    <div class="border border-[#ff9f00]/50 bg-[#ff9f00]/10 p-5 mt-5 text-left shadow-[0_0_20px_rgba(255,159,0,0.3)]" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);">
-                        <div class="flex justify-between items-center mb-4 border-b border-[#ff9f00]/30 pb-3">
-                            <span class="text-[#ff9f00] font-bold text-sm md:text-xl tracking-widest">DIAGNOSTIC REPORT</span>
-                            <span class="text-red-500 font-display text-2xl md:text-3xl font-bold animate-pulse">SCORE: 42/100</span>
+                    <div class="border border-[#ff9f00]/50 bg-[#ff9f00]/10 p-5 md:p-8 mt-6 text-left shadow-[0_0_30px_rgba(255,159,0,0.2)] rounded-2xl backdrop-blur-md">
+                        <div class="flex justify-between items-center mb-5 border-b border-[#ff9f00]/30 pb-4">
+                            <span class="text-[#ff9f00] font-bold text-base md:text-2xl tracking-[0.2em] uppercase">DIAGNOSTIC REPORT</span>
+                            <span class="text-red-500 font-display text-3xl md:text-5xl font-black animate-pulse drop-shadow-[0_0_15px_red]">42/100</span>
                         </div>
-                        <ul class="text-gray-300 space-y-4 mb-6 font-mono text-[10px] md:text-xs">
-                            <li class="flex items-start gap-3"><span class="text-red-500 font-bold">[FAIL]</span> <span>High Load Time / Render Blocking Scripts Detected.</span></li>
-                            <li class="flex items-start gap-3"><span class="text-red-500 font-bold">[FAIL]</span> <span>Legacy Architecture & Outdated Frameworks.</span></li>
-                            <li class="flex items-start gap-3"><span class="text-[#ff9f00] font-bold">[WARN]</span> <span>Sub-optimal Mobile Responsiveness.</span></li>
-                            <li class="flex items-start gap-3"><span class="text-[#ff9f00] font-bold">[WARN]</span> <span>UI/UX Patterns require modernization.</span></li>
+                        <ul class="text-gray-300 space-y-5 mb-8 font-mono text-[10px] md:text-sm">
+                            <li class="flex items-start gap-4"><span class="text-red-500 font-bold bg-red-500/20 px-2 py-1 rounded">[FAIL]</span> <span class="pt-1">High Load Time / Render Blocking Scripts Detected.</span></li>
+                            <li class="flex items-start gap-4"><span class="text-red-500 font-bold bg-red-500/20 px-2 py-1 rounded">[FAIL]</span> <span class="pt-1">Legacy Architecture & Outdated Frameworks.</span></li>
+                            <li class="flex items-start gap-4"><span class="text-[#ff9f00] font-bold bg-[#ff9f00]/20 px-2 py-1 rounded">[WARN]</span> <span class="pt-1">Sub-optimal Mobile Responsiveness.</span></li>
+                            <li class="flex items-start gap-4"><span class="text-[#ff9f00] font-bold bg-[#ff9f00]/20 px-2 py-1 rounded">[WARN]</span> <span class="pt-1">UI/UX Patterns require modernization.</span></li>
                         </ul>
-                        <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Upgrade+Request+for+${encodeURIComponent(url)}" class="block w-full text-black bg-[#00f0ff] hover:bg-white p-4 text-center font-bold tracking-widest cursor-none magnetic transition-colors text-xs md:text-sm" onclick="playAudio('click')">
+                        <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Upgrade+Request+for+${encodeURIComponent(url)}" class="block w-full text-black bg-gradient-to-r from-[#00f0ff] to-[var(--accent-purple)] hover:shadow-[0_0_40px_rgba(0,240,255,0.6)] p-5 rounded-xl text-center font-black tracking-widest cursor-none magnetic transition-all text-xs md:text-base uppercase" onclick="playAudio('click')">
                             [ INITIATE UPGRADE VIA SYS.OP ]
                         </a>
                     </div>
@@ -1379,15 +1456,15 @@
 
             const modal = document.getElementById('project-modal');
             modal.classList.remove('hidden', 'pointer-events-none');
-            gsap.fromTo(modal, {opacity: 0}, {opacity: 1, duration: 0.4});
-            gsap.fromTo('#project-modal-content', {scale: 0.9, y: 30}, {scale: 1, y: 0, duration: 0.6, ease: "power4.out"});
+            gsap.fromTo(modal, {opacity: 0}, {opacity: 1, duration: 0.5});
+            gsap.fromTo('#project-modal-content', {scale: 0.8, y: 50, filter: "blur(20px)"}, {scale: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power4.out"});
         };
 
         window.closeProjectLog = () => {
             playAudio('click');
             const modal = document.getElementById('project-modal');
-            gsap.to('#project-modal-content', {scale: 0.95, y: 20, duration: 0.3});
-            gsap.to(modal, {opacity: 0, duration: 0.3, onComplete: () => modal.classList.add('hidden', 'pointer-events-none')});
+            gsap.to('#project-modal-content', {scale: 0.9, y: 30, filter: "blur(10px)", duration: 0.4});
+            gsap.to(modal, {opacity: 0, duration: 0.4, onComplete: () => modal.classList.add('hidden', 'pointer-events-none')});
         };
 
         window.viewCertificate = (name, category, fileName) => {
@@ -1414,10 +1491,10 @@
             
             if(modal) {
                 modal.classList.remove('hidden', 'pointer-events-none');
-                gsap.fromTo(modal, {opacity: 0}, {opacity: 1, duration: 0.4});
+                gsap.fromTo(modal, {opacity: 0}, {opacity: 1, duration: 0.5});
             }
             if(content) {
-                gsap.fromTo(content, {scale: 0.9, y: 40}, {scale: 1, y: 0, duration: 0.7, ease: "power4.out"});
+                gsap.fromTo(content, {scale: 0.8, y: 50, filter: "blur(20px)"}, {scale: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power4.out"});
             }
 
             setTimeout(async () => {
@@ -1442,9 +1519,9 @@
             playAudio('click');
             const modal = document.getElementById('cert-modal');
             const content = document.getElementById('cert-modal-content');
-            if(content) gsap.to(content, {scale: 0.95, y: 30, duration: 0.3, ease: "power2.in"});
+            if(content) gsap.to(content, {scale: 0.9, y: 30, filter: "blur(10px)", duration: 0.4});
             if(modal) {
-                gsap.to(modal, {opacity: 0, duration: 0.3, onComplete: () => {
+                gsap.to(modal, {opacity: 0, duration: 0.4, onComplete: () => {
                     modal.classList.add('hidden', 'pointer-events-none');
                     const iframe = document.getElementById('modal-cert-iframe');
                     if(iframe) iframe.src = "";
@@ -1499,10 +1576,10 @@
                 if(term) {
                     if(term.classList.contains('active')) {
                         term.classList.remove('active');
-                        gsap.to(term, {autoAlpha: 0, duration: 0.3}); 
+                        gsap.to(term, {autoAlpha: 0, y: "-100%", duration: 0.5, ease: "power3.in"}); 
                     } else {
                         term.classList.add('active');
-                        gsap.to(term, {autoAlpha: 1, duration: 0.3}); 
+                        gsap.to(term, {autoAlpha: 1, y: "0%", duration: 0.5, ease: "power4.out"}); 
                         const input = document.getElementById('cmd-input');
                         if(input) input.focus();
                         playAudio('hover');
@@ -1520,9 +1597,9 @@
                     if(output) output.innerText += `\nroot@sys.op:~# ${val}`;
                     
                     if(val === 'help' && output) output.innerText += `\nAvailable commands:\n- init: Reboot sequence\n- clear: Clear terminal\n- run skills_matrix: Navigate to capabilities`;
-                    else if (val === 'clear' && output) output.innerText = `QUANTUM OS v3.0.0`;
+                    else if (val === 'clear' && output) output.innerText = `QUANTUM OS v4.0.0 (AAA EDITION)`;
                     else if (val === 'init') location.reload();
-                    else if (val === 'run skills_matrix') { openNode('skills', {currentTarget: document.body}); const term = document.getElementById('cmd-terminal'); if(term) {term.classList.remove('active'); gsap.to(term, {autoAlpha: 0, duration: 0.3});} }
+                    else if (val === 'run skills_matrix') { openNode('skills', {currentTarget: document.body}); const term = document.getElementById('cmd-terminal'); if(term) {term.classList.remove('active'); gsap.to(term, {autoAlpha: 0, y: "-100%", duration: 0.5});} }
                     else if (val !== '' && output) output.innerText += `\nCommand not found: ${val}`;
                     
                     this.value = '';
@@ -1535,7 +1612,7 @@
         // 10. BOOT SEQUENCE
         const runBootSequence = () => {
             // HIDE ALL REVEAL ELEMENTS INITIALLY TO PREVENT FLASHING BUG
-            gsap.set('.gs-reveal', {opacity: 0, y: 30});
+            gsap.set('.gs-reveal', {opacity: 0, y: 60, scale: 0.9, filter: "blur(20px)"});
             
             renderData();
             initVisitorTracking(); 
@@ -1547,17 +1624,17 @@
 
             const tl = gsap.timeline();
             
-            tl.to('#progress-bar', {width: '100%', duration: 2.0, ease: "power3.inOut", onUpdate: function() {
-                if(Math.random() > 0.8) playAudio('hover');
+            tl.to('#progress-bar', {width: '100%', duration: 2.5, ease: "power4.inOut", onUpdate: function() {
+                if(Math.random() > 0.85) playAudio('hover');
             }})
-            .to('#loader-flash', {opacity: 1, duration: 0.1})
+            .to('#loader-flash', {opacity: 1, duration: 0.15})
             .to('#loader', {display: 'none', duration: 0})
-            .to('#loader-flash', {opacity: 0, duration: 1.0, ease: "power3.out"})
+            .to('#loader-flash', {opacity: 0, duration: 1.5, ease: "power3.out"})
             .add(() => {
                 initCardCanvas(); 
                 document.body.style.overflowY = 'auto';
-            }, "-=1.0") // Execute alongside fade-out to prevent stutter
-            .to('#home-hub .gs-reveal', {y: 0, opacity: 1, duration: 0.8, stagger: 0.05, ease: "power3.out"}, "-=0.8");
+            }, "-=1.2") 
+            .to('#home-hub .gs-reveal', {y: 0, scale: 1, opacity: 1, filter: "blur(0px)", duration: 1.5, stagger: 0.1, ease: "power4.out"}, "-=1.0");
         };
 
         // 11. EVENT LISTENERS & ONLOAD
