@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUANTUM.ARCH // Syed Ahmed // AAA HUD EDITION</title>
+    
+    <!-- Libraries: Tailwind, GSAP, Three.js -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Fonts: Minimalist, Corporate Sci-Fi -->
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-base: #020409;
+            --accent-core: #00f0ff;
+            --accent-glow: rgba(0, 240, 255, 0.7);
+            --accent-mute: rgba(0, 240, 255, 0.15);
+            --accent-warn: #ff9f00;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --hud-bg: rgba(5, 9, 18, 0.85);
+            --hud-border: rgba(0, 240, 255, 0.25);
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            cursor: none; 
+            -webkit-font-smoothing: antialiased;
+            background-image: radial-gradient(circle at 50% 0%, #060c1c 0%, var(--bg-base) 80%);
+        }
+
+        h1, h2, h3, h4, h5, .font-display { font-family: 'Syncopate', sans-serif; letter-spacing: -0.02em; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Smooth Scrolling */
+        html { scroll-behavior: smooth; }
+        
+        /* Custom Fluid Cursor Canvas */
+        #fluid-cursor { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; }
+        #cursor-dot { 
+            position: fixed; width: 4px; height: 4px; background: var(--accent-core); 
+            pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); 
+            box-shadow: 0 0 10px var(--accent-core), 0 0 20px var(--accent-core); 
+            transition: transform 0.1s; 
+        }
+        .cursor-active { transform: translate(-50%, -50%) scale(2) !important; background: var(--accent-warn) !important; box-shadow: 0 0 15px var(--accent-warn) !important; }
+
+        /* 3D Background */
+        #webgl-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; pointer-events: auto; opacity: 0.7; }
+        
+        /* AAA HUD Grid Overlay */
+        .tech-grid {
+            position: fixed; inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(0,240,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,240,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -9; pointer-events: none;
+            mask-image: radial-gradient(circle at center, black 20%, transparent 90%);
+            -webkit-mask-image: radial-gradient(circle at center, black 20%, transparent 90%);
+        }
+
+        /* AAA Game HUD Panel (Angled / Chamfered) */
+        .hud-panel {
+            background: var(--hud-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--hud-border);
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            position: relative;
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        /* HUD Crosshairs & Accents */
+        .hud-panel::before {
+            content: '+'; position: absolute; top: 5px; right: 10px; color: var(--accent-core);
+            font-family: 'JetBrains Mono'; font-size: 10px; opacity: 0.5;
+        }
+        .hud-panel::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 30%; height: 2px;
+            background: var(--accent-core); opacity: 0.5; transition: width 0.3s;
+        }
+
+        .hud-panel:hover { transform: translateY(-4px); border-color: var(--accent-core); box-shadow: 0 15px 30px rgba(0,0,0,0.8); background: rgba(10, 18, 32, 0.95); }
+        .hud-panel:hover::after { width: 100%; opacity: 1; box-shadow: 0 0 15px var(--accent-core); }
+
+        /* Premium Buttons */
+        .btn-elite {
+            background: rgba(0, 240, 255, 0.05); color: var(--text-main); 
+            border: 1px solid var(--hud-border);
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; text-transform: uppercase; font-weight: 700;
+            padding: 14px 28px; position: relative; overflow: hidden;
+            transition: all 0.3s ease; cursor: none; display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn-elite::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--accent-core); transform: scaleX(0); transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: -1;
+        }
+        .btn-elite:hover::before { transform: scaleX(1); transform-origin: left; }
+        .btn-elite:hover { color: #000; border-color: var(--accent-core); box-shadow: 0 0 20px var(--accent-mute); }
+
+        .btn-warn { border-color: rgba(255,159,0,0.3); color: var(--accent-warn); background: rgba(255,159,0,0.05); }
+        .btn-warn::before { background: var(--accent-warn); }
+        .btn-warn:hover { border-color: var(--accent-warn); color: #000; box-shadow: 0 0 20px rgba(255,159,0,0.2); }
+
+        /* Glitch Effects */
+        @keyframes glitch-anim {
+            0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
+            20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
+            40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 0); }
+            60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, 1px); }
+            80% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, -1px); }
+            100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+        }
+        .glitch-text:hover { animation: glitch-anim 0.2s cubic-bezier(.25, .46, .45, .94) both infinite; color: var(--accent-core); text-shadow: 2px 0 var(--accent-warn), -2px 0 var(--purple-core); }
+
+        /* View Section Logic (SPA Hub & Spoke) */
+        .view-section { display: none; opacity: 0; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; padding-top: 140px; padding-bottom: 100px; pointer-events: none; }
+        .view-section.active { display: flex; flex-direction: column; opacity: 1; pointer-events: auto; position: relative; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-core); border-radius: 0; }
+
+        /* Magical Quantum Transition Overlay */
+        #quantum-transition {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9);
+            z-index: 9900; opacity: 0; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .transition-line { width: 0; height: 2px; background: var(--accent-core); box-shadow: 0 0 20px var(--accent-core); }
+
+        /* Cinematic Loader */
+        #loader { position: fixed; inset: 0; background: #000; z-index: 11000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .loader-ring { width: 150px; height: 150px; border: 1px solid rgba(0, 240, 255, 0.1); border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
+        .loader-ring::before { content: ''; position: absolute; inset: -10px; border-top: 2px solid var(--accent-core); border-right: 2px solid transparent; border-radius: 50%; animation: spin 2s linear infinite; }
+        .loader-ring::after { content: ''; position: absolute; inset: -20px; border-bottom: 2px solid var(--accent-warn); border-left: 2px solid transparent; border-radius: 50%; animation: spin 3s linear infinite reverse; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .progress-container { width: 250px; height: 2px; background: rgba(255,255,255,0.1); overflow: hidden; margin-top: 40px; }
+        #progress-bar { width: 0%; height: 100%; background: var(--accent-core); box-shadow: 0 0 10px var(--accent-core); }
+        #loader-flash { position: fixed; inset: 0; background: var(--accent-core); z-index: 11001; opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Cinematic Loader -->
+    <div id="loader">
+        <div class="loader-ring font-display text-4xl text-white tracking-widest font-bold">SA</div>
+        <div class="font-mono text-[10px] text-gray-500 mt-12 tracking-[0.3em] uppercase" id="loader-text">SYSTEM BOOT SEQUENCE...</div>
+        <div class="progress-container"><div id="progress-bar"></div></div>
+    </div>
+    <div id="loader-flash"></div>
+
+    <!-- Magical Transition Overlay -->
+    <div id="quantum-transition">
+        <div class="transition-line" id="t-line"></div>
+    </div>
+
+    <!-- Hidden Command Terminal -->
+    <div id="cmd-terminal">
+        <div id="cmd-output">QUANTUM OS v3.0.0
+Enter 'help' for available commands.
+</div>
+        <div id="cmd-input-line">
+            <span class="text-gray-500">root@sys.op:~#</span>
+            <input type="text" id="cmd-input" autocomplete="off" spellcheck="false">
+        </div>
+    </div>
+
+    <!-- Fluid Cursor & Overlays -->
+    <canvas id="fluid-cursor"></canvas>
+    <div id="cursor-dot"></div>
+    
+    <!-- 3D Environment -->
+    <canvas id="webgl-bg"></canvas>
+    <div class="tech-grid"></div>
+
+    <!-- AAA Global Header -->
+    <header class="fixed top-0 w-full z-50 bg-[rgba(2,4,9,0.8)] backdrop-blur-md border-b border-white/5" id="main-header">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-4 group magnetic cursor-none" onclick="returnToHub()">
+                <div class="w-10 h-10 bg-black border border-white/10 flex items-center justify-center text-sm font-display text-white transition-all group-hover:border-[var(--accent-core)] group-hover:shadow-[0_0_15px_var(--accent-mute)]" style="clip-path: polygon(30% 0%, 100% 0%, 100% 70%, 70% 100%, 0% 100%, 0% 30%);">SA</div>
+                <div class="font-mono text-[10px] text-gray-400 tracking-widest hidden sm:block" id="geo-greeting">ANALYZING UPLINK...</div>
+            </div>
+            <div class="font-mono text-[10px] text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-3 py-1 hidden sm:flex items-center gap-2">
+                <div class="w-1.5 h-1.5 bg-[#00f0ff] animate-pulse"></div> HUD_ONLINE
+            </div>
+        </div>
+    </header>
+
+    <!-- Global Return Button (Hidden on Hub) -->
+    <button id="back-to-hub" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[8000] btn-elite btn-warn magnetic opacity-0 pointer-events-none invisible" onclick="returnToHub()">
+        [ ABORT / RETURN TO CORE ]
+    </button>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 md:px-6 w-full relative z-10" id="spa-wrapper">
+        
+        <!-- 1. DASHBOARD HUB SCENE -->
+        <section id="home-hub" class="view-section active flex-col justify-center items-center pt-20 min-h-screen">
+            
+            <div class="text-center mb-12 relative z-10 gs-reveal w-full">
+                <p class="font-mono text-[#00f0ff] tracking-[0.4em] text-[10px] sm:text-xs uppercase mb-4">> ARCHITECT IDENTIFIED</p>
+                <h1 class="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-display font-bold text-white uppercase tracking-tighter mb-6 glitch-text leading-none">SYED AHMED</h1>
+                
+                <!-- AAA Profile Summary -->
+                <div class="mt-10 font-mono text-xs sm:text-sm text-gray-400 max-w-3xl mx-auto leading-relaxed hud-panel p-8 text-left border-l-4 border-l-[#00f0ff]">
+                    <div class="flex items-center gap-3 mb-4">
+                        <svg class="w-4 h-4 text-[#00f0ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <span class="text-[#00f0ff] font-bold tracking-widest">SYSTEM_SUMMARY</span>
+                    </div>
+                    A highly optimized development entity specializing in the architecture of robust, scalable digital platforms. Operating across the full technological stack, executing end-to-end deployment of <strong class="text-white">Enterprise Websites</strong>, intricate <strong class="text-white">Web Applications</strong>, and natively compiled <strong class="text-white">Mobile Software</strong> architectures.
+                </div>
+            </div>
+
+            <!-- Graphical Options Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl relative z-20 gs-reveal">
+                
+                <div class="hud-panel p-8 flex flex-col items-center justify-center cursor-none group magnetic h-64" onclick="openNode('identity', event)">
+                    <div class="w-16 h-16 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);">
+                         <svg class="w-6 h-6 text-white group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                    <h3 class="font-display text-lg text-white tracking-widest uppercase">Identity</h3>
+                    <p class="font-mono text-[9px] text-[#64748b] mt-3 group-hover:text-[#00f0ff] transition-colors">> AUTH_NODE</p>
+                </div>
+
+                <div class="hud-panel p-8 flex flex-col items-center justify-center cursor-none group magnetic h-64" onclick="openNode('skills', event)">
+                    <div class="w-16 h-16 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);">
+                         <svg class="w-6 h-6 text-white group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    </div>
+                    <h3 class="font-display text-lg text-white tracking-widest uppercase">Capabilities</h3>
+                    <p class="font-mono text-[9px] text-[#64748b] mt-3 group-hover:text-[#00f0ff] transition-colors">> MATRIX_SYNC</p>
+                </div>
+
+                <div class="hud-panel p-8 flex flex-col items-center justify-center cursor-none group magnetic h-64" onclick="openNode('work-hub', event)">
+                    <div class="w-16 h-16 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);">
+                         <svg class="w-6 h-6 text-white group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <h3 class="font-display text-lg text-white tracking-widest uppercase">Work</h3>
+                    <p class="font-mono text-[9px] text-[#64748b] mt-3 group-hover:text-[#00f0ff] transition-colors">> PORTFOLIO</p>
+                </div>
+
+                <div class="hud-panel p-8 flex flex-col items-center justify-center cursor-none group magnetic h-64" onclick="openNode('certificates', event)">
+                    <div class="w-16 h-16 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);">
+                         <svg class="w-6 h-6 text-white group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <h3 class="font-display text-lg text-white tracking-widest uppercase">Records</h3>
+                    <p class="font-mono text-[9px] text-[#64748b] mt-3 group-hover:text-[#00f0ff] transition-colors">> DATABANK</p>
+                </div>
+            </div>
+            
+            <p class="font-mono text-[9px] text-gray-600 tracking-[0.3em] mt-16 gs-reveal animate-pulse">[ AWAITING_INPUT ]</p>
+        </section>
+
+        <!-- 2. WORK HUB SCENE (Websites vs Applications) -->
+        <section id="work-hub" class="view-section flex-col justify-center items-center pt-24 min-h-screen">
+            <div class="text-center mb-16 relative z-10 gs-reveal w-full">
+                <p class="font-mono text-[#00f0ff] tracking-[0.4em] text-[10px] uppercase mb-4">> SELECT_DOMAIN</p>
+                <h2 class="text-4xl md:text-6xl font-display font-bold text-white tracking-widest uppercase">Architecture</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl relative z-20 gs-reveal">
+                <!-- Option: Websites -->
+                <div class="hud-panel p-10 flex flex-col items-center justify-center cursor-none group magnetic h-72" onclick="openNode('deployments', event)">
+                    <div class="w-24 h-24 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
+                        <svg class="w-10 h-10 text-white group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                    </div>
+                    <h3 class="font-display text-xl text-white tracking-widest uppercase">Websites</h3>
+                    <p class="font-mono text-[9px] text-[#64748b] mt-3 group-hover:text-[#00f0ff] transition-colors">> VIEW DEPLOYMENTS</p>
+                </div>
+                
+                <!-- Option: Applications -->
+                <div class="hud-panel p-10 flex flex-col items-center justify-center cursor-none group magnetic h-72" onclick="openNode('applications', event)">
+                    <div class="w-24 h-24 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#ff9f00] group-hover:border-[#ff9f00] transition-all duration-300" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
+                        <svg class="w-10 h-10 text-white group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3 class="font-display text-xl text-white tracking-widest uppercase">Applications</h3>
+                    <p class="font-mono text-[9px] text-[#64748b] mt-3 group-hover:text-[#ff9f00] transition-colors">> RESTRICTED ACCESS</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. APPLICATIONS SCENE (Access Denied) -->
+        <section id="applications" class="view-section flex-col justify-center items-center min-h-screen">
+            <div class="hud-panel p-12 flex flex-col items-center text-center max-w-2xl w-full border-t-4 border-t-[#ff9f00] gs-reveal relative z-20">
+                <div class="w-24 h-24 border-2 border-[#ff9f00] flex items-center justify-center rounded-sm mb-8 relative" style="clip-path: polygon(20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%, 0% 20%);">
+                    <div class="absolute inset-0 bg-[#ff9f00] opacity-20 animate-pulse"></div>
+                    <span class="text-[#ff9f00] font-display text-5xl font-bold">!</span>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-[#ff9f00] tracking-widest uppercase mb-4">Access Denied</h2>
+                <p class="font-mono text-gray-300 text-sm mb-10 leading-relaxed">
+                    APPLICATION_MODULES_AWAITING_DEPLOYMENT<br>
+                    <span class="text-[10px] mt-4 block text-gray-500">Check back later for natively compiled iOS/Android architectures.</span>
+                </p>
+                <button class="btn-elite btn-warn magnetic" onclick="returnToHub()">ACKNOWLEDGE</button>
+            </div>
+        </section>
+
+        <!-- 4. IDENTITY & COMMS SCENE -->
+        <section id="identity" class="view-section">
+            <div class="flex items-center gap-6 mb-12 gs-reveal">
+                <h2 class="text-2xl md:text-4xl font-display font-bold text-white tracking-widest uppercase">Identity Core</h2>
+                <div class="h-px bg-gradient-to-r from-white/20 to-transparent flex-grow"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- UPDATED BRIGHT AAA HOLOGRAPHIC PROFILE & STATS -->
+                <div class="lg:col-span-5 hud-panel p-6 md:p-8 flex flex-col items-center justify-center relative min-h-[450px] gs-reveal border-l-2 border-l-[#00f0ff]">
+                    <!-- Rotating Elements -->
+                    <div class="w-48 h-48 border border-white/10 absolute animate-[spin_20s_linear_infinite]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); top: 10%;"></div>
+                    <div class="w-40 h-40 border border-[#00f0ff]/50 absolute animate-[spin_10s_linear_infinite_reverse]" style="clip-path: polygon(20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%, 0% 20%); top: 13%;"></div>
+                    
+                    <!-- Profile Picture Base -->
+                    <div class="w-56 h-56 rounded-full overflow-hidden relative shadow-[0_0_40px_rgba(0,240,255,0.6)] z-10 border-[3px] border-[#00f0ff]/80">
+                        <img src="assets/images/profile.jpg" alt="Syed Ahmed" class="w-full h-full object-cover filter brightness-125 contrast-125 saturate-150 relative z-0" onerror="this.style.display='none'">
+                        <!-- Vibrant cyan holographic overlay wash -->
+                        <div class="absolute inset-0 bg-[#00f0ff] mix-blend-overlay opacity-30 z-10 pointer-events-none"></div>
+                        <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,240,255,0.2)_50%)] bg-[length:100%_4px] pointer-events-none z-20"></div>
+                    </div>
+                    
+                    <!-- Tech Stats Grid -->
+                    <div class="mt-8 w-full relative z-10 text-left border border-[#00f0ff]/20 bg-[rgba(0,240,255,0.03)] p-4 md:p-5" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);">
+                        <div class="grid grid-cols-2 gap-x-2 gap-y-3 font-mono text-[9px] sm:text-[10px] text-gray-300">
+                            <div><span class="text-[#00f0ff] font-bold">> AGE:</span> UNKNOWN</div>
+                            <div><span class="text-[#00f0ff] font-bold">> LOCATION:</span> HYDERABAD</div>
+                            
+                            <div class="col-span-2 mt-1"><span class="text-[#00f0ff] font-bold">> ROLE:</span> WEB & APP DEVELOPER</div>
+                            <div class="col-span-2"><span class="text-[#00f0ff] font-bold">> SPECIALTY:</span> UI/UX + HIGH-END DESIGN</div>
+                            
+                            <div class="w-full col-span-2 h-[1px] bg-gradient-to-r from-transparent via-[#00f0ff]/40 to-transparent my-1"></div>
+                            
+                            <div class="col-span-2"><span class="text-[#00f0ff] font-bold">> SERVICES:</span> WEBSITES | MOBILE APPS | BRANDING</div>
+                            <div class="col-span-2"><span class="text-[#00f0ff] font-bold">> EXPERIENCE:</span> 3+ YEARS</div>
+                            
+                            <div class="col-span-2 mt-2 p-2 bg-[#ff9f00]/10 border border-[#ff9f00]/30 text-[#ff9f00] flex items-center justify-center gap-2">
+                                <span class="w-2 h-2 bg-[#ff9f00] rounded-sm animate-pulse shadow-[0_0_10px_#ff9f00]"></span> 
+                                <span class="font-bold tracking-widest">STATUS: AVAILABLE FOR PROJECTS</span>
+                            </div>
+                            
+                            <div class="col-span-2 mt-1 text-[#00f0ff] text-center font-bold">> CONTACT: READY ON REQUEST</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Academic Data & Comms -->
+                <div class="lg:col-span-7 flex flex-col gap-8">
+                    <div class="hud-panel p-8 gs-reveal">
+                        <p class="font-mono text-[10px] text-[#00f0ff] uppercase tracking-widest mb-6 relative z-10 border-b border-white/10 pb-2">> ACADEMIC_ARCHITECTURE</p>
+                        <div class="space-y-6 relative z-10">
+                            <div class="bg-white/5 p-4 border-l-2 border-[#00f0ff]">
+                                <h4 class="font-display text-sm text-white mb-2">MASTER OF COMPUTER APPLICATIONS</h4>
+                                <p class="font-mono text-[10px] text-[#00f0ff]">> PURSUING</p>
+                            </div>
+                            <div class="bg-white/5 p-4 border-l-2 border-gray-600">
+                                <h4 class="font-display text-sm text-gray-400 mb-2">BACHELOR OF COMMERCE</h4>
+                                <p class="font-mono text-[10px] text-gray-500">> COMPLETED: 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hud-panel p-8 bg-[#02050a] gs-reveal border-t-2 border-t-[#00f0ff]">
+                        <p class="font-mono text-[10px] text-gray-500 uppercase tracking-widest mb-6 relative z-10 border-b border-white/10 pb-2">Comms_Link</p>
+                        <div class="flex flex-col gap-4 relative z-10">
+                            <a href="tel:+918019416016" class="magnetic flex items-center justify-between group bg-white/5 p-4" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);">
+                                <span class="font-mono text-xs text-gray-400 group-hover:text-white transition-colors">MOBILE_UPLINK</span>
+                                <span class="font-mono text-xs text-[#00f0ff]">+91 8019416016</span>
+                            </a>
+                            <a href="mailto:Syedahmed.sa43@gmail.com" class="magnetic flex items-center justify-between group bg-white/5 p-4" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);">
+                                <span class="font-mono text-xs text-gray-400 group-hover:text-white transition-colors">SECURE_MAIL</span>
+                                <span class="font-mono text-[10px] text-[#00f0ff]">SYEDAHMED.SA43@GMAIL.COM</span>
+                            </a>
+                            <div class="flex gap-4 mt-2">
+                                <a href="https://wa.me/918019416016" target="_blank" class="magnetic flex-1 text-center font-mono text-xs font-bold text-black hover:bg-green-400 bg-green-500 py-3 transition-colors" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);">WHATSAPP</a>
+                                <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="magnetic flex-1 text-center font-mono text-xs font-bold text-black hover:bg-blue-400 bg-[#007acc] py-3 transition-colors" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);">LINKEDIN</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. SKILLS SCENE -->
+        <section id="skills" class="view-section">
+            <div class="flex items-center gap-6 mb-12 gs-reveal">
+                <h2 class="text-2xl md:text-4xl font-display font-bold text-white tracking-widest uppercase">Capabilities</h2>
+                <div class="h-px bg-gradient-to-r from-white/20 to-transparent flex-grow"></div>
+            </div>
+            
+            <div id="skills-container" class="space-y-16">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- 6. DEPLOYMENTS SCENE (Websites) -->
+        <section id="deployments" class="view-section">
+            <div class="flex items-center gap-6 mb-12 gs-reveal">
+                <h2 class="text-2xl md:text-4xl font-display font-bold text-white tracking-widest uppercase">Websites</h2>
+                <div class="h-px bg-gradient-to-r from-white/20 to-transparent flex-grow"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- Project: Crownz -->
+                <div class="hud-panel p-8 group flex flex-col interactive-card gs-reveal border-white/10 hover:border-[#00e5ff]">
+                    <div class="h-56 w-full mb-6 bg-black relative overflow-hidden z-10 border border-white/10" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
+                         <img src="assets/images/crownz.jpg" class="w-full h-full object-cover filter grayscale contrast-125 opacity-50 group-hover:opacity-80 transition-opacity duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80';">
+                    </div>
+                    <h4 class="text-lg font-display font-bold mb-3 text-white relative z-10">Crownz Barbershop</h4>
+                    <p class="text-gray-400 font-mono text-xs mb-8 flex-grow leading-relaxed relative z-10">High-performance grooming salon web interface featuring immersive visuals and modern frontend architecture.</p>
+                    <div class="flex gap-4 mt-auto relative z-10">
+                        <a href="https://crownzbarbershop.github.io" target="_blank" class="btn-elite flex-1 magnetic text-center !border-[#00e5ff]/50 !text-[#00e5ff] hover:!bg-[#00e5ff] hover:!text-black">ACCESS NODE</a>
+                    </div>
+                </div>
+
+                <!-- Project: Clip Kings -->
+                <div class="hud-panel p-8 group flex flex-col interactive-card gs-reveal border-white/10 hover:border-[#b100ff]">
+                    <div class="h-56 w-full mb-6 bg-black relative overflow-hidden z-10 border border-white/10" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
+                         <img src="assets/images/clipkings.jpg" class="w-full h-full object-cover filter grayscale contrast-125 opacity-50 group-hover:opacity-80 transition-opacity duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80';">
+                    </div>
+                    <h4 class="text-lg font-display font-bold mb-3 text-white relative z-10">Clip Kings</h4>
+                    <p class="text-gray-400 font-mono text-xs mb-8 flex-grow leading-relaxed relative z-10">Premium digital experience with dynamic service showcases and custom system interfaces.</p>
+                    <div class="flex gap-4 mt-auto relative z-10">
+                        <a href="https://clipkings.github.io/clip-kings-website/" target="_blank" class="btn-elite flex-1 magnetic text-center !border-[#b100ff]/50 !text-[#b100ff] hover:!bg-[#b100ff] hover:!text-white">ACCESS NODE</a>
+                    </div>
+                </div>
+
+                <!-- Project: Opus Al Qudsi -->
+                <div class="hud-panel p-8 group flex flex-col interactive-card gs-reveal border-white/10 hover:border-[#00ff41]">
+                    <div class="h-56 w-full mb-6 bg-black relative overflow-hidden z-10 border border-white/10" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
+                         <img src="assets/images/opus.jpg" class="w-full h-full object-cover filter grayscale contrast-125 opacity-50 group-hover:opacity-80 transition-opacity duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80';">
+                    </div>
+                    <h4 class="text-lg font-display font-bold mb-3 text-white relative z-10">Opus Al Qudsi</h4>
+                    <p class="text-gray-400 font-mono text-xs mb-8 flex-grow leading-relaxed relative z-10">Professional corporate portal providing specialized services. Engineered for top-tier performance and security.</p>
+                    <div class="flex gap-4 mt-auto relative z-10">
+                        <a href="https://opusalqudsi.com" target="_blank" class="btn-elite flex-1 magnetic text-center !border-[#00ff41]/50 !text-[#00ff41] hover:!bg-[#00ff41] hover:!text-black">ACCESS NODE</a>
+                    </div>
+                </div>
+                
+                <!-- Interactive 3D Card: J.A.R.V.I.S Portfolio -->
+                <div class="hud-panel p-8 group flex flex-col interactive-card gs-reveal border-white/10 hover:border-[#007acc]">
+                    <div class="h-56 w-full mb-6 bg-[rgba(0,240,255,0.05)] relative overflow-hidden flex items-center justify-center z-10 border border-[#00f0ff]/30" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
+                        <div class="project-3d-canvas absolute inset-0" data-type="cube"></div>
+                    </div>
+                    <h4 class="text-lg font-display font-bold mb-3 text-[#00f0ff] relative z-10">Quantum OS Portfolio</h4>
+                    <p class="text-gray-400 font-mono text-xs mb-8 flex-grow leading-relaxed relative z-10">Advanced cinematic portfolio dashboard engineered with WebGL, GSAP, and synthetic spatial audio.</p>
+                    <div class="flex gap-4 mt-auto relative z-10">
+                        <button class="btn-elite flex-1 magnetic cursor-none pointer-events-none opacity-50">SYSTEM ACTIVE</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. CERTIFICATES SCENE -->
+        <section id="certificates" class="view-section">
+            <div class="flex items-center gap-6 mb-12 gs-reveal">
+                <h2 class="text-2xl md:text-4xl font-display font-bold text-white tracking-widest uppercase">Verified Records</h2>
+                <div class="h-px bg-gradient-to-r from-white/20 to-transparent flex-grow"></div>
+                <span class="font-mono text-[10px] text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-3 py-1">RECORDS: <span id="cert-count-display">0</span></span>
+            </div>
+            
+            <div id="cert-container" class="space-y-16">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FULLSCREEN WEBGL SHADER MODAL FOR PDFS -->
+    <div id="cert-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-xl" onclick="closeModal()"></div>
+        
+        <div class="hud-panel p-8 md:p-10 max-w-6xl w-full mx-4 relative transform scale-95 transition-transform duration-500 bg-[rgba(5,9,18,0.95)] border-[#00f0ff]/50 shadow-[0_0_80px_rgba(0,240,255,0.15)] z-10" id="cert-modal-content">
+            
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-gray-400 hover:text-white font-mono text-[10px] tracking-widest z-30 magnetic px-4 py-2 border border-white/20 bg-white/5 transition-colors uppercase" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);"> 
+                [ CLOSE ]
+            </button>
+            
+            <div class="mb-6">
+                <p class="font-mono text-[#00f0ff] text-[9px] tracking-widest mb-2">> DECRYPTION_SUCCESS</p>
+                <h3 id="modal-cert-title" class="text-xl md:text-3xl font-display font-bold text-white mb-2 pr-32 leading-tight uppercase truncate">Title</h3>
+                <p id="modal-cert-category" class="font-mono text-gray-500 text-[10px] uppercase tracking-widest">DOMAIN: </p>
+            </div>
+            
+            <div class="w-full h-[60vh] md:h-[600px] border border-white/10 bg-black flex items-center justify-center relative overflow-hidden" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
+                <iframe id="modal-cert-iframe" src="" class="w-full h-full relative z-20 hidden bg-white" frameborder="0"></iframe>
+                
+                <div id="cert-loading" class="z-30 text-center flex flex-col items-center">
+                    <div class="w-16 h-16 border border-white/10 border-t-[#00f0ff] rounded-full animate-spin mb-6"></div>
+                    <p class="font-mono text-[#00f0ff] tracking-widest text-[10px] animate-pulse">DECRYPTING DATABANK...</p>
+                </div>
+
+                <div id="cert-error" class="hidden z-30 text-center flex flex-col items-center bg-black/90 p-10 border-t-2 border-t-red-500">
+                    <span class="text-red-500 font-display text-4xl font-bold mb-4 animate-pulse">!</span>
+                    <p class="font-mono text-red-500 tracking-widest text-sm font-bold uppercase mb-2">FILE NOT FOUND</p>
+                    <p id="missing-file-path" class="font-mono text-gray-500 tracking-widest text-[9px] mt-4 select-all text-center">assets/certificates/filename.pdf</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. ADVANCED SPATIAL AUDIO SYSTEM
+        // ==========================================
+        const AudioEngine = {
+            ctx: new (window.AudioContext || window.webkitAudioContext)(),
+            unlocked: false,
+            droneGain: null,
+            droneOsc: null,
+            panner: null,
+            init() {
+                const unlockAudio = () => {
+                    if(!this.unlocked) { 
+                        this.ctx.resume().then(() => {
+                            this.unlocked = true;
+                            this.startDrone();
+                        }); 
+                    }
+                };
+                document.body.addEventListener('click', unlockAudio, {once:true});
+                document.body.addEventListener('keydown', unlockAudio, {once:true});
+            },
+            startDrone() {
+                this.droneOsc = this.ctx.createOscillator();
+                this.droneGain = this.ctx.createGain();
+                this.panner = this.ctx.createStereoPanner();
+                
+                this.droneOsc.type = 'sine';
+                this.droneOsc.frequency.value = 45; 
+                this.droneGain.gain.value = 0.02; 
+                
+                this.droneOsc.connect(this.droneGain);
+                this.droneGain.connect(this.panner);
+                this.panner.connect(this.ctx.destination);
+                
+                this.droneOsc.start();
+            },
+            play(type) {
+                if (!this.unlocked || this.ctx.state === 'suspended') return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                const t = this.ctx.currentTime;
+                
+                if (type === 'hover') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(2000, t); osc.frequency.exponentialRampToValueAtTime(1000, t + 0.03);
+                    gain.gain.setValueAtTime(0.01, t); gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+                    osc.start(t); osc.stop(t + 0.03);
+                } else if (type === 'click') {
+                    osc.type = 'square'; osc.frequency.setValueAtTime(400, t); osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
+                    gain.gain.setValueAtTime(0.03, t); gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+                    osc.start(t); osc.stop(t + 0.15);
+                } else if (type === 'decrypt') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(100, t); osc.frequency.exponentialRampToValueAtTime(1500, t + 0.8);
+                    gain.gain.setValueAtTime(0.02, t); gain.gain.linearRampToValueAtTime(0.0001, t + 0.8);
+                    osc.start(t); osc.stop(t + 0.8);
+                } else if (type === 'warp') {
+                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(50, t); osc.frequency.exponentialRampToValueAtTime(800, t + 0.5);
+                    gain.gain.setValueAtTime(0.05, t); gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+                    osc.start(t); osc.stop(t + 0.6);
+                }
+            }
+        };
+        AudioEngine.init();
+        window.playAudio = (t) => AudioEngine.play(t);
+
+        document.addEventListener('mouseover', e => {
+            if (e.target.closest('button, a, .hud-panel, .magnetic')) {
+                playAudio('hover');
+                const cursorDot = document.getElementById('cursor-dot');
+                if(cursorDot) cursorDot.classList.add('cursor-active');
+            }
+        });
+        document.addEventListener('mouseout', e => {
+            if (e.target.closest('button, a, .hud-panel, .magnetic')) {
+                const cursorDot = document.getElementById('cursor-dot');
+                if(cursorDot) cursorDot.classList.remove('cursor-active');
+            }
+        });
+
+        // ==========================================
+        // 2. FLUID CURSOR SIMULATION
+        // ==========================================
+        const initFluidCursor = () => {
+            const canvas = document.getElementById('fluid-cursor');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            
+            let particles = [];
+            let mouse = { x: width/2, y: height/2, vx: 0, vy: 0 };
+            let lastMouse = { x: width/2, y: height/2 };
+
+            window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
+            window.addEventListener('mousemove', e => {
+                lastMouse.x = mouse.x; lastMouse.y = mouse.y;
+                mouse.x = e.clientX; mouse.y = e.clientY;
+                mouse.vx = mouse.x - lastMouse.x; mouse.vy = mouse.y - lastMouse.y;
+                
+                if(Math.abs(mouse.vx) > 1 || Math.abs(mouse.vy) > 1) {
+                    for(let i=0; i<3; i++) {
+                        particles.push({
+                            x: mouse.x, y: mouse.y,
+                            vx: mouse.vx * 0.1 + (Math.random()-0.5)*2,
+                            vy: mouse.vy * 0.1 + (Math.random()-0.5)*2,
+                            life: 1, size: Math.random() * 4 + 2
+                        });
+                    }
+                }
+                const cursorDot = document.getElementById('cursor-dot');
+                if(cursorDot) gsap.to(cursorDot, {x: e.clientX, y: e.clientY, duration: 0.15});
+            });
+
+            const render = () => {
+                ctx.clearRect(0, 0, width, height);
+                ctx.globalCompositeOperation = 'screen';
+                
+                for(let i = 0; i < particles.length; i++) {
+                    let p = particles[i];
+                    p.x += p.vx; p.y += p.vy;
+                    p.life -= 0.02;
+                    p.size *= 0.95;
+                    
+                    if(p.life <= 0) { particles.splice(i, 1); i--; continue; }
+                    
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${Math.random()>0.5?0:177}, ${Math.random()>0.5?229:0}, 255, ${p.life * 0.5})`;
+                    ctx.fill();
+                }
+                requestAnimationFrame(render);
+            };
+            render();
+        };
+
+        // ==========================================
+        // 3. THREE.JS: NEXUS CORE & BG
+        // ==========================================
+        const initThreeJSCore = () => {
+            const canvas = document.getElementById('webgl-bg');
+            if(!canvas) return;
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 40;
+
+            const sceneGroup = new THREE.Group();
+            scene.add(sceneGroup);
+            window.glSceneGroup = sceneGroup; // Export for warp effect
+
+            const starGeo = new THREE.BufferGeometry();
+            const starCount = 1000;
+            const starPos = new Float32Array(starCount * 3);
+            for(let i=0; i<starCount*3; i++) { starPos[i] = (Math.random() - 0.5) * 200; }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+            const starMat = new THREE.PointsMaterial({color: 0x334455, size: 0.2, transparent: true, opacity: 0.5});
+            const stars = new THREE.Points(starGeo, starMat);
+            sceneGroup.add(stars);
+
+            const coreGeo = new THREE.IcosahedronGeometry(8, 1);
+            const coreMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff, wireframe: true, transparent: true, opacity: 0.15 });
+            const core = new THREE.Mesh(coreGeo, coreMat);
+            
+            const innerGeo = new THREE.IcosahedronGeometry(6, 0);
+            const innerMat = new THREE.MeshBasicMaterial({ color: 0x0a1128 });
+            const innerCore = new THREE.Mesh(innerGeo, innerMat);
+            
+            core.add(innerCore);
+            sceneGroup.add(core);
+
+            const ringGeo = new THREE.TorusGeometry(14, 0.05, 16, 100);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05 });
+            const ring1 = new THREE.Mesh(ringGeo, ringMat);
+            ring1.rotation.x = Math.PI / 2;
+            sceneGroup.add(ring1);
+
+            let mouseX = 0; let mouseY = 0;
+            document.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            const animate = () => {
+                core.rotation.x += 0.002;
+                core.rotation.z -= 0.001;
+                ring1.rotation.y -= 0.001;
+                ring1.rotation.x += 0.0005;
+                stars.rotation.y += 0.0002;
+
+                gsap.to(sceneGroup.rotation, {
+                    x: mouseY * 0.1,
+                    y: mouseX * 0.1,
+                    duration: 2,
+                    ease: "power2.out"
+                });
+
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            };
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        const initCardCanvas = () => {
+            const containers = document.querySelectorAll('.project-3d-canvas');
+            containers.forEach(container => {
+                const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                container.appendChild(renderer.domElement);
+
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 100);
+                camera.position.z = 5;
+
+                const geo = new THREE.BoxGeometry(2, 2, 2);
+                const edges = new THREE.EdgesGeometry(geo);
+                const mat = new THREE.LineBasicMaterial({ color: 0x007acc, linewidth: 2 });
+                const cube = new THREE.LineSegments(edges, mat);
+                scene.add(cube);
+
+                let isHovered = false;
+                container.parentElement.addEventListener('mouseenter', () => isHovered = true);
+                container.parentElement.addEventListener('mouseleave', () => isHovered = false);
+
+                const anim = () => {
+                    if(isHovered) {
+                        cube.rotation.x += 0.02; cube.rotation.y += 0.02;
+                    } else {
+                        cube.rotation.x += 0.005; cube.rotation.y += 0.005;
+                    }
+                    renderer.render(scene, camera);
+                    requestAnimationFrame(anim);
+                };
+                anim();
+            });
+        };
+
+        // ==========================================
+        // 4. GSAP INTERACTIONS & ANIMATIONS
+        // ==========================================
+        const initMagnetic = () => {
+            document.querySelectorAll('.magnetic').forEach(el => {
+                el.addEventListener('mousemove', e => {
+                    const rect = el.getBoundingClientRect();
+                    const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
+                    const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
+                    gsap.to(el, { x, y, duration: 0.4, ease: "power2.out" });
+                });
+                el.addEventListener('mouseleave', () => {
+                    gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.3)" });
+                });
+            });
+        };
+
+        const init3DTilt = () => {
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -10;
+                    const rotateY = ((x - centerX) / centerX) * 10;
+                    
+                    gsap.to(card, { rotateX, rotateY, transformPerspective: 1000, duration: 0.4, ease: "power2.out" });
+                });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.7, ease: "power3.out" });
+                });
+            });
+        };
+
+        // ==========================================
+        // 5. HUB & SPOKE SPA LOGIC (QUANTUM WARP)
+        // ==========================================
+        window.openNode = (targetId, event) => {
+            playAudio('warp');
+            
+            if(window.glSceneGroup) {
+                gsap.to(window.glSceneGroup.position, {z: 50, duration: 0.8, ease: "power2.in"});
+                gsap.to(window.glSceneGroup.rotation, {y: "+=3", duration: 1, ease: "power2.in"});
+            }
+
+            const tLine = document.getElementById('t-line');
+            gsap.to(tLine, {width: '100%', duration: 0.4, ease: "power2.inOut"});
+
+            gsap.to('#quantum-transition', {
+                opacity: 1, duration: 0.4, ease: "power2.in",
+                onComplete: () => {
+                    document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+                    
+                    const target = document.getElementById(targetId);
+                    if(target) {
+                        target.classList.add('active');
+                        window.scrollTo(0,0);
+                    }
+
+                    const backBtn = document.getElementById('back-to-hub');
+                    if(backBtn) {
+                        backBtn.classList.remove('invisible', 'pointer-events-none');
+                        gsap.to(backBtn, {autoAlpha: 1, duration: 0.5});
+                    }
+
+                    if(window.glSceneGroup) {
+                        window.glSceneGroup.position.z = -20;
+                        gsap.to(window.glSceneGroup.position, {z: 0, duration: 1.5, ease: "power3.out"});
+                    }
+
+                    gsap.to(tLine, {width: '0%', duration: 0.4, delay: 0.1});
+                    gsap.to('#quantum-transition', {opacity: 0, duration: 0.6, ease: "power2.out", delay: 0.1});
+
+                    if(target) {
+                        gsap.fromTo(target.querySelectorAll('.gs-reveal'), {y: 30, opacity: 0}, {y: 0, opacity: 1, duration: 0.6, stagger: 0.05, ease: "power3.out", delay: 0.2});
+                        
+                        if(targetId === 'skills') {
+                            target.querySelectorAll('.gs-skill-bar').forEach(bar => {
+                                const width = bar.getAttribute('data-width');
+                                gsap.fromTo(bar, {width: "0%"}, {width: width, duration: 1.2, ease: "power3.out", delay: 0.4});
+                            });
+                        }
+                    }
+                }
+            });
+        };
+
+        window.returnToHub = () => {
+            playAudio('click');
+            
+            const tLine = document.getElementById('t-line');
+            gsap.to(tLine, {width: '100%', duration: 0.3, ease: "power2.inOut"});
+
+            gsap.to('#quantum-transition', {
+                opacity: 1, duration: 0.3, ease: "power2.in",
+                onComplete: () => {
+                    document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+                    
+                    const homeHub = document.getElementById('home-hub');
+                    if(homeHub) homeHub.classList.add('active');
+                    window.scrollTo(0,0);
+                    
+                    const backBtn = document.getElementById('back-to-hub');
+                    if(backBtn) {
+                        gsap.to(backBtn, {autoAlpha: 0, duration: 0.2, onComplete: () => {
+                            backBtn.classList.add('invisible', 'pointer-events-none');
+                        }});
+                    }
+                    
+                    if(window.glSceneGroup) {
+                        window.glSceneGroup.position.z = 20;
+                        gsap.to(window.glSceneGroup.position, {z: 0, duration: 1.2, ease: "power3.out"});
+                    }
+                    
+                    gsap.to(tLine, {width: '0%', duration: 0.3, delay: 0.1});
+                    gsap.to('#quantum-transition', {opacity: 0, duration: 0.5, ease: "power2.out", delay: 0.1});
+                    if(homeHub) gsap.fromTo(homeHub.querySelectorAll('.gs-reveal'), {scale: 0.95, opacity: 0}, {scale: 1, opacity: 1, duration: 0.6, stagger: 0.05, ease: "power2.out", delay: 0.2});
+                }
+            });
+        };
+
+        // ==========================================
+        // 6. EXACT DATA & RENDERING
+        // ==========================================
+        
+        const certCategoryData = [
+            {
+                title: "🤖 AI / MACHINE LEARNING", theme: "cyan",
+                items: [
+                    { name: "Generative AI Mastermind Certificate", file: "Generative AI Mastermind Certificate.pdf" },
+                    { name: "Generative AI Tools", file: "Generative AI Tools.pdf" },
+                    { name: "AI for Beginners", file: "AI for Beginners.pdf" },
+                    { name: "AI for Business Professionals", file: "AI for Business Professionals.pdf" },
+                    { name: "Artificial Intelligence Foundations Machine Learning", file: "CertificateOfCompletion_Artificial Intelligence Foundations Machine Learning.pdf" },
+                    { name: "Builtin Machine Learning in the Wolfram Language", file: "CertificateOfCompletion_Builtin Machine Learning in the Wolfram Language.pdf" },
+                    { name: "ML- Columbia University", file: "ML- Columbia University.pdf" },
+                    { name: "ML-COLUMBIA", file: "ML-COLUMBIA.pdf" },
+                    { name: "What Is Generative AI", file: "CertificateOfCompletion_What Is Generative AI.pdf" },
+                    { name: "Computer Vision app with Azure", file: "Build a computer vision app with Azure Cognitive Services.pdf" },
+                    { name: "Oracle AI Foundations Associate", file: "Oracle Cloud Infrastructure 2025 Certified AI Foundations Associate.pdf" }
+                ]
+            },
+            {
+                title: "📊 DATA ANALYTICS / BI", theme: "green",
+                items: [
+                    { name: "Become a Data Analyst", file: "CertificateOfCompletion_Become a Data Analyst.pdf" },
+                    { name: "Data Science & Analytics", file: "Data Science & Analytics.pdf" },
+                    { name: "Learning Data Analytics 1 Foundations", file: "CertificateOfCompletion_Learning Data Analytics 1 Foundations.pdf" },
+                    { name: "Learning Data Analytics 1 Foundations (1)", file: "CertificateOfCompletion_Learning Data Analytics 1 Foundations (1).pdf" },
+                    { name: "Learning Data Analytics Part 2 Extending Core Knowledge", file: "CertificateOfCompletion_Learning Data Analytics Part 2 Extending and Applying Core Knowledge.pdf" },
+                    { name: "Complete Guide to R Wrangling Visualizing Modeling", file: "CertificateOfCompletion_Complete Guide to R Wrangling Visualizing and Modeling Data.pdf" },
+                    { name: "Predictive Analytics Essential Training Data Mining", file: "CertificateOfCompletion_Predictive Analytics Essential Training Data Mining.pdf" },
+                    { name: "NonTechnical Skills of Effective Data Scientists", file: "CertificateOfCompletion_The NonTechnical Skills of Effective Data Scientists.pdf" },
+                    { name: "NonTechnical Skills of Effective Data Scientists (1)", file: "CertificateOfCompletion_The NonTechnical Skills of Effective Data Scientists (1).pdf" },
+                    { name: "Tableau 2024.1 Essential Training", file: "CertificateOfCompletion_Tableau 2024.1 Essential Training.pdf" },
+                    { name: "Power BI Essential Training 2024", file: "CertificateOfCompletion_Power BI Essential Training 2024.pdf" },
+                    { name: "Power Bi Workshop", file: "Power Bi Workshop.pdf" },
+                    { name: "Python for Data Science", file: "Python for Data Science.pdf" },
+                    { name: "Deloitte certificate data analysis", file: "Deloitte certificate data analysis.pdf" }
+                ]
+            },
+            {
+                title: "💻 TECHNICAL / PROGRAMMING", theme: "cyan",
+                items: [
+                    { name: "Operating Systems", file: "Operating Systems.pdf" },
+                    { name: "Computer Architecture", file: "Computer Architecture.pdf" },
+                    { name: "Oracle Cloud Data Science Professional", file: "Oracle Cloud Infrastructure 2025 Certified Data Science Professional.pdf" },
+                    { name: "Oracle APEX Cloud Developer", file: "Oracle APEX Cloud Developer Certified Professional.pdf" },
+                    { name: "Signed PFB-83", file: "pfb-83_signed 1.pdf" }
+                ]
+            },
+            {
+                title: "🧠 BUSINESS / ANALYSIS", theme: "purple",
+                items: [
+                    { name: "Business Analysis & Process Management", file: "Business Analysis & Process Management.pdf" },
+                    { name: "IT for Business Success", file: "IT for Business Success.pdf" },
+                    { name: "Effective Leadership", file: "Effective Leadership.pdf" },
+                    { name: "Project Management with Clickup", file: "Introduction to Project Management with Clickup.pdf" }
+                ]
+            },
+            {
+                title: "📈 TOOLS / SOFTWARE", theme: "yellow",
+                items: [
+                    { name: "Excel Certificate", file: "Excel Certificate.pdf" },
+                    { name: "Getting Started with Microsoft Excel", file: "Getting Started with Microsoft Excel.pdf" },
+                    { name: "Data Analysis using Microsoft Excel", file: "Introduction to Data Analysis using Microsoft Excel.pdf" },
+                    { name: "Learning Excel Data Analysis", file: "CertificateOfCompletion_Learning Excel Data Analysis.pdf" },
+                    { name: "Canva Design Digitall Course Collateral", file: "Use Canva to Design Digitall Course Collateral.pdf" }
+                ]
+            },
+            {
+                title: "🌐 DIGITAL / MARKETING", theme: "purple",
+                items: [
+                    { name: "Search Engine Optimization (SEO) with Squarespace", file: "Search Engine Optimization (SEO) with Squarespace.pdf" },
+                    { name: "Create a Lead Generation Messenger Chatbot", file: "Create a Lead Generation Messenger Chatbot using Chatfuel.pdf" }
+                ]
+            },
+            {
+                title: "🛡️ SECURITY / GENERAL IT", theme: "red",
+                items: [
+                    { name: "Introduction to Cybersecurity Awareness", file: "Introduction to Cybersecurity Awareness.pdf" },
+                    { name: "Microsoft Security Essentials Professional", file: "CertificateOfCompletion_Microsoft Security Essentials Professional Certificate by Microsoft and LinkedIn.pdf" }
+                ]
+            },
+            {
+                title: "🏭 HARDWARE / ENGINEERING", theme: "yellow",
+                items: [
+                    { name: "Computer Hardware Certificate", file: "Computer Hardware Certificate .pdf" },
+                    { name: "Desktop and Laptop Chip level Certificate", file: "Desktop and Laptop Chip level Certificate .pdf" },
+                    { name: "Mobile Chip Level Certificate", file: "Mobile Chip Level Certificate .pdf" }
+                ]
+            },
+            {
+                title: "📧 PROFESSIONAL", theme: "green",
+                items: [
+                    { name: "Business Email", file: "Business Email.pdf" }
+                ]
+            },
+            {
+                title: "📜 ADDITIONAL", theme: "cyan",
+                items: [
+                    { name: "Deloitte certificate", file: "Deloitte certificate.pdf" },
+                    { name: "System Id 2266547300SA", file: "2266547300SA.pdf" },
+                    { name: "System Id 8ijz1yll", file: "8ijz1yll_1756449742326.pdf" },
+                    { name: "My Learning _ NVIDIA", file: "My Learning _ NVIDIA.pdf" }
+                ]
+            }
+        ];
+
+        const skillsData = [
+            { title: "🤖 AI / MACHINE LEARNING", theme: "cyan", percent: "95%", items: [
+                { name: "Artificial Intelligence Foundations: Machine Learning", tags: ["Machine Learning Basics", "Model Training", "Data Patterns"] },
+                { name: "Built-in Machine Learning in the Wolfram Language", tags: ["Wolfram Language", "ML Functions", "Data Modeling"] },
+                { name: "Machine Learning I", tags: ["Supervised Learning", "Regression", "Classification"] },
+                { name: "Machine Learning Certificate – Columbia University", tags: ["ML Algorithms", "Data Modeling", "Predictive Analysis"] },
+                { name: "Generative AI Mastermind", tags: ["Generative AI", "Prompt Engineering", "AI Tools"] },
+                { name: "Generative AI Tools", tags: ["AI Tools Usage", "Automation", "Content Generation"] },
+                { name: "AI Tools Workshop", tags: ["AI Tools", "Workflow Automation", "Productivity"] },
+                { name: "AI for Beginners", tags: ["AI Concepts", "Basic Algorithms", "Data Understanding"] },
+                { name: "AI for Business Professionals", tags: ["AI in Business", "Decision Making", "Process Automation"] },
+                { name: "Freedom with AI Masterclass", tags: ["AI Productivity", "Automation", "Digital Workflows"] }
+            ]},
+            { title: "📊 DATA ANALYTICS / BI", theme: "green", percent: "90%", items: [
+                { name: "Become a Data Analyst", tags: ["Data Analysis", "Data Cleaning", "Visualization"] },
+                { name: "Data Science & Analytics", tags: ["Data Science", "Data Interpretation", "Analytics"] },
+                { name: "Learning Data Analytics: Foundations", tags: ["Data Basics", "Analysis Methods", "Data Handling"] },
+                { name: "Learning Data Analytics Part 2", tags: ["Advanced Analytics", "Data Application", "Insights Generation"] },
+                { name: "Power BI Essential Training (2024)", tags: ["Power BI", "Dashboard Creation", "Data Visualization"] },
+                { name: "Power BI Workshop", tags: ["Data Visualization", "Reporting", "BI Tools"] },
+                { name: "Tableau 2024.1 Essential Training", tags: ["Tableau", "Data Visualization", "Dashboard Design"] },
+                { name: "Predictive Analytics Essential Training", tags: ["Predictive Modeling", "Data Mining", "Forecasting"] },
+                { name: "Complete Guide to R", tags: ["R Programming", "Data Visualization", "Data Analysis"] },
+                { name: "What is Generative AI", tags: ["Generative AI", "AI Concepts", "Use Cases"] }
+            ]},
+            { title: "🧠 BUSINESS / ANALYSIS", theme: "purple", percent: "85%", items: [
+                { name: "Business Analysis & Process Management", tags: ["Business Analysis", "Process Optimization", "Requirement Gathering"] },
+                { name: "IT for Business Success", tags: ["IT Strategy", "Business Integration", "Digital Solutions"] },
+                { name: "Effective Leadership", tags: ["Leadership", "Team Management", "Decision Making"] }
+            ]},
+            { title: "💻 TECHNICAL / PROGRAMMING", theme: "cyan", percent: "92%", items: [
+                { name: "Python for Beginners", tags: ["Python Basics", "Data Handling", "Logic Building"] },
+                { name: "SQL", tags: ["SQL Queries", "Data Extraction", "Database Management"] },
+                { name: "Oracle Data Science Professional", tags: ["Data Science", "Oracle Cloud", "ML Models"] },
+                { name: "Oracle AI Foundations Associate", tags: ["AI Concepts", "Cloud AI", "Data Processing"] },
+                { name: "Oracle APEX Cloud Developer", tags: ["Web Development", "App Development", "Oracle APEX"] }
+            ]},
+            { title: "📈 TOOLS / SOFTWARE", theme: "yellow", percent: "88%", items: [
+                { name: "Microsoft Excel (Getting Started)", tags: ["Excel Basics", "Data Entry", "Formulas"] },
+                { name: "Data Analysis using Excel", tags: ["Data Analysis", "Excel Functions", "Data Cleaning"] },
+                { name: "Learning Excel Data Analysis", tags: ["Advanced Excel", "Data Visualization", "Reporting"] },
+                { name: "Google Analytics", tags: ["Web Analytics", "Traffic Analysis", "User Behavior"] },
+                { name: "Canva Design", tags: ["Graphic Design", "Content Creation", "Visual Branding"] }
+            ]},
+            { title: "🌐 DIGITAL / MARKETING", theme: "purple", percent: "80%", items: [
+                { name: "SEO with Squarespace", tags: ["SEO", "Keyword Optimization", "Website Ranking"] },
+                { name: "Chatbot using Chatfuel", tags: ["Chatbot Development", "Automation", "Lead Generation"] }
+            ]},
+            { title: "🛡️ SECURITY / IT", theme: "red", percent: "85%", items: [
+                { name: "Cybersecurity Awareness", tags: ["Security Basics", "Threat Awareness", "Data Protection"] },
+                { name: "Microsoft Security Essentials", tags: ["System Security", "Malware Protection", "Risk Management"] }
+            ]},
+            { title: "🏭 HARDWARE", theme: "yellow", percent: "75%", items: [
+                { name: "Mobile Chip Level Engineer", tags: ["Hardware Repair", "Circuit Analysis", "Troubleshooting"] },
+                { name: "Advance Diploma Hardware", tags: ["Hardware Systems", "Maintenance", "Repair"] },
+                { name: "Diploma in Computer Hardware", tags: ["Computer Hardware", "Installation", "Troubleshooting"] }
+            ]},
+            { title: "📧 PROFESSIONAL", theme: "green", percent: "90%", items: [
+                { name: "Business Email", tags: ["Email Communication", "Professional Writing", "Communication Skills"] }
+            ]}
+        ];
+
+        function renderData() {
+            const skillContainer = document.getElementById('skills-container');
+            if(skillContainer) {
+                skillsData.forEach(cat => {
+                    let html = `
+                    <div class="mb-12 gs-reveal">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-2 h-6 bg-${cat.theme}-500 shadow-[0_0_15px_var(--${cat.theme}-core)]"></div>
+                            <h4 class="font-display text-lg text-white uppercase tracking-wider">${cat.title}</h4>
+                            <div class="h-px flex-grow bg-gradient-to-r from-white/20 to-transparent"></div>
+                        </div>
+                        <div class="mb-6 max-w-sm pl-6">
+                            <div class="flex justify-between font-mono text-[9px] text-gray-500 mb-2"><span>PROFICIENCY</span><span>${cat.percent}</span></div>
+                            <div class="h-1 w-full bg-white/5 overflow-hidden">
+                                <div class="h-full bg-[#00f0ff] w-0 gs-skill-bar" data-width="${cat.percent}"></div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pl-6">`;
+                    
+                    cat.items.forEach((skill, i) => {
+                        let tags = skill.tags.map(t => `<span class="font-mono text-[8px] uppercase tracking-widest px-2 py-1 bg-white/5 text-gray-400" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);">${t}</span>`).join('');
+                        html += `
+                            <div class="hud-panel p-5 flex flex-col justify-between magnetic cursor-none group">
+                                <div class="relative z-10 flex-grow">
+                                    <p class="font-mono text-[8px] text-gray-600 uppercase mb-3 border-b border-white/5 pb-1">ID_${(i+1).toString().padStart(2,'0')}</p>
+                                    <h5 class="font-display text-xs font-bold text-white mb-4 leading-snug">${skill.name}</h5>
+                                    <div class="flex flex-wrap gap-1.5 mt-auto">${tags}</div>
+                                </div>
+                            </div>`;
+                    });
+                    skillContainer.innerHTML += html + `</div></div>`;
+                });
+            }
+
+            const certContainer = document.getElementById('cert-container');
+            let certCount = 0;
+            let globalCertId = 1;
+
+            if(certContainer) {
+                certCategoryData.forEach(cat => {
+                    certCount += cat.items.length;
+                    let html = `
+                    <div class="mb-12 gs-reveal">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-2 h-6 bg-${cat.theme}-500 shadow-[0_0_15px_var(--${cat.theme}-core)]"></div>
+                            <h4 class="font-display text-lg text-white uppercase tracking-wider">${cat.title}</h4>
+                            <div class="h-px flex-grow bg-gradient-to-r from-white/20 to-transparent"></div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pl-6">`;
+                    
+                    cat.items.forEach((cert) => {
+                        const safeName = cert.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        const safeCategory = cat.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        const safeFileName = cert.file.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        
+                        html += `
+                            <div class="hud-panel p-5 flex flex-col h-full cursor-none magnetic group hover:border-${cat.theme}-400" onclick="viewCertificate('${safeName}', '${safeCategory}', '${safeFileName}')">
+                                <div class="relative z-10 flex flex-col h-full">
+                                    <div class="flex-grow">
+                                        <p class="font-mono text-[8px] text-[#00f0ff] uppercase mb-2 truncate">> ${cat.title.split('/')[0].replace(/[^\w\s]/gi, '').trim()}</p>
+                                        <h5 class="font-display text-[10px] font-bold text-gray-200 group-hover:text-white transition-colors leading-snug mb-4">${cert.name}</h5>
+                                    </div>
+                                    <div class="mt-auto flex justify-between items-end border-t border-white/5 pt-3">
+                                        <p class="font-mono text-[8px] text-gray-600 uppercase">SYS_${(globalCertId++).toString().padStart(2,'0')}</p>
+                                        <span class="text-[8px] text-gray-400 font-mono group-hover:text-[#00f0ff] transition-colors font-bold">DECRYPT</span>
+                                    </div>
+                                </div>
+                            </div>`;
+                    });
+                    certContainer.innerHTML += html + `</div></div>`;
+                });
+            }
+            
+            const certCountDisplay = document.getElementById('cert-count-display');
+            if(certCountDisplay) certCountDisplay.innerText = certCount;
+        }
+
+        // --- CINEMATIC MODAL ---
+        window.viewCertificate = (name, category, fileName) => {
+            playAudio('click'); playAudio('decrypt');
+            const titleEl = document.getElementById('modal-cert-title');
+            if(titleEl) titleEl.innerText = name;
+            const categoryEl = document.getElementById('modal-cert-category');
+            if(categoryEl) categoryEl.innerText = "DOMAIN: " + category;
+            
+            const iframe = document.getElementById('modal-cert-iframe');
+            const loading = document.getElementById('cert-loading');
+            const errorBlock = document.getElementById('cert-error');
+            
+            if(iframe) iframe.classList.add('hidden'); 
+            if(errorBlock) errorBlock.classList.add('hidden');
+            if(loading) loading.classList.remove('hidden');
+            
+            // Encode URI for safe file path handling
+            const pdfPath = 'assets/certificates/' + encodeURIComponent(fileName);
+            const pathEl = document.getElementById('missing-file-path');
+            if(pathEl) pathEl.innerText = 'assets/certificates/' + fileName;
+
+            const modal = document.getElementById('cert-modal');
+            const content = document.getElementById('cert-modal-content');
+            
+            if(modal) {
+                modal.classList.remove('hidden', 'pointer-events-none');
+                gsap.fromTo(modal, {opacity: 0}, {opacity: 1, duration: 0.4});
+            }
+            if(content) {
+                gsap.fromTo(content, {scale: 0.95, y: 30}, {scale: 1, y: 0, duration: 0.6, ease: "power3.out"});
+            }
+
+            setTimeout(async () => {
+                try {
+                    const response = await fetch(pdfPath, { method: 'HEAD' });
+                    if (response.status === 404) { 
+                        playAudio('error'); 
+                        if(loading) loading.classList.add('hidden'); 
+                        if(errorBlock) errorBlock.classList.remove('hidden'); 
+                        return; 
+                    }
+                } catch(e) {}
+                if(iframe) {
+                    iframe.src = pdfPath;
+                    iframe.classList.remove('hidden');
+                }
+                if(loading) loading.classList.add('hidden');
+            }, 1200); 
+        }
+
+        window.closeModal = () => {
+            playAudio('click');
+            const modal = document.getElementById('cert-modal');
+            const content = document.getElementById('cert-modal-content');
+            if(content) gsap.to(content, {scale: 0.95, y: 30, duration: 0.3, ease: "power2.in"});
+            if(modal) {
+                gsap.to(modal, {opacity: 0, duration: 0.3, onComplete: () => {
+                    modal.classList.add('hidden', 'pointer-events-none');
+                    const iframe = document.getElementById('modal-cert-iframe');
+                    if(iframe) iframe.src = "";
+                }});
+            }
+        }
+
+        // --- HIDDEN COMMAND TERMINAL ---
+        window.addEventListener('keydown', (e) => {
+            if (e.key === '`' || e.key === '~') {
+                e.preventDefault();
+                const term = document.getElementById('cmd-terminal');
+                if(term) {
+                    term.classList.toggle('active');
+                    if(term.classList.contains('active')) {
+                        const input = document.getElementById('cmd-input');
+                        if(input) input.focus();
+                        playAudio('hover');
+                    }
+                }
+            }
+        });
+        
+        const cmdInput = document.getElementById('cmd-input');
+        if(cmdInput) {
+            cmdInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    const val = this.value.trim().toLowerCase();
+                    const output = document.getElementById('cmd-output');
+                    if(output) output.innerText += `\nroot@sys.op:~# ${val}`;
+                    
+                    if(val === 'help' && output) output.innerText += `\nAvailable commands:\n- init: Reboot sequence\n- clear: Clear terminal\n- run skills_matrix: Navigate to capabilities`;
+                    else if (val === 'clear' && output) output.innerText = `QUANTUM OS v3.0.0`;
+                    else if (val === 'init') location.reload();
+                    else if (val === 'run skills_matrix') { openNode('skills', {currentTarget: document.body}); const term = document.getElementById('cmd-terminal'); if(term) term.classList.remove('active'); }
+                    else if (val !== '' && output) output.innerText += `\nCommand not found: ${val}`;
+                    
+                    this.value = '';
+                    if(output) output.scrollTop = output.scrollHeight;
+                    playAudio('click');
+                }
+            });
+        }
+
+        // --- DYNAMIC GEOLOCATION / TIME GREETING ---
+        const setGreeting = () => {
+            const el = document.getElementById('geo-greeting');
+            if (!el) return;
+            const hr = new Date().getHours();
+            let timeGreet = hr < 12 ? "MORNING" : hr < 18 ? "AFTERNOON" : "EVENING";
+            
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const city = tz.split('/')[1] ? tz.split('/')[1].replace('_', ' ').toUpperCase() : "SECURE NODE";
+            
+            el.innerText = `GOOD ${timeGreet}. UPLINK FROM ${city}.`;
+        };
+
+        // --- BOOT SEQUENCE (GSAP) ---
+        const runBootSequence = () => {
+            renderData();
+            setGreeting();
+            initThreeJSCore();
+            initFluidCursor();
+            initMagnetic();
+            init3DTilt();
+
+            const tl = gsap.timeline();
+            
+            tl.to('#progress-bar', {width: '100%', duration: 1.5, ease: "power2.inOut", onUpdate: function() {
+                if(Math.random() > 0.9) playAudio('hover');
+            }});
+            
+            tl.to('#loader-flash', {opacity: 1, duration: 0.1})
+              .to('#loader', {display: 'none', duration: 0})
+              .to('#loader-flash', {opacity: 0, duration: 1, ease: "power2.out"})
+              .add(() => {
+                  initCardCanvas(); 
+                  gsap.fromTo('#home-hub .gs-reveal', {y: 40, opacity: 0}, {y: 0, opacity: 1, duration: 1, stagger: 0.1, ease: "power4.out"});
+                  document.body.style.overflowY = 'auto';
+              });
+        };
+
+        window.onload = () => { document.body.style.overflowY = 'hidden'; setTimeout(runBootSequence, 500); };
+    </script>
+</body>
+</html>
