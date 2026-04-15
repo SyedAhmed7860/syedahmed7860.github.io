@@ -797,27 +797,7 @@
                     this.ctx.resume().then(() => {
                         this.unlocked = true;
                         this.startDrone();
-                        this.speak("Uplink established. Welcome to Quantum Architecture. Reviewing Syed Ahmed's deployment logs.");
                     }); 
-                }
-            },
-            speak(text) {
-                if ('speechSynthesis' in window) {
-                    const synth = window.speechSynthesis;
-                    const utterThis = new SpeechSynthesisUtterance(text);
-                    utterThis.pitch = 0.4;
-                    utterThis.rate = 0.9;
-                    utterThis.volume = 1.0; 
-                    
-                    const setVoice = () => {
-                        const voices = synth.getVoices();
-                        const engVoice = voices.find(v => v.name.includes('Google UK English Male') || v.name.includes('Microsoft Mark') || v.lang.includes('en-GB')) || voices[0];
-                        if(engVoice) utterThis.voice = engVoice;
-                        synth.speak(utterThis);
-                    };
-
-                    if (synth.getVoices().length) { setVoice(); } 
-                    else { synth.onvoiceschanged = setVoice; }
                 }
             },
             startDrone() {
