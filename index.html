@@ -158,9 +158,6 @@
         
         /* Initialization Screen */
         #loader { position: fixed; inset: 0; background: rgba(2,4,9,1); z-index: 11000; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .loader-ring { width: 180px; height: 180px; border: 2px solid rgba(0, 240, 255, 0.1); border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 50px rgba(0,240,255,0.1) inset; }
-        .loader-ring::before { content: ''; position: absolute; inset: -12px; border-top: 3px solid var(--accent-core); border-right: 3px solid transparent; border-radius: 50%; animation: spin 1.5s linear infinite; }
-        .loader-ring::after { content: ''; position: absolute; inset: -24px; border-bottom: 3px solid var(--accent-warn); border-left: 3px solid transparent; border-radius: 50%; animation: spin 2.5s linear infinite reverse; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spin-slow { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
         .progress-container { width: 300px; height: 3px; background: rgba(255,255,255,0.1); overflow: hidden; margin-top: 30px; max-width: 80vw; }
@@ -189,9 +186,6 @@
             .hud-panel { transform-style: flat; }
             .target-bracket { display: none !important; }
             .aaa-title { text-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
-            .loader-ring { width: 120px; height: 120px; }
-            .loader-ring::before { inset: -8px; }
-            .loader-ring::after { inset: -16px; }
         }
     </style>
 </head>
@@ -203,13 +197,34 @@
     <div class="corner-brkt c-tl"></div><div class="corner-brkt c-tr"></div>
     <div class="corner-brkt c-bl"></div><div class="corner-brkt c-br"></div>
 
-    <!-- Cinematic Loader -->
+    <!-- Cinematic Loader with Custom CSS Sci-Fi Logo -->
     <div id="loader">
-        <div class="loader-ring font-display text-4xl md:text-5xl text-white tracking-widest font-bold mb-8 md:mb-10" style="text-shadow: 0 0 20px #00f0ff;">SA</div>
-        <button id="init-btn" class="btn-elite magnetic !border-[#00f0ff] !text-[#00f0ff] hover:!bg-[#00f0ff] hover:!text-black transition-all text-sm md:text-lg px-6 py-3 md:px-8 md:py-4">INITIALIZE UPLINK</button>
+        <div class="relative flex flex-col items-center justify-center mb-8 md:mb-12 z-10 group">
+            <!-- Background Ambient Glow -->
+            <div class="absolute inset-0 bg-[#00f0ff] blur-[60px] opacity-20 group-hover:opacity-40 transition-opacity duration-700 rounded-full"></div>
+            
+            <!-- Main Geometric Logo Container -->
+            <div class="w-28 h-28 md:w-36 md:h-36 border-[2px] border-[#00f0ff]/50 bg-[#050912]/80 flex items-center justify-center relative backdrop-blur-md transition-all duration-500 group-hover:border-[#00f0ff] group-hover:shadow-[0_0_40px_rgba(0,240,255,0.4)]" style="clip-path: polygon(30% 0%, 100% 0%, 100% 70%, 70% 100%, 0% 100%, 0% 30%);">
+                <!-- Inner Decor Lines -->
+                <div class="absolute inset-1.5 md:inset-2 border border-[#00f0ff]/20" style="clip-path: polygon(30% 0%, 100% 0%, 100% 70%, 70% 100%, 0% 100%, 0% 30%);"></div>
+                <!-- Tech Accents -->
+                <span class="absolute top-3 left-3 font-mono text-[7px] text-[#00f0ff]/60 tracking-widest hidden md:block">SYS</span>
+                <span class="absolute bottom-3 right-3 font-mono text-[7px] text-[#ff9f00]/80 tracking-widest animate-pulse hidden md:block">ON</span>
+                <!-- Logo Text -->
+                <span class="font-display font-bold text-5xl md:text-6xl text-white tracking-tighter" style="text-shadow: 0 0 20px rgba(0,240,255,0.8);">S<span class="text-[#00f0ff]">A</span></span>
+            </div>
+            
+            <!-- Text Logo Underneath -->
+            <div class="mt-6 flex flex-col items-center">
+                <span class="font-display font-bold text-2xl md:text-3xl text-white tracking-[0.4em] uppercase aaa-title" data-text="SYED AHMED">SYED AHMED</span>
+                <span class="font-mono text-[9px] md:text-[11px] text-[#ff9f00] tracking-[0.6em] mt-2 font-bold">SYS_ARCHITECT</span>
+            </div>
+        </div>
         
-        <div class="progress-container hidden" id="progress-wrapper"><div id="progress-bar"></div></div>
-        <div class="font-mono text-[10px] text-[#00f0ff] mt-4 tracking-[0.4em] uppercase hidden animate-pulse" id="loader-text">DECRYPTING ARCHITECTURE...</div>
+        <button id="init-btn" class="btn-elite magnetic !border-[#00f0ff] !text-[#00f0ff] hover:!bg-[#00f0ff] hover:!text-black transition-all text-sm md:text-lg px-6 py-3 md:px-8 md:py-4 z-10">INITIALIZE UPLINK</button>
+        
+        <div class="progress-container hidden z-10" id="progress-wrapper"><div id="progress-bar"></div></div>
+        <div class="font-mono text-[10px] text-[#00f0ff] mt-4 tracking-[0.4em] uppercase hidden animate-pulse z-10" id="loader-text">DECRYPTING ARCHITECTURE...</div>
     </div>
     <div id="loader-flash"></div>
 
@@ -233,8 +248,12 @@
     <!-- AAA Global Header -->
     <header class="fixed top-0 w-full z-50 bg-[rgba(2,4,9,0.85)] backdrop-blur-lg border-b border-white/10" id="main-header">
         <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3 md:gap-4 group magnetic" onclick="returnToHub()">
-                <div class="w-10 h-10 bg-[#050912] border-2 border-[#00f0ff]/50 flex items-center justify-center text-sm font-display text-white transition-all group-hover:border-[var(--accent-core)] group-hover:shadow-[0_0_20px_var(--accent-glow)] group-hover:bg-[#00f0ff] group-hover:text-black cursor-pointer" style="clip-path: polygon(30% 0%, 100% 0%, 100% 70%, 70% 100%, 0% 100%, 0% 30%);">SA</div>
+            <!-- Header Logo Integration (Pure CSS Sci-Fi Logo) -->
+            <div class="flex items-center gap-3 md:gap-4 group magnetic cursor-pointer" onclick="returnToHub()">
+                <div class="relative flex items-center justify-center w-12 h-12 md:w-14 md:h-14 border border-[#00f0ff]/50 bg-[#050912]/80 group-hover:border-[#00f0ff] group-hover:bg-[#00f0ff]/10 transition-all duration-300 z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)] group-hover:shadow-[0_0_25px_rgba(0,240,255,0.6)]" style="clip-path: polygon(30% 0%, 100% 0%, 100% 70%, 70% 100%, 0% 100%, 0% 30%);">
+                    <div class="absolute inset-1 border border-[#00f0ff]/20" style="clip-path: polygon(30% 0%, 100% 0%, 100% 70%, 70% 100%, 0% 100%, 0% 30%);"></div>
+                    <span class="font-display font-bold text-lg md:text-xl text-white" style="text-shadow: 0 0 10px rgba(0,240,255,0.8);">S<span class="text-[#00f0ff]">A</span></span>
+                </div>
                 <div class="font-mono text-[9px] md:text-[10px] text-gray-400 tracking-[0.2em] hidden sm:block" id="geo-greeting">ANALYZING UPLINK...</div>
             </div>
             <div class="font-mono text-[10px] md:text-xs text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-3 py-1.5 md:px-4 md:py-2 flex items-center gap-2 md:gap-3 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
@@ -320,7 +339,7 @@
             </div>
 
             <!-- Direct Gmail Link -->
-            <a href="mailto:Syedahmed.sa43@gmail.com?subject=Contract+Inquiry" class="block w-full max-w-6xl gs-reveal magnetic tilt-card" onclick="playAudio('click')">
+            <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Contract+Inquiry" class="block w-full max-w-6xl gs-reveal magnetic tilt-card" onclick="playAudio('click')">
                 <div class="hud-panel p-0 group bg-[rgba(0,240,255,0.05)] border-[#00f0ff]/40 hover:border-[#00f0ff] hover:bg-[#00f0ff]/15 text-center h-32 md:h-40">
                     <div class="transform-3d-layer flex flex-col items-center justify-center w-full h-full p-4">
                         <h2 class="font-display text-xl sm:text-3xl md:text-5xl text-[#00f0ff] tracking-[0.1em] md:tracking-[0.2em] uppercase mb-2 md:mb-3 group-hover:animate-pulse relative z-10 font-bold" style="text-shadow: 0 0 20px rgba(0,240,255,0.5);">INITIATE CONTRACT</h2>
@@ -403,7 +422,7 @@
                             <div class="holographic-glare"></div>
                             <p class="font-mono text-[10px] md:text-xs text-gray-400 uppercase tracking-[0.2em] md:tracking-[0.3em] mb-6 md:mb-8 relative z-10 border-b border-white/10 pb-2 md:pb-3">Comms_Link</p>
                             <div class="flex flex-col gap-4 md:gap-5 relative z-10">
-                                <a href="tel:+918019416016" class="magnetic flex flex-col sm:flex-row items-start sm:items-center justify-between group bg-[rgba(0,240,255,0.05)] border border-[#00f0ff]/30 p-4 md:p-6 hover:bg-[#00f0ff]/20 transition-colors gap-2" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">
+                                <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com" class="magnetic flex flex-col sm:flex-row items-start sm:items-center justify-between group bg-[rgba(0,240,255,0.05)] border border-[#00f0ff]/30 p-4 md:p-6 hover:bg-[#00f0ff]/20 transition-colors gap-2" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">
                                     <span class="font-mono text-xs md:text-sm text-gray-300 group-hover:text-white font-bold tracking-widest">SECURE_MAIL</span>
                                     <span class="font-mono text-[10px] md:text-sm text-[#00f0ff] font-bold break-all">SYEDAHMED.SA43@GMAIL.COM</span>
                                 </a>
@@ -488,7 +507,7 @@
                     <p class="font-mono text-gray-200 text-xs md:text-lg mb-8 md:mb-12 leading-relaxed relative z-10">
                         Custom iOS/Android architectures are built strictly on commission. Current proprietary modules are classified.
                     </p>
-                    <a href="mailto:Syedahmed.sa43@gmail.com?subject=Custom+App+Build+Inquiry" class="btn-elite btn-warn magnetic block w-full md:w-auto text-center relative z-10 text-sm md:text-lg py-4 md:py-5 px-6 md:px-10" onclick="playAudio('click')">REQUEST CUSTOM APP BUILD</a>
+                    <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Custom+App+Build+Inquiry" class="btn-elite btn-warn magnetic block w-full md:w-auto text-center relative z-10 text-sm md:text-lg py-4 md:py-5 px-6 md:px-10" onclick="playAudio('click')">REQUEST CUSTOM APP BUILD</a>
                 </div>
             </div>
         </section>
@@ -1280,7 +1299,7 @@
                             <li class="flex items-start gap-3"><span class="text-[#ff9f00] font-bold">[WARN]</span> <span>Sub-optimal Mobile Responsiveness.</span></li>
                             <li class="flex items-start gap-3"><span class="text-[#ff9f00] font-bold">[WARN]</span> <span>UI/UX Patterns require modernization.</span></li>
                         </ul>
-                        <a href="mailto:Syedahmed.sa43@gmail.com?subject=Upgrade+Request+for+${encodeURIComponent(url)}" class="block w-full text-black bg-[#00f0ff] hover:bg-white p-4 text-center font-bold tracking-widest cursor-none magnetic transition-colors text-xs md:text-sm" onclick="playAudio('click')">
+                        <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Upgrade+Request+for+${encodeURIComponent(url)}" class="block w-full text-black bg-[#00f0ff] hover:bg-white p-4 text-center font-bold tracking-widest cursor-none magnetic transition-colors text-xs md:text-sm" onclick="playAudio('click')">
                             [ INITIATE UPGRADE VIA SYS.OP ]
                         </a>
                     </div>
