@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syed Ahmed | Building Modern Websites & Applications</title>
+    <title>QUANTUM.ARCH // Syed Ahmed // AAA HUD EDITION</title>
     
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,7 +24,7 @@
             --text-main: #e2e8f0;
             --text-muted: #64748b;
             --hud-bg: rgba(5, 9, 18, 0.85);
-            --hud-border: rgba(0, 240, 255, 0.25);
+            --hud-border: rgba(0, 240, 255, 0.4);
         }
 
         * { box-sizing: border-box; }
@@ -37,7 +37,7 @@
             margin: 0;
             cursor: none; 
             -webkit-font-smoothing: antialiased;
-            background-image: radial-gradient(circle at 50% 0%, #060c1c 0%, var(--bg-base) 80%);
+            background-image: radial-gradient(circle at 50% 0%, #050b14 0%, var(--bg-base) 100%);
         }
 
         h1, h2, h3, h4, h5, .font-display { font-family: 'Syncopate', sans-serif; letter-spacing: -0.02em; }
@@ -46,145 +46,151 @@
         /* Custom Fluid Cursor */
         #fluid-cursor { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 12000; }
         #cursor-dot { 
-            position: fixed; width: 4px; height: 4px; background: var(--accent-core); 
+            position: fixed; width: 6px; height: 6px; background: var(--accent-core); 
             pointer-events: none; z-index: 12001; transform: translate(-50%, -50%); 
-            box-shadow: 0 0 10px var(--accent-core), 0 0 20px var(--accent-core); 
-            transition: transform 0.1s; 
+            box-shadow: 0 0 15px var(--accent-core), 0 0 30px var(--accent-core); 
+            transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1); 
+            border-radius: 50%;
         }
-        .cursor-active { transform: translate(-50%, -50%) scale(2) !important; background: var(--accent-warn) !important; box-shadow: 0 0 15px var(--accent-warn) !important; }
+        .cursor-active { transform: translate(-50%, -50%) scale(2.5) !important; background: var(--accent-warn) !important; box-shadow: 0 0 20px var(--accent-warn) !important; }
 
-        /* 3D Background */
-        #webgl-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; pointer-events: auto; opacity: 0.7; }
+        /* 3D Background & Dynamic Floor (NOTICEABLE AAA UPGRADE) */
+        #webgl-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; pointer-events: auto; opacity: 0.8; }
         
-        /* Tech Grid */
-        .tech-grid {
-            position: fixed; inset: 0;
-            background-image: 
-                linear-gradient(to right, rgba(0,240,255,0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(0,240,255,0.03) 1px, transparent 1px);
-            background-size: 40px 40px; z-index: -9; pointer-events: none;
-            mask-image: radial-gradient(circle at center, black 20%, transparent 90%);
-            -webkit-mask-image: radial-gradient(circle at center, black 20%, transparent 90%);
+        .tech-grid-floor {
+            position: fixed; bottom: -10%; left: -50%; width: 200%; height: 60vh;
+            background-image: linear-gradient(to top, rgba(0,240,255,0.15) 2px, transparent 2px), linear-gradient(to right, rgba(0,240,255,0.15) 2px, transparent 2px);
+            background-size: 60px 60px;
+            transform: perspective(600px) rotateX(75deg);
+            animation: gridMove 2s linear infinite; z-index: -9; pointer-events: none;
+            mask-image: linear-gradient(to top, black 10%, transparent 80%); -webkit-mask-image: linear-gradient(to top, black 10%, transparent 80%);
         }
+        @keyframes gridMove { from { transform: perspective(600px) rotateX(75deg) translateY(0); } to { transform: perspective(600px) rotateX(75deg) translateY(60px); } }
 
-        /* AAA HUD Panel */
+        /* TRUE 3D POP-OUT CARDS (NOTICEABLE AAA UPGRADE) */
         .hud-panel {
             background: var(--hud-bg);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--hud-border);
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            position: relative; transform-style: preserve-3d; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+            position: relative; 
+            transform-style: preserve-3d; /* Essential for 3D Pop */
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s, box-shadow 0.4s;
+            box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.05);
         }
-        .hud-panel::before { content: '+'; position: absolute; top: 5px; right: 10px; color: var(--accent-core); font-family: 'JetBrains Mono'; font-size: 10px; opacity: 0.5; }
-        .hud-panel::after { content: ''; position: absolute; bottom: 0; left: 0; width: 30%; height: 2px; background: var(--accent-core); opacity: 0.5; transition: width 0.3s; }
-        .hud-panel:hover { transform: translateY(-4px); border-color: var(--accent-core); box-shadow: 0 15px 30px rgba(0,0,0,0.8); background: rgba(10, 18, 32, 0.95); }
-        .hud-panel:hover::after { width: 100%; opacity: 1; box-shadow: 0 0 15px var(--accent-core); }
+        
+        .transform-3d-layer {
+            transform: translateZ(40px); /* Pushes content out towards the user */
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
+            width: 100%; height: 100%;
+        }
+
+        .hud-panel:hover { 
+            border-color: var(--accent-core); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 30px rgba(0, 240, 255, 0.2); 
+            background: rgba(10, 18, 32, 0.98); 
+        }
+        .hud-panel:hover .transform-3d-layer {
+            transform: translateZ(65px) scale(1.05); /* Extra pop on hover */
+        }
+
+        .hud-panel::before { content: '+'; position: absolute; top: 10px; right: 15px; color: var(--accent-core); font-family: 'JetBrains Mono'; font-size: 14px; opacity: 0.7; transform: translateZ(10px); }
+        .hud-panel::after { content: ''; position: absolute; bottom: 0; left: 0; width: 40%; height: 3px; background: var(--accent-core); opacity: 0.7; transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1); transform: translateZ(5px); }
+        .hud-panel:hover::after { width: 100%; opacity: 1; box-shadow: 0 0 20px var(--accent-core); }
+
+        /* Target Lock Animation Brackets */
+        .target-bracket { position: absolute; width: 25px; height: 25px; border: 2px solid transparent; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 20; pointer-events: none; transform: translateZ(20px); }
+        .hud-panel .tl { top: 15px; left: 15px; border-top-color: var(--accent-core); border-left-color: var(--accent-core); transform: translate(-15px, -15px) translateZ(20px); opacity: 0; }
+        .hud-panel .tr { top: 15px; right: 15px; border-top-color: var(--accent-core); border-right-color: var(--accent-core); transform: translate(15px, -15px) translateZ(20px); opacity: 0; }
+        .hud-panel .bl { bottom: 15px; left: 15px; border-bottom-color: var(--accent-core); border-left-color: var(--accent-core); transform: translate(-15px, 15px) translateZ(20px); opacity: 0; }
+        .hud-panel .br { bottom: 15px; right: 15px; border-bottom-color: var(--accent-core); border-right-color: var(--accent-core); transform: translate(15px, 15px) translateZ(20px); opacity: 0; }
+        .hud-panel:hover .target-bracket { transform: translate(0, 0) translateZ(50px); opacity: 1; box-shadow: 0 0 10px rgba(0, 240, 255, 0.5) inset; }
+
+        /* Dynamic Mouse Glare */
+        .holographic-glare {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.25), transparent 60%);
+            opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 5; mix-blend-mode: screen; transform: translateZ(0);
+        }
+        .tilt-card:hover .holographic-glare { opacity: 1; }
 
         /* Premium Buttons */
         .btn-elite {
             background: rgba(0, 240, 255, 0.05); color: var(--text-main); border: 1px solid var(--hud-border);
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; text-transform: uppercase; font-weight: 700;
-            padding: 14px 28px; position: relative; overflow: hidden; transition: all 0.3s ease; cursor: none; display: inline-flex; align-items: center; justify-content: center;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; text-transform: uppercase; font-weight: 800; tracking-widest;
+            padding: 16px 32px; position: relative; overflow: hidden; transition: all 0.3s ease; cursor: none; display: inline-flex; align-items: center; justify-content: center;
         }
         .btn-elite::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--accent-core); transform: scaleX(0); transform-origin: right; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: -1;
         }
         .btn-elite:hover::before { transform: scaleX(1); transform-origin: left; }
-        .btn-elite:hover { color: #000; border-color: var(--accent-core); box-shadow: 0 0 20px var(--accent-mute); }
+        .btn-elite:hover { color: #000; border-color: var(--accent-core); box-shadow: 0 0 25px var(--accent-glow); }
 
-        .btn-warn { border-color: rgba(255,159,0,0.3); color: var(--accent-warn); background: rgba(255,159,0,0.05); }
+        .btn-warn { border-color: rgba(255,159,0,0.4); color: var(--accent-warn); background: rgba(255,159,0,0.08); }
         .btn-warn::before { background: var(--accent-warn); }
-        .btn-warn:hover { border-color: var(--accent-warn); color: #000; box-shadow: 0 0 20px rgba(255,159,0,0.2); }
+        .btn-warn:hover { border-color: var(--accent-warn); color: #000; box-shadow: 0 0 25px rgba(255,159,0,0.4); }
 
-        /* AAA Title Game Effect (Chromatic Glitch) */
+        /* AAA Title Game Effect */
         .aaa-title {
-            color: #fff;
-            position: relative;
-            display: inline-block;
-            text-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+            color: #fff; position: relative; display: inline-block; text-shadow: 0 0 40px rgba(0, 240, 255, 0.6);
         }
         .aaa-title::before, .aaa-title::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.8; pointer-events: none;
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8; pointer-events: none;
         }
-        .aaa-title::before {
-            color: #00f0ff; z-index: -1;
-            mix-blend-mode: screen;
-            animation: glitch-anim-1 3s infinite linear alternate-reverse;
-        }
-        .aaa-title::after {
-            color: #ff003c; z-index: -2;
-            mix-blend-mode: screen;
-            animation: glitch-anim-2 2.5s infinite linear alternate-reverse;
-        }
+        .aaa-title::before { color: #00f0ff; z-index: -1; mix-blend-mode: screen; animation: glitch-anim-1 4s infinite linear alternate-reverse; }
+        .aaa-title::after { color: #ff003c; z-index: -2; mix-blend-mode: screen; animation: glitch-anim-2 3s infinite linear alternate-reverse; }
         
         @keyframes glitch-anim-1 {
-            0% { clip-path: inset(20% 0 80% 0); transform: translate(-3px, 1px); }
-            20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
+            0% { clip-path: inset(20% 0 80% 0); transform: translate(-4px, 2px); }
+            20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -2px); }
             40% { clip-path: inset(40% 0 50% 0); transform: translate(-3px, 0); }
-            60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, 1px); }
-            80% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, -1px); }
-            100% { clip-path: inset(30% 0 50% 0); transform: translate(1px, 2px); }
+            60% { clip-path: inset(80% 0 5% 0); transform: translate(3px, 1px); }
+            80% { clip-path: inset(10% 0 70% 0); transform: translate(-2px, -1px); }
+            100% { clip-path: inset(30% 0 50% 0); transform: translate(2px, 3px); }
         }
         @keyframes glitch-anim-2 {
-            0% { clip-path: inset(10% 0 60% 0); transform: translate(3px, -1px); }
-            20% { clip-path: inset(30% 0 20% 0); transform: translate(-2px, 1px); }
-            40% { clip-path: inset(70% 0 10% 0); transform: translate(3px, 0); }
-            60% { clip-path: inset(20% 0 50% 0); transform: translate(-2px, -1px); }
-            80% { clip-path: inset(50% 0 30% 0); transform: translate(1px, 1px); }
-            100% { clip-path: inset(5% 0 80% 0); transform: translate(-1px, -2px); }
+            0% { clip-path: inset(10% 0 60% 0); transform: translate(3px, -2px); }
+            20% { clip-path: inset(30% 0 20% 0); transform: translate(-2px, 2px); }
+            40% { clip-path: inset(70% 0 10% 0); transform: translate(4px, 0); }
+            60% { clip-path: inset(20% 0 50% 0); transform: translate(-3px, -1px); }
+            80% { clip-path: inset(50% 0 30% 0); transform: translate(2px, 2px); }
+            100% { clip-path: inset(5% 0 80% 0); transform: translate(-2px, -3px); }
         }
 
-        /* Glitch & Neons */
-        .text-gradient { background: linear-gradient(180deg, #ffffff 0%, #8892b0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .accent-glow { text-shadow: 0 0 20px var(--accent-glow); }
-        .neon-text { text-shadow: 0 0 10px var(--accent-glow), 0 0 20px var(--accent-glow); }
-        .neon-text-red { text-shadow: 0 0 10px rgba(255,0,60,0.6), 0 0 20px rgba(255,0,60,0.4); color: #ff003c; }
-
-        /* Orbit Tech Stack */
-        .orbit-container { position: relative; width: 300px; height: 300px; margin: 0 auto; }
-        .orbit-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; background: var(--accent-mute); border: 2px solid var(--accent-core); box-shadow: 0 0 30px var(--accent-glow); display: flex; align-items: center; justify-content: center; font-family: 'Syncopate'; font-weight: bold; color: #fff; z-index: 10; animation: pulse 2s infinite; }
-        .orbit-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px dashed rgba(0,240,255,0.3); border-radius: 50%; }
-        .orbit-ring-1 { width: 180px; height: 180px; animation: spin 15s linear infinite; }
-        .orbit-ring-2 { width: 280px; height: 280px; animation: spin 25s linear infinite reverse; }
-        .orbit-node { position: absolute; width: 40px; height: 40px; background: #050912; border: 1px solid var(--accent-core); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono'; font-size: 8px; color: #fff; transform: translate(-50%, -50%); box-shadow: 0 0 10px rgba(0,240,255,0.5); }
-        
-        .ring-1-node-1 { top: 0%; left: 50%; } .ring-1-node-2 { top: 75%; left: 93%; } .ring-1-node-3 { top: 75%; left: 7%; }
-        .ring-2-node-1 { top: 15%; left: 15%; } .ring-2-node-2 { top: 15%; left: 85%; } .ring-2-node-3 { top: 85%; left: 50%; }
+        .neon-text { text-shadow: 0 0 10px var(--accent-glow), 0 0 30px var(--accent-glow); }
+        .neon-text-red { text-shadow: 0 0 10px rgba(255,0,60,0.8), 0 0 30px rgba(255,0,60,0.6); color: #ff003c; }
 
         /* General SPA */
         .view-section { display: none; opacity: 0; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; padding-top: 100px; padding-bottom: 100px; pointer-events: none; }
         .view-section.active { display: flex; flex-direction: column; opacity: 1; pointer-events: auto; position: relative; }
-        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: var(--bg-base); } ::-webkit-scrollbar-thumb { background: var(--accent-core); border-radius: 0; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-base); } ::-webkit-scrollbar-thumb { background: var(--accent-core); border-radius: 0; }
 
         /* Transitions */
-        #quantum-transition { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); z-index: 9900; opacity: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; }
-        .transition-line { width: 0; height: 2px; background: var(--accent-core); box-shadow: 0 0 20px var(--accent-core); }
+        #quantum-transition { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); z-index: 9900; opacity: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .transition-line { width: 0; height: 3px; background: var(--accent-core); box-shadow: 0 0 30px var(--accent-core), 0 0 60px var(--accent-core); }
         
         /* Initialization Screen */
-        #loader { position: fixed; inset: 0; background: rgba(2,4,9,0.95); z-index: 11000; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .loader-ring { width: 150px; height: 150px; border: 1px solid rgba(0, 240, 255, 0.1); border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
-        .loader-ring::before { content: ''; position: absolute; inset: -10px; border-top: 2px solid var(--accent-core); border-right: 2px solid transparent; border-radius: 50%; animation: spin 2s linear infinite; }
-        .loader-ring::after { content: ''; position: absolute; inset: -20px; border-bottom: 2px solid var(--accent-warn); border-left: 2px solid transparent; border-radius: 50%; animation: spin 3s linear infinite reverse; }
+        #loader { position: fixed; inset: 0; background: rgba(2,4,9,0.98); z-index: 11000; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .loader-ring { width: 180px; height: 180px; border: 2px solid rgba(0, 240, 255, 0.1); border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 50px rgba(0,240,255,0.1) inset; }
+        .loader-ring::before { content: ''; position: absolute; inset: -12px; border-top: 3px solid var(--accent-core); border-right: 3px solid transparent; border-radius: 50%; animation: spin 1.5s linear infinite; }
+        .loader-ring::after { content: ''; position: absolute; inset: -24px; border-bottom: 3px solid var(--accent-warn); border-left: 3px solid transparent; border-radius: 50%; animation: spin 2.5s linear infinite reverse; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 50% { box-shadow: 0 0 50px var(--accent-glow); } }
-        .progress-container { width: 250px; height: 2px; background: rgba(255,255,255,0.1); overflow: hidden; margin-top: 20px; }
-        #progress-bar { width: 0%; height: 100%; background: var(--accent-core); box-shadow: 0 0 10px var(--accent-core); }
-        #loader-flash { position: fixed; inset: 0; background: var(--accent-core); z-index: 11001; opacity: 0; pointer-events: none; }
+        .progress-container { width: 300px; height: 3px; background: rgba(255,255,255,0.1); overflow: hidden; margin-top: 30px; }
+        #progress-bar { width: 0%; height: 100%; background: var(--accent-core); box-shadow: 0 0 15px var(--accent-core); }
+        #loader-flash { position: fixed; inset: 0; background: #fff; z-index: 11001; opacity: 0; pointer-events: none; mix-blend-mode: overlay; }
     </style>
 </head>
 <body>
 
     <!-- Cinematic Loader -->
     <div id="loader">
-        <div class="loader-ring font-display text-4xl text-white tracking-widest font-bold mb-8">SA</div>
-        <button id="init-btn" class="btn-elite magnetic !border-[#00f0ff] !text-[#00f0ff] hover:!bg-[#00f0ff] hover:!text-black transition-all text-sm md:text-base">INITIALIZE UPLINK</button>
+        <div class="loader-ring font-display text-5xl text-white tracking-widest font-bold mb-10" style="text-shadow: 0 0 20px #00f0ff;">SA</div>
+        <button id="init-btn" class="btn-elite magnetic !border-[#00f0ff] !text-[#00f0ff] hover:!bg-[#00f0ff] hover:!text-black transition-all text-base md:text-lg px-8 py-4">INITIALIZE UPLINK</button>
         
         <div class="progress-container hidden" id="progress-wrapper"><div id="progress-bar"></div></div>
-        <div class="font-mono text-[10px] text-[#00f0ff] mt-4 tracking-[0.3em] uppercase hidden" id="loader-text">DECRYPTING ARCHITECTURE...</div>
+        <div class="font-mono text-[10px] text-[#00f0ff] mt-4 tracking-[0.4em] uppercase hidden animate-pulse" id="loader-text">DECRYPTING ARCHITECTURE...</div>
     </div>
     <div id="loader-flash"></div>
 
@@ -201,19 +207,19 @@
     <canvas id="fluid-cursor"></canvas>
     <div id="cursor-dot"></div>
     
-    <!-- 3D Environment -->
+    <!-- 3D Environment (Massive Upgrade) -->
     <canvas id="webgl-bg"></canvas>
-    <div class="tech-grid"></div>
+    <div class="tech-grid-floor"></div> <!-- New 3D Grid Floor -->
 
     <!-- AAA Global Header -->
-    <header class="fixed top-0 w-full z-50 bg-[rgba(2,4,9,0.8)] backdrop-blur-md border-b border-white/5" id="main-header">
+    <header class="fixed top-0 w-full z-50 bg-[rgba(2,4,9,0.85)] backdrop-blur-lg border-b border-white/10" id="main-header">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-4 group magnetic cursor-none" onclick="returnToHub()">
-                <div class="w-10 h-10 bg-black border border-white/10 flex items-center justify-center text-sm font-display text-white transition-all group-hover:border-[var(--accent-core)] group-hover:shadow-[0_0_15px_var(--accent-mute)]" style="clip-path: polygon(30% 0%, 100% 0%, 100% 70%, 70% 100%, 0% 100%, 0% 30%);">SA</div>
-                <div class="font-mono text-[10px] text-gray-400 tracking-widest hidden sm:block" id="geo-greeting">ANALYZING UPLINK...</div>
+                <div class="w-12 h-12 bg-[#050912] border-2 border-[#00f0ff]/50 flex items-center justify-center text-sm font-display text-white transition-all group-hover:border-[var(--accent-core)] group-hover:shadow-[0_0_20px_var(--accent-glow)] group-hover:bg-[#00f0ff] group-hover:text-black" style="clip-path: polygon(30% 0%, 100% 0%, 100% 70%, 70% 100%, 0% 100%, 0% 30%);">SA</div>
+                <div class="font-mono text-[10px] text-gray-400 tracking-[0.2em] hidden sm:block" id="geo-greeting">ANALYZING UPLINK...</div>
             </div>
-            <div class="font-mono text-[10px] text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-3 py-1 hidden sm:flex items-center gap-2">
-                <div class="w-1.5 h-1.5 bg-[#00f0ff] animate-pulse"></div> HUD_ONLINE
+            <div class="font-mono text-xs text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-4 py-2 hidden sm:flex items-center gap-3 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+                <div class="w-2 h-2 bg-[#00f0ff] animate-pulse"></div> HUD_ONLINE
             </div>
         </div>
     </header>
@@ -230,18 +236,17 @@
         <section id="home-hub" class="view-section active flex-col justify-center items-center pt-20 min-h-screen">
             
             <div class="text-center mb-12 relative z-10 gs-reveal w-full pt-10">
-                <p class="font-mono text-[#00f0ff] tracking-[0.4em] text-[10px] sm:text-xs uppercase mb-4">> ARCHITECT IDENTIFIED</p>
-                <!-- AAA GLITCH NAME ANIMATION -->
-                <h1 class="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-display font-bold uppercase tracking-tighter mb-6 aaa-title leading-none" data-text="SYED AHMED">SYED AHMED</h1>
+                <p class="font-mono text-[#00f0ff] tracking-[0.5em] text-[10px] sm:text-xs uppercase mb-6">> ARCHITECT IDENTIFIED</p>
+                <h1 class="text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] font-display font-bold uppercase tracking-tighter mb-8 aaa-title leading-none" data-text="SYED AHMED">SYED AHMED</h1>
                 
                 <!-- AAA Profile Summary -->
-                <div class="mt-10 font-mono text-xs sm:text-sm text-gray-400 max-w-3xl mx-auto leading-relaxed hud-panel p-8 text-left border-l-4 border-l-[#00f0ff]">
-                    <div class="flex items-center justify-between mb-4">
+                <div class="mt-12 font-mono text-sm sm:text-base text-gray-300 max-w-4xl mx-auto leading-relaxed hud-panel p-10 text-left border-l-4 border-l-[#00f0ff] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                    <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center gap-3">
-                            <svg class="w-4 h-4 text-[#00f0ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            <span class="text-[#00f0ff] font-bold tracking-widest">SYSTEM_SUMMARY</span>
+                            <svg class="w-5 h-5 text-[#00f0ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <span class="text-[#00f0ff] font-bold tracking-[0.2em] text-lg">SYSTEM_SUMMARY</span>
                         </div>
-                        <div class="flex items-center gap-2 text-green-400 text-[10px]">
+                        <div class="flex items-center gap-2 text-green-400 text-xs tracking-widest border border-green-500/30 px-3 py-1 bg-green-500/10">
                             <div class="w-2 h-2 bg-green-500 animate-pulse"></div> READY FOR COMMISSION
                         </div>
                     </div>
@@ -249,132 +254,138 @@
                 </div>
             </div>
 
-            <!-- SCANNER LEAD MAGNET -->
-            <div class="w-full max-w-3xl mx-auto mb-12 gs-reveal">
-                <div class="hud-panel p-6 flex flex-col md:flex-row items-center gap-4">
-                    <div class="flex-grow w-full">
-                        <p class="font-mono text-[10px] text-gray-500 mb-2">RUN ARCHITECTURE DIAGNOSTIC ON CURRENT URL</p>
-                        <input type="text" id="scan-url" placeholder="https://your-current-website.com" class="w-full bg-black/50 border border-white/20 p-3 font-mono text-xs text-white outline-none focus:border-[#00f0ff]">
+            <!-- Core 4 Nodes (TRUE 3D POP OUT) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl relative z-20 gs-reveal mb-14">
+                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-72" onclick="openNode('identity', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
+                        <div class="w-20 h-20 mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-2xl text-white group-hover:text-black">01</span></div>
+                        <h3 class="font-display text-xl text-white tracking-widest uppercase relative z-10">Identity</h3>
                     </div>
-                    <button class="btn-elite magnetic w-full md:w-auto h-[46px] mt-6 md:mt-0" onclick="runScanner()">SCAN SYSTEM</button>
                 </div>
-                <div id="scan-result" class="font-mono text-[10px] mt-4 hidden"></div>
-            </div>
+                
+                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-72" onclick="openNode('skills', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
+                        <div class="w-20 h-20 mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-2xl text-white group-hover:text-black">02</span></div>
+                        <h3 class="font-display text-xl text-white tracking-widest uppercase relative z-10">Tech</h3>
+                    </div>
+                </div>
 
-            <!-- Core 4 Nodes -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl relative z-20 gs-reveal mb-10">
-                <div class="hud-panel p-8 flex flex-col items-center justify-center cursor-none group magnetic h-64" onclick="openNode('identity', event)">
-                    <div class="w-16 h-16 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-lg text-white group-hover:text-black">01</span></div>
-                    <h3 class="font-display text-lg text-white tracking-widest uppercase">Identity</h3>
+                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-72" onclick="openNode('work-hub', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
+                        <div class="w-20 h-20 mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-2xl text-white group-hover:text-black">03</span></div>
+                        <h3 class="font-display text-xl text-white tracking-widest uppercase relative z-10">Work</h3>
+                    </div>
                 </div>
-                <div class="hud-panel p-8 flex flex-col items-center justify-center cursor-none group magnetic h-64" onclick="openNode('skills', event)">
-                    <div class="w-16 h-16 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-lg text-white group-hover:text-black">02</span></div>
-                    <h3 class="font-display text-lg text-white tracking-widest uppercase">Tech</h3>
-                </div>
-                <div class="hud-panel p-8 flex flex-col items-center justify-center cursor-none group magnetic h-64" onclick="openNode('work-hub', event)">
-                    <div class="w-16 h-16 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-lg text-white group-hover:text-black">03</span></div>
-                    <h3 class="font-display text-lg text-white tracking-widest uppercase">Work</h3>
-                </div>
-                <div class="hud-panel p-8 flex flex-col items-center justify-center cursor-none group magnetic h-64" onclick="openNode('certificates', event)">
-                    <div class="w-16 h-16 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-lg text-white group-hover:text-black">04</span></div>
-                    <h3 class="font-display text-lg text-white tracking-widest uppercase">Records</h3>
+
+                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-72" onclick="openNode('certificates', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
+                        <div class="w-20 h-20 mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-2xl text-white group-hover:text-black">04</span></div>
+                        <h3 class="font-display text-xl text-white tracking-widest uppercase relative z-10">Records</h3>
+                    </div>
                 </div>
             </div>
 
             <!-- Direct Gmail Link -->
-            <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Contract+Inquiry" class="block w-full max-w-6xl gs-reveal cursor-none magnetic" onclick="playAudio('click')">
-                <div class="hud-panel p-8 group bg-[rgba(0,240,255,0.05)] border-[#00f0ff]/40 hover:border-[#00f0ff] hover:bg-[#00f0ff]/10 text-center">
-                    <h2 class="font-display text-2xl md:text-4xl text-[#00f0ff] tracking-widest uppercase mb-2 group-hover:animate-pulse">INITIATE CONTRACT</h2>
-                    <p class="font-mono text-xs text-gray-400">> ESTABLISH DIRECT SECURE COMM_LINK (GMAIL)</p>
+            <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Contract+Inquiry" class="block w-full max-w-6xl gs-reveal cursor-none magnetic tilt-card" onclick="playAudio('click')">
+                <div class="hud-panel p-0 group bg-[rgba(0,240,255,0.05)] border-[#00f0ff]/40 hover:border-[#00f0ff] hover:bg-[#00f0ff]/15 text-center h-40">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center w-full h-full">
+                        <div class="holographic-glare"></div>
+                        <h2 class="font-display text-3xl md:text-5xl text-[#00f0ff] tracking-[0.2em] uppercase mb-3 group-hover:animate-pulse relative z-10 font-bold" style="text-shadow: 0 0 20px rgba(0,240,255,0.5);">INITIATE CONTRACT</h2>
+                        <p class="font-mono text-sm text-white relative z-10 tracking-widest">> ESTABLISH DIRECT SECURE COMM_LINK (GMAIL)</p>
+                    </div>
                 </div>
             </a>
         </section>
 
         <!-- 2. IDENTITY & COMMS SCENE -->
         <section id="identity" class="view-section">
-            <div class="flex items-center gap-6 mb-12 gs-reveal">
-                <h2 class="text-2xl md:text-4xl font-display font-bold text-white tracking-widest uppercase">Identity Core</h2>
-                <div class="h-px bg-gradient-to-r from-white/20 to-transparent flex-grow"></div>
+            <div class="flex items-center gap-6 mb-16 gs-reveal">
+                <h2 class="text-3xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Identity Core</h2>
+                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50"></div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 <!-- High-End Graphical Profile -->
-                <div class="lg:col-span-5 hud-panel p-6 md:p-8 flex flex-col items-center justify-center relative min-h-[450px] gs-reveal border-l-2 border-l-[#00f0ff]">
-                    <!-- Rotating Elements -->
-                    <div class="w-48 h-48 border border-white/10 absolute animate-[spin_20s_linear_infinite]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); top: 10%;"></div>
-                    <div class="w-40 h-40 border border-[#00f0ff]/50 absolute animate-[spin_10s_linear_infinite_reverse]" style="clip-path: polygon(20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%, 0% 20%); top: 13%;"></div>
-                    
-                    <!-- Profile Picture Base -->
-                    <div class="w-56 h-56 rounded-full overflow-hidden relative shadow-[0_0_40px_rgba(0,240,255,0.6)] z-10 border-[3px] border-[#00f0ff]/80">
-                        <img src="assets/images/profile.jpg" alt="Syed Ahmed" class="w-full h-full object-cover filter brightness-125 contrast-125 saturate-150 relative z-0" onerror="this.style.display='none'">
-                        <div class="absolute inset-0 bg-[#00f0ff] mix-blend-overlay opacity-30 z-10 pointer-events-none"></div>
-                        <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,240,255,0.2)_50%)] bg-[length:100%_4px] pointer-events-none z-20"></div>
-                        <div class="absolute top-0 left-0 w-full h-[3px] bg-[#00f0ff] shadow-[0_0_20px_#00f0ff] animate-[scan-laser_2.5s_ease-in-out_infinite] z-30"></div>
-                    </div>
-                    
-                    <!-- Technical Grid Stats -->
-                    <div class="mt-6 w-full relative z-10 text-left border border-[#00f0ff]/30 bg-[#00f0ff]/5 p-5" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);">
-                        <div class="flex flex-col gap-3 font-mono text-[10px] sm:text-xs text-gray-300">
-                            <div class="flex justify-between border-b border-white/10 pb-1">
-                                <span class="text-[#00f0ff] font-bold">AGE</span> <span>UNKNOWN</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/10 pb-1">
-                                <span class="text-[#00f0ff] font-bold">LOCATION</span> <span>HYDERABAD</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/10 pb-1">
-                                <span class="text-[#00f0ff] font-bold">ROLE</span> <span>WEB & APP DEVELOPER</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/10 pb-1">
-                                <span class="text-[#00f0ff] font-bold">SPECIALTY</span> <span>UI/UX + HIGH-END DESIGN</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/10 pb-1">
-                                <span class="text-[#00f0ff] font-bold">SERVICES</span> <span>WEBSITES | MOBILE APPS | BRANDING</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/10 pb-1">
-                                <span class="text-[#00f0ff] font-bold">EXPERIENCE</span> <span>3+ YEARS</span>
-                            </div>
-                            <div class="flex justify-between items-center mt-2 p-2 bg-[#ff9f00]/10 border border-[#ff9f00]/30 text-[#ff9f00]">
-                                <span class="flex items-center gap-2"><span class="w-2 h-2 bg-[#ff9f00] rounded-sm animate-pulse shadow-[0_0_10px_#ff9f00]"></span> <span class="font-bold tracking-widest">STATUS</span></span>
-                                <span class="font-bold">AVAILABLE FOR PROJECTS</span>
-                            </div>
-                            <div class="flex justify-between items-center mt-1 p-2 bg-[#00f0ff]/10 border border-[#00f0ff]/30 text-[#00f0ff]">
-                                <span class="font-bold tracking-widest">CONTACT</span>
-                                <span class="font-bold">READY ON REQUEST</span>
+                <div class="lg:col-span-5 hud-panel tilt-card p-0 relative min-h-[500px] gs-reveal border-l-4 border-l-[#00f0ff]">
+                    <div class="transform-3d-layer p-8 flex flex-col items-center justify-center">
+                        <div class="holographic-glare"></div>
+                        
+                        <div class="w-56 h-56 border border-white/20 absolute animate-[spin_20s_linear_infinite] z-0" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); top: 8%;"></div>
+                        <div class="w-48 h-48 border-[3px] border-[#00f0ff]/70 absolute animate-[spin_10s_linear_infinite_reverse] z-0" style="clip-path: polygon(20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%, 0% 20%); top: 12%;"></div>
+                        
+                        <div class="w-64 h-64 rounded-full overflow-hidden relative shadow-[0_0_50px_rgba(0,240,255,0.7)] z-10 border-4 border-[#00f0ff]">
+                            <img src="assets/images/profile.jpg" alt="Syed Ahmed" class="w-full h-full object-cover filter brightness-125 contrast-150 saturate-150 relative z-0" onerror="this.style.display='none'">
+                            <div class="absolute inset-0 bg-[#00f0ff] mix-blend-overlay opacity-40 z-10 pointer-events-none"></div>
+                            <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,240,255,0.3)_50%)] bg-[length:100%_4px] pointer-events-none z-20"></div>
+                        </div>
+                        
+                        <!-- Technical Grid Stats -->
+                        <div class="mt-10 w-full relative z-20 text-left border border-[#00f0ff]/40 bg-[#00f0ff]/10 p-6" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px); backdrop-filter: blur(5px);">
+                            <div class="flex flex-col gap-4 font-mono text-xs sm:text-sm text-gray-200">
+                                <div class="flex justify-between border-b border-white/10 pb-2">
+                                    <span class="text-[#00f0ff] font-bold">AGE</span> <span>UNKNOWN</span>
+                                </div>
+                                <div class="flex justify-between border-b border-white/10 pb-2">
+                                    <span class="text-[#00f0ff] font-bold">LOCATION</span> <span>HYDERABAD</span>
+                                </div>
+                                <div class="flex justify-between border-b border-white/10 pb-2">
+                                    <span class="text-[#00f0ff] font-bold">ROLE</span> <span class="font-bold text-white">WEB & APP DEVELOPER</span>
+                                </div>
+                                <div class="flex justify-between border-b border-white/10 pb-2">
+                                    <span class="text-[#00f0ff] font-bold">SPECIALTY</span> <span>UI/UX + HIGH-END DESIGN</span>
+                                </div>
+                                <div class="flex justify-between border-b border-white/10 pb-2">
+                                    <span class="text-[#00f0ff] font-bold">SERVICES</span> <span>WEBSITES | MOBILE APPS</span>
+                                </div>
+                                <div class="flex justify-between items-center mt-3 p-3 bg-[#ff9f00]/15 border border-[#ff9f00]/50 text-[#ff9f00]">
+                                    <span class="flex items-center gap-3"><span class="w-3 h-3 bg-[#ff9f00] rounded-sm animate-pulse shadow-[0_0_15px_#ff9f00]"></span> <span class="font-bold tracking-widest text-sm">STATUS</span></span>
+                                    <span class="font-bold text-sm">AVAILABLE</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Academic Data & Comms -->
-                <div class="lg:col-span-7 flex flex-col gap-8">
-                    <div class="hud-panel p-8 gs-reveal">
-                        <p class="font-mono text-[10px] text-[#00f0ff] uppercase tracking-widest mb-6 relative z-10 border-b border-white/10 pb-2">> ACADEMIC_ARCHITECTURE</p>
-                        <div class="space-y-6 relative z-10">
-                            <div class="bg-white/5 p-4 border-l-2 border-[#00f0ff]">
-                                <h4 class="font-display text-sm text-white mb-2">MASTER OF COMPUTER APPLICATIONS</h4>
-                                <p class="font-mono text-[10px] text-[#00f0ff]">> PURSUING</p>
-                            </div>
-                            <div class="bg-white/5 p-4 border-l-2 border-gray-600">
-                                <h4 class="font-display text-sm text-gray-400 mb-2">BACHELOR OF COMMERCE</h4>
-                                <p class="font-mono text-[10px] text-gray-500">> COMPLETED: 2023</p>
+                <div class="lg:col-span-7 flex flex-col gap-10">
+                    <div class="hud-panel tilt-card p-0 gs-reveal">
+                        <div class="transform-3d-layer p-10">
+                            <div class="holographic-glare"></div>
+                            <p class="font-mono text-xs text-[#00f0ff] uppercase tracking-widest mb-8 relative z-10 border-b border-white/10 pb-3">> ACADEMIC_ARCHITECTURE</p>
+                            <div class="space-y-8 relative z-10">
+                                <div class="bg-white/5 p-6 border-l-4 border-[#00f0ff] shadow-[0_0_20px_rgba(0,240,255,0.1)]">
+                                    <h4 class="font-display text-lg text-white mb-2 font-bold">MASTER OF COMPUTER APPLICATIONS</h4>
+                                    <p class="font-mono text-xs text-[#00f0ff] tracking-widest">> PURSUING</p>
+                                </div>
+                                <div class="bg-white/5 p-6 border-l-4 border-gray-600">
+                                    <h4 class="font-display text-lg text-gray-400 mb-2 font-bold">BACHELOR OF COMMERCE</h4>
+                                    <p class="font-mono text-xs text-gray-500 tracking-widest">> COMPLETED: 2023</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="hud-panel p-8 bg-[#02050a] gs-reveal border-t-2 border-t-[#00f0ff]">
-                        <p class="font-mono text-[10px] text-gray-500 uppercase tracking-widest mb-6 relative z-10 border-b border-white/10 pb-2">Comms_Link</p>
-                        <div class="flex flex-col gap-4 relative z-10">
-                            <a href="tel:+918019416016" class="magnetic flex items-center justify-between group bg-white/5 p-4" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);" onclick="playAudio('click')">
-                                <span class="font-mono text-xs text-gray-400 group-hover:text-white transition-colors">MOBILE_UPLINK</span>
-                                <span class="font-mono text-xs text-[#00f0ff]">+91 8019416016</span>
-                            </a>
-                            <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com" class="magnetic flex items-center justify-between group bg-white/5 p-4" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);" onclick="playAudio('click')">
-                                <span class="font-mono text-xs text-gray-400 group-hover:text-white transition-colors">SECURE_MAIL</span>
-                                <span class="font-mono text-[10px] text-[#00f0ff]">SYEDAHMED.SA43@GMAIL.COM</span>
-                            </a>
-                            <div class="flex gap-4 mt-2">
-                                <a href="https://wa.me/918019416016" target="_blank" class="magnetic flex-1 text-center font-mono text-[10px] font-bold text-black hover:bg-green-400 bg-green-500 py-3 transition-colors" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);" onclick="playAudio('click')">WHATSAPP</a>
-                                <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="magnetic flex-1 text-center font-mono text-[10px] font-bold text-black hover:bg-[#00f0ff] bg-[#007acc] py-3 transition-colors" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);" onclick="playAudio('click')">LINKEDIN</a>
+                    <div class="hud-panel tilt-card p-0 bg-[#02050a] gs-reveal border-t-4 border-t-[#00f0ff]">
+                        <div class="transform-3d-layer p-10">
+                            <div class="holographic-glare"></div>
+                            <p class="font-mono text-xs text-gray-400 uppercase tracking-[0.3em] mb-8 relative z-10 border-b border-white/10 pb-3">Comms_Link</p>
+                            <div class="flex flex-col gap-5 relative z-10">
+                                <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com" class="magnetic flex items-center justify-between group bg-[rgba(0,240,255,0.05)] border border-[#00f0ff]/30 p-6 hover:bg-[#00f0ff]/20 transition-colors" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">
+                                    <span class="font-mono text-sm text-gray-300 group-hover:text-white font-bold tracking-widest">SECURE_MAIL</span>
+                                    <span class="font-mono text-sm text-[#00f0ff] font-bold">SYEDAHMED.SA43@GMAIL.COM</span>
+                                </a>
+                                <div class="flex gap-5 mt-2">
+                                    <a href="https://wa.me/918019416016" target="_blank" class="magnetic flex-1 text-center font-mono text-sm font-bold tracking-widest text-black hover:bg-green-400 bg-green-500 py-4 transition-colors" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">WHATSAPP</a>
+                                    <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="magnetic flex-1 text-center font-mono text-sm font-bold tracking-widest text-black hover:bg-[#00f0ff] bg-[#007acc] py-4 transition-colors" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">LINKEDIN</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -385,104 +396,133 @@
         <!-- 3. SKILLS SCENE -->
         <section id="skills" class="view-section">
             <div class="flex items-center gap-6 mb-12 gs-reveal">
-                <h2 class="text-2xl md:text-4xl font-display font-bold text-white tracking-widest uppercase">Capabilities</h2>
-                <div class="h-px bg-gradient-to-r from-white/20 to-transparent flex-grow"></div>
+                <h2 class="text-3xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Capabilities</h2>
+                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50"></div>
             </div>
 
-            <!-- Tech Orbit System -->
-            <div class="w-full py-12 gs-reveal mb-12 flex justify-center hud-panel">
-                <div class="orbit-container">
-                    <div class="orbit-core">CORE</div>
-                    <div class="orbit-ring orbit-ring-1">
-                        <div class="orbit-node ring-1-node-1">REACT</div>
-                        <div class="orbit-node ring-1-node-2">NODE</div>
-                        <div class="orbit-node ring-1-node-3">DB</div>
+            <!-- Tech Orbit System (AAA Background Integration) -->
+            <div class="w-full py-16 gs-reveal mb-16 flex justify-center hud-panel bg-[rgba(0,240,255,0.02)] border-[#00f0ff]/20">
+                <div class="orbit-container" style="transform: scale(1.2);">
+                    <div class="orbit-core font-display text-lg tracking-widest text-[#00f0ff]">CORE</div>
+                    <div class="orbit-ring orbit-ring-1 border-[#00f0ff]/40">
+                        <div class="orbit-node ring-1-node-1 text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">REACT</div>
+                        <div class="orbit-node ring-1-node-2 text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">NODE</div>
+                        <div class="orbit-node ring-1-node-3 text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">DB</div>
                     </div>
-                    <div class="orbit-ring orbit-ring-2">
-                        <div class="orbit-node ring-2-node-1">UI/UX</div>
-                        <div class="orbit-node ring-2-node-2">AWS</div>
-                        <div class="orbit-node ring-2-node-3">THREE</div>
+                    <div class="orbit-ring orbit-ring-2 border-[#ff9f00]/30">
+                        <div class="orbit-node ring-2-node-1 text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">UI/UX</div>
+                        <div class="orbit-node ring-2-node-2 text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">AWS</div>
+                        <div class="orbit-node ring-2-node-3 text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">THREE</div>
                     </div>
                 </div>
             </div>
             
-            <div id="skills-container" class="space-y-16"></div>
+            <div id="skills-container" class="space-y-20"></div>
         </section>
 
         <!-- 4. WORK HUB SCENE -->
         <section id="work-hub" class="view-section flex-col justify-center items-center pt-24 min-h-screen">
-            <div class="text-center mb-16 relative z-10 gs-reveal w-full">
-                <p class="font-mono text-[#00f0ff] tracking-[0.4em] text-[10px] uppercase mb-4">> SELECT_DOMAIN</p>
-                <h2 class="text-4xl md:text-6xl font-display font-bold text-white tracking-widest uppercase">Architecture</h2>
+            <div class="text-center mb-20 relative z-10 gs-reveal w-full">
+                <p class="font-mono text-[#00f0ff] tracking-[0.5em] text-xs uppercase mb-6">> SELECT_DOMAIN</p>
+                <h2 class="text-5xl md:text-7xl font-display font-bold text-white tracking-widest uppercase aaa-title" data-text="ARCHITECTURE">ARCHITECTURE</h2>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl relative z-20 gs-reveal">
-                <div class="hud-panel p-10 flex flex-col items-center justify-center cursor-none group magnetic h-72" onclick="openNode('deployments', event)">
-                    <div class="w-24 h-24 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
-                        <svg class="w-10 h-10 text-white group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl relative z-20 gs-reveal">
+                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-96" onclick="openNode('deployments', event)">
+                    <div class="transform-3d-layer p-12 flex flex-col items-center justify-center h-full">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket tr" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket bl" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket br" style="width:40px; height:40px; border-width: 3px;"></div>
+                        <div class="w-32 h-32 mb-8 border-2 border-[#00f0ff]/40 flex items-center justify-center bg-[#00f0ff]/10 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_30px_rgba(0,240,255,0.3)]" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
+                            <svg class="w-14 h-14 text-[#00f0ff] group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                        </div>
+                        <h3 class="font-display text-3xl text-white tracking-widest uppercase relative z-10 font-bold">Websites</h3>
+                        <p class="font-mono text-xs text-[#00f0ff] mt-4 tracking-widest relative z-10">> VIEW DEPLOYMENTS</p>
                     </div>
-                    <h3 class="font-display text-xl text-white tracking-widest uppercase">Websites</h3>
-                    <p class="font-mono text-[9px] text-[#64748b] mt-3 group-hover:text-[#00f0ff] transition-colors">> VIEW DEPLOYMENTS</p>
                 </div>
-                <div class="hud-panel p-10 flex flex-col items-center justify-center cursor-none group magnetic h-72" onclick="openNode('applications', event)">
-                    <div class="w-24 h-24 mb-6 border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#ff9f00] group-hover:border-[#ff9f00] transition-all duration-300" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
-                        <svg class="w-10 h-10 text-white group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                
+                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-96" onclick="openNode('applications', event)">
+                    <div class="transform-3d-layer p-12 flex flex-col items-center justify-center h-full">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket tr" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket bl" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket br" style="width:40px; height:40px; border-width: 3px;"></div>
+                        <div class="w-32 h-32 mb-8 border-2 border-[#ff9f00]/40 flex items-center justify-center bg-[#ff9f00]/10 group-hover:bg-[#ff9f00] group-hover:border-[#ff9f00] transition-all duration-300 relative z-10 shadow-[0_0_30px_rgba(255,159,0,0.3)]" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
+                            <svg class="w-14 h-14 text-[#ff9f00] group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="font-display text-3xl text-white tracking-widest uppercase relative z-10 font-bold">Applications</h3>
+                        <p class="font-mono text-xs text-[#ff9f00] mt-4 tracking-widest relative z-10">> RESTRICTED ACCESS</p>
                     </div>
-                    <h3 class="font-display text-xl text-white tracking-widest uppercase">Applications</h3>
-                    <p class="font-mono text-[9px] text-[#64748b] mt-3 group-hover:text-[#ff9f00] transition-colors">> RESTRICTED ACCESS</p>
                 </div>
             </div>
         </section>
 
         <!-- 5. APPLICATIONS SCENE -->
         <section id="applications" class="view-section flex-col justify-center items-center min-h-screen">
-            <div class="hud-panel p-12 flex flex-col items-center text-center max-w-2xl w-full border-t-4 border-t-[#ff9f00] gs-reveal relative z-20">
-                <div id="app-wireframe-canvas" class="w-48 h-48 mb-6 pointer-events-none"></div>
-                <h2 class="text-3xl md:text-4xl font-display font-bold text-[#ff9f00] tracking-widest uppercase mb-4">RESTRICTED_AREA // PROTOTYPES</h2>
-                <p class="font-mono text-gray-300 text-sm mb-10 leading-relaxed">
-                    Custom iOS/Android architectures are built strictly on commission. Current proprietary modules are classified.
-                </p>
-                <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Custom+App+Build+Inquiry" class="btn-elite btn-warn magnetic block w-auto text-center" onclick="playAudio('click')">REQUEST CUSTOM APP BUILD</a>
+            <div class="hud-panel tilt-card p-0 max-w-3xl w-full border-t-4 border-t-[#ff9f00] gs-reveal relative z-20">
+                <div class="transform-3d-layer p-16 flex flex-col items-center text-center">
+                    <div class="holographic-glare"></div>
+                    <div id="app-wireframe-canvas" class="w-64 h-64 mb-8 pointer-events-none relative z-10 shadow-[0_0_50px_rgba(255,159,0,0.2)] rounded-full"></div>
+                    <h2 class="text-4xl md:text-5xl font-display font-bold text-[#ff9f00] tracking-widest uppercase mb-6 neon-text-red relative z-10">RESTRICTED_AREA</h2>
+                    <p class="font-mono text-gray-200 text-base md:text-lg mb-12 leading-relaxed relative z-10">
+                        Custom iOS/Android architectures are built strictly on commission. Current proprietary modules are classified.
+                    </p>
+                    <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Custom+App+Build+Inquiry" class="btn-elite btn-warn magnetic block w-auto text-center relative z-10 text-lg py-5 px-10" onclick="playAudio('click')">REQUEST CUSTOM APP BUILD</a>
+                </div>
             </div>
         </section>
 
         <!-- 6. DEPLOYMENTS SCENE (Websites) -->
         <section id="deployments" class="view-section">
             <div class="flex items-center gap-6 mb-12 gs-reveal">
-                <h2 class="text-2xl md:text-4xl font-display font-bold text-white tracking-widest uppercase">Websites</h2>
-                <div class="h-px bg-gradient-to-r from-white/20 to-transparent flex-grow"></div>
+                <h2 class="text-3xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Websites</h2>
+                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div class="hud-panel p-8 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Crownz Barbershop', 'Enhance digital presence and booking flow.', 'React, Tailwind CSS', '40% increase in user retention.', 'https://crownzbarbershop.github.io')">
-                    <div class="h-56 w-full mb-6 bg-black relative overflow-hidden z-10 border border-white/10" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
-                         <img src="assets/images/crownz.jpg" class="w-full h-full object-cover filter grayscale contrast-125 opacity-50 group-hover:opacity-80 transition-opacity duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80';">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Project Cards (3D Pop) -->
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Crownz Barbershop', 'Enhance digital presence and booking flow.', 'React, Tailwind CSS', '40% increase in user retention.', 'https://crownzbarbershop.github.io')">
+                    <div class="transform-3d-layer p-8">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
+                        <div class="h-64 w-full mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
+                             <img src="assets/images/crownz.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-70 group-hover:opacity-100 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80';">
+                        </div>
+                        <h4 class="text-2xl font-display font-bold mb-4 text-white relative z-10">Crownz Barbershop</h4>
+                        <p class="font-mono text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
                     </div>
-                    <h4 class="text-lg font-display font-bold mb-3 text-white relative z-10">Crownz Barbershop</h4>
-                    <p class="font-mono text-[9px] text-[#00f0ff]">> ACCESS DATA LOG</p>
                 </div>
 
-                <div class="hud-panel p-8 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Clip Kings', 'Premium digital experience showcase.', 'GSAP, Custom JS', 'Elevated brand authority.', 'https://clipkings.github.io/clip-kings-website/')">
-                    <div class="h-56 w-full mb-6 bg-black relative overflow-hidden z-10 border border-white/10" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
-                         <img src="assets/images/clipkings.jpg" class="w-full h-full object-cover filter grayscale contrast-125 opacity-50 group-hover:opacity-80 transition-opacity duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80';">
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Clip Kings', 'Premium digital experience showcase.', 'GSAP, Custom JS', 'Elevated brand authority.', 'https://clipkings.github.io/clip-kings-website/')">
+                    <div class="transform-3d-layer p-8">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
+                        <div class="h-64 w-full mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
+                             <img src="assets/images/clipkings.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-70 group-hover:opacity-100 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80';">
+                        </div>
+                        <h4 class="text-2xl font-display font-bold mb-4 text-white relative z-10">Clip Kings</h4>
+                        <p class="font-mono text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
                     </div>
-                    <h4 class="text-lg font-display font-bold mb-3 text-white relative z-10">Clip Kings</h4>
-                    <p class="font-mono text-[9px] text-[#00f0ff]">> ACCESS DATA LOG</p>
                 </div>
 
-                <div class="hud-panel p-8 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Opus Al Qudsi', 'Corporate portal for specialized services.', 'Enterprise CMS', 'Enhanced security and load times.', 'https://opusalqudsi.com')">
-                    <div class="h-56 w-full mb-6 bg-black relative overflow-hidden z-10 border border-white/10" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
-                         <img src="assets/images/opus.jpg" class="w-full h-full object-cover filter grayscale contrast-125 opacity-50 group-hover:opacity-80 transition-opacity duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80';">
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Opus Al Qudsi', 'Corporate portal for specialized services.', 'Enterprise CMS', 'Enhanced security and load times.', 'https://opusalqudsi.com')">
+                    <div class="transform-3d-layer p-8">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
+                        <div class="h-64 w-full mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
+                             <img src="assets/images/opus.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-70 group-hover:opacity-100 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80';">
+                        </div>
+                        <h4 class="text-2xl font-display font-bold mb-4 text-white relative z-10">Opus Al Qudsi</h4>
+                        <p class="font-mono text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
                     </div>
-                    <h4 class="text-lg font-display font-bold mb-3 text-white relative z-10">Opus Al Qudsi</h4>
-                    <p class="font-mono text-[9px] text-[#00f0ff]">> ACCESS DATA LOG</p>
                 </div>
                 
-                <div class="hud-panel p-8 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Quantum OS Portfolio', 'Create an immersive AAA experience.', 'Three.js, WebGL, GSAP', 'Ultimate client retention.', '#')">
-                    <div class="h-56 w-full mb-6 bg-[rgba(0,240,255,0.05)] relative overflow-hidden flex items-center justify-center z-10 border border-[#00f0ff]/30" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
-                        <div class="project-3d-canvas absolute inset-0" data-type="cube"></div>
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Quantum OS Portfolio', 'Create an immersive AAA experience.', 'Three.js, WebGL, GSAP', 'Ultimate client retention.', '#')">
+                    <div class="transform-3d-layer p-8">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
+                        <div class="h-64 w-full mb-8 bg-[rgba(0,240,255,0.05)] relative overflow-hidden flex items-center justify-center z-10 border-2 border-[#00f0ff]/50 shadow-[0_0_30px_rgba(0,240,255,0.3)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
+                            <div class="project-3d-canvas absolute inset-0" data-type="cube"></div>
+                        </div>
+                        <h4 class="text-2xl font-display font-bold mb-4 text-[#00f0ff] relative z-10">Quantum OS Portfolio</h4>
+                        <p class="font-mono text-xs tracking-widest text-gray-400 relative z-10">> CURRENT SYSTEM ACTIVE</p>
                     </div>
-                    <h4 class="text-lg font-display font-bold mb-3 text-[#00f0ff] relative z-10">Quantum OS Portfolio</h4>
-                    <p class="font-mono text-[9px] text-gray-500">> CURRENT SYSTEM ACTIVE</p>
                 </div>
             </div>
         </section>
@@ -490,62 +530,62 @@
         <!-- 7. CERTIFICATES SCENE -->
         <section id="certificates" class="view-section">
             <div class="flex items-center gap-6 mb-12 gs-reveal">
-                <h2 class="text-2xl md:text-4xl font-display font-bold text-white tracking-widest uppercase">Verified Records</h2>
-                <div class="h-px bg-gradient-to-r from-white/20 to-transparent flex-grow"></div>
-                <span class="font-mono text-[10px] text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-3 py-1">RECORDS: <span id="cert-count-display">0</span></span>
+                <h2 class="text-3xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Verified Records</h2>
+                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50"></div>
+                <span class="font-mono text-xs text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-4 py-2 shadow-[0_0_10px_rgba(0,240,255,0.2)]">RECORDS: <span id="cert-count-display" class="font-bold">0</span></span>
             </div>
-            <div id="cert-container" class="space-y-16"></div>
+            <div id="cert-container" class="space-y-20"></div>
         </section>
 
     </main>
 
     <!-- FULLSCREEN DATA LOG MODAL -->
     <div id="project-modal" class="fixed inset-0 z-[105] hidden flex items-center justify-center opacity-0 pointer-events-none">
-        <div class="absolute inset-0 bg-black/90 backdrop-blur-xl" onclick="closeProjectLog()"></div>
-        <div class="hud-panel p-10 max-w-2xl w-full mx-4 relative z-10" id="project-modal-content">
-            <button onclick="closeProjectLog()" class="absolute top-6 right-6 text-gray-400 font-mono text-[10px] magnetic px-4 py-2 border border-white/20 bg-white/5 uppercase" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);"> [ CLOSE ] </button>
-            <p class="font-mono text-[#00f0ff] text-[9px] tracking-widest mb-2">> DECLASSIFIED_DATA_LOG</p>
-            <h3 id="plog-title" class="text-2xl md:text-3xl font-display font-bold text-white mb-8 uppercase">Project Title</h3>
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-2xl" onclick="closeProjectLog()"></div>
+        <div class="hud-panel p-12 max-w-3xl w-full mx-4 relative z-10 border-[3px] border-[#00f0ff]/60 shadow-[0_0_100px_rgba(0,240,255,0.2)]" id="project-modal-content">
+            <button onclick="closeProjectLog()" class="absolute top-8 right-8 text-white font-mono text-xs magnetic px-6 py-3 border border-[#00f0ff] bg-[#00f0ff]/20 hover:bg-[#00f0ff] hover:text-black uppercase transition-all" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);"> [ CLOSE_LOG ] </button>
+            <p class="font-mono text-[#00f0ff] text-xs tracking-[0.3em] mb-4">> DECLASSIFIED_DATA_LOG</p>
+            <h3 id="plog-title" class="text-4xl md:text-5xl font-display font-bold text-white mb-10 uppercase aaa-title">Project Title</h3>
             
-            <div class="space-y-6 font-mono text-sm text-gray-300 mb-10">
-                <div><span class="text-[#00f0ff] font-bold">> OBJECTIVE:</span> <span id="plog-obj">...</span></div>
-                <div><span class="text-[#00f0ff] font-bold">> TECH_STACK:</span> <span id="plog-tech">...</span></div>
-                <div><span class="text-[#00f0ff] font-bold">> RESULT:</span> <span id="plog-res" class="text-green-400">...</span></div>
+            <div class="space-y-8 font-mono text-base text-gray-300 mb-12 bg-black/50 p-8 border border-white/10" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
+                <div class="border-b border-white/10 pb-4"><span class="text-[#00f0ff] font-bold block mb-2">> OBJECTIVE:</span> <span id="plog-obj" class="text-white">...</span></div>
+                <div class="border-b border-white/10 pb-4"><span class="text-[#00f0ff] font-bold block mb-2">> TECH_STACK:</span> <span id="plog-tech" class="text-white">...</span></div>
+                <div><span class="text-[#00f0ff] font-bold block mb-2">> RESULT:</span> <span id="plog-res" class="text-green-400 font-bold text-lg">...</span></div>
             </div>
             
-            <a id="plog-link" href="#" target="_blank" class="btn-elite w-full text-center" onclick="playAudio('click')">INITIALIZE LIVE PREVIEW</a>
+            <a id="plog-link" href="#" target="_blank" class="btn-elite w-full text-center py-6 text-xl tracking-widest bg-[#00f0ff]/10" onclick="playAudio('click')">INITIALIZE LIVE PREVIEW</a>
         </div>
     </div>
 
     <!-- FULLSCREEN PDF MODAL -->
     <div id="cert-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none">
-        <div class="absolute inset-0 bg-black/90 backdrop-blur-xl" onclick="closeModal()"></div>
-        <div class="hud-panel p-8 md:p-10 max-w-6xl w-full mx-4 relative transform scale-95 transition-transform duration-500 bg-[rgba(5,9,18,0.95)] border-[#00f0ff]/50 shadow-[0_0_80px_rgba(0,240,255,0.15)] z-10" id="cert-modal-content">
-            <button onclick="closeModal()" class="absolute top-6 right-6 text-gray-400 hover:text-white font-mono text-[10px] tracking-widest z-30 magnetic px-4 py-2 border border-white/20 bg-white/5 transition-colors uppercase" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);"> 
-                [ CLOSE ]
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-2xl" onclick="closeModal()"></div>
+        <div class="hud-panel p-8 md:p-12 max-w-6xl w-full mx-4 relative transform scale-95 transition-transform duration-500 bg-[rgba(5,9,18,0.98)] border-2 border-[#00f0ff]/60 shadow-[0_0_100px_rgba(0,240,255,0.2)] z-10" id="cert-modal-content">
+            <button onclick="closeModal()" class="absolute top-8 right-8 text-white font-mono text-xs magnetic px-6 py-3 border border-[#00f0ff] bg-[#00f0ff]/20 hover:bg-[#00f0ff] hover:text-black uppercase transition-all z-30" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);"> 
+                [ CLOSE_LOG ]
             </button>
-            <div class="mb-6">
-                <p class="font-mono text-[#00f0ff] text-[9px] tracking-widest mb-2">> DECRYPTION_SUCCESS</p>
-                <h3 id="modal-cert-title" class="text-xl md:text-3xl font-display font-bold text-white mb-2 pr-32 leading-tight uppercase truncate">Title</h3>
-                <p id="modal-cert-category" class="font-mono text-gray-500 text-[10px] uppercase tracking-widest">DOMAIN: </p>
+            <div class="mb-8 border-b border-white/10 pb-6 pr-32">
+                <p class="font-mono text-[#00f0ff] text-xs tracking-[0.3em] mb-3">> DECRYPTION_SUCCESS</p>
+                <h3 id="modal-cert-title" class="text-2xl md:text-4xl font-display font-bold text-white mb-3 leading-tight uppercase truncate aaa-title">Title</h3>
+                <p id="modal-cert-category" class="font-mono text-gray-500 text-xs uppercase tracking-widest bg-white/5 inline-block px-3 py-1">DOMAIN: </p>
             </div>
-            <div class="w-full h-[60vh] md:h-[600px] border border-white/10 bg-black flex items-center justify-center relative overflow-hidden" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
+            <div class="w-full h-[65vh] md:h-[650px] border-2 border-[#00f0ff]/30 bg-black flex items-center justify-center relative overflow-hidden shadow-[0_0_30px_rgba(0,240,255,0.1)inset]" style="clip-path: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px);">
                 <iframe id="modal-cert-iframe" src="" class="w-full h-full relative z-20 hidden bg-white" frameborder="0"></iframe>
                 <div id="cert-loading" class="z-30 text-center flex flex-col items-center">
-                    <div class="w-16 h-16 border border-white/10 border-t-[#00f0ff] rounded-full animate-spin mb-6"></div>
-                    <p class="font-mono text-[#00f0ff] tracking-widest text-[10px] animate-pulse">DECRYPTING DATABANK...</p>
+                    <div class="w-24 h-24 border-[3px] border-transparent border-t-[#00f0ff] border-b-[#00f0ff] rounded-full animate-spin mb-8 shadow-[0_0_20px_#00f0ff]"></div>
+                    <p class="font-mono text-[#00f0ff] tracking-[0.3em] text-sm animate-pulse font-bold">DECRYPTING DATABANK...</p>
                 </div>
-                <div id="cert-error" class="hidden z-30 text-center flex flex-col items-center bg-black/90 p-10 border-t-2 border-t-red-500">
-                    <span class="text-red-500 font-display text-4xl font-bold mb-4 animate-pulse">!</span>
-                    <p class="font-mono text-red-500 tracking-widest text-sm font-bold uppercase mb-2">FILE NOT FOUND</p>
-                    <p id="missing-file-path" class="font-mono text-gray-500 tracking-widest text-[9px] mt-4 select-all text-center">assets/certificates/filename.pdf</p>
+                <div id="cert-error" class="hidden z-30 text-center flex flex-col items-center bg-black/90 p-12 border-t-4 border-t-red-500 shadow-[0_0_50px_rgba(255,0,0,0.2)]">
+                    <span class="text-red-500 font-display text-6xl font-bold mb-6 animate-pulse" style="text-shadow: 0 0 30px red;">!</span>
+                    <p class="font-mono text-red-500 tracking-[0.2em] text-xl font-bold uppercase mb-4">FILE NOT FOUND</p>
+                    <p id="missing-file-path" class="font-mono text-gray-400 tracking-widest text-xs mt-4 select-all text-center bg-white/5 p-4 border border-white/10">assets/certificates/filename.pdf</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. DATA & RENDERING
+        // 1. DATA & RENDERING (100% FULL LIST RESTORED)
         const certCategoryData = [
             {
                 title: "🤖 AI / MACHINE LEARNING", theme: "cyan",
@@ -716,28 +756,32 @@
             if(skillContainer) {
                 skillsData.forEach(cat => {
                     let html = `
-                    <div class="mb-12 gs-reveal">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-2 h-6 bg-${cat.theme}-500 shadow-[0_0_15px_var(--${cat.theme}-core)]"></div>
-                            <h4 class="font-display text-lg text-white uppercase tracking-wider">${cat.title}</h4>
-                            <div class="h-px flex-grow bg-gradient-to-r from-white/20 to-transparent"></div>
+                    <div class="mb-14 gs-reveal">
+                        <div class="flex items-center gap-5 mb-6">
+                            <div class="w-3 h-8 bg-${cat.theme}-500 shadow-[0_0_20px_var(--${cat.theme}-core)]"></div>
+                            <h4 class="font-display text-2xl md:text-3xl text-white uppercase tracking-widest aaa-title" data-text="${cat.title}">${cat.title}</h4>
+                            <div class="h-px flex-grow bg-gradient-to-r from-white/30 to-transparent ml-4"></div>
                         </div>
-                        <div class="mb-6 max-w-sm pl-6">
-                            <div class="flex justify-between font-mono text-[9px] text-gray-500 mb-2"><span>PROFICIENCY</span><span>${cat.percent}</span></div>
-                            <div class="h-1 w-full bg-white/5 overflow-hidden">
-                                <div class="h-full bg-[#00f0ff] w-0 gs-skill-bar" data-width="${cat.percent}"></div>
+                        <div class="mb-8 max-w-md pl-8">
+                            <div class="flex justify-between font-mono text-xs text-[#00f0ff] mb-3 font-bold tracking-widest"><span>SYS_PROFICIENCY</span><span>${cat.percent}</span></div>
+                            <div class="h-2 w-full bg-white/5 overflow-hidden border border-white/10" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);">
+                                <div class="h-full bg-[#00f0ff] w-0 gs-skill-bar shadow-[0_0_15px_#00f0ff]" data-width="${cat.percent}"></div>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pl-6">`;
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pl-8">`;
                     
                     cat.items.forEach((skill, i) => {
-                        let tags = skill.tags.map(t => `<span class="font-mono text-[8px] uppercase tracking-widest px-2 py-1 bg-white/5 text-gray-400" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);">${t}</span>`).join('');
+                        let tags = skill.tags.map(t => `<span class="font-mono text-[9px] uppercase tracking-[0.2em] px-3 py-1.5 bg-white/5 text-gray-300 font-bold border border-white/10 shadow-[0_0_10px_rgba(255,255,255,0.05)inset]" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);">${t}</span>`).join('');
                         html += `
-                            <div class="hud-panel p-5 flex flex-col justify-between magnetic cursor-none group">
-                                <div class="relative z-10 flex-grow">
-                                    <p class="font-mono text-[8px] text-gray-600 uppercase mb-3 border-b border-white/5 pb-1">ID_${(i+1).toString().padStart(2,'0')}</p>
-                                    <h5 class="font-display text-xs font-bold text-white mb-4 leading-snug">${skill.name}</h5>
-                                    <div class="flex flex-wrap gap-1.5 mt-auto">${tags}</div>
+                            <div class="hud-panel tilt-card p-0 flex flex-col justify-between magnetic cursor-none group hover:border-${cat.theme}-500 min-h-[160px]">
+                                <div class="transform-3d-layer p-6 flex flex-col h-full">
+                                    <div class="holographic-glare"></div>
+                                    <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
+                                    <div class="relative z-10 flex-grow">
+                                        <p class="font-mono text-[9px] text-[#00f0ff] uppercase mb-4 tracking-widest border-b border-white/10 pb-2">ID_${(i+1).toString().padStart(2,'0')}</p>
+                                        <h5 class="font-display text-sm font-bold text-white mb-6 leading-snug tracking-wide">${skill.name}</h5>
+                                        <div class="flex flex-wrap gap-2 mt-auto">${tags}</div>
+                                    </div>
                                 </div>
                             </div>`;
                     });
@@ -753,13 +797,13 @@
                 certCategoryData.forEach(cat => {
                     certCount += cat.items.length;
                     let html = `
-                    <div class="mb-12 gs-reveal">
-                        <div class="flex items-center gap-4 mb-6">
-                            <div class="w-2 h-6 bg-${cat.theme}-500 shadow-[0_0_15px_var(--${cat.theme}-core)]"></div>
-                            <h4 class="font-display text-lg text-white uppercase tracking-wider">${cat.title}</h4>
-                            <div class="h-px flex-grow bg-gradient-to-r from-white/20 to-transparent"></div>
+                    <div class="mb-16 gs-reveal">
+                        <div class="flex items-center gap-5 mb-8">
+                            <div class="w-3 h-8 bg-${cat.theme}-500 shadow-[0_0_20px_var(--${cat.theme}-core)]"></div>
+                            <h4 class="font-display text-2xl md:text-3xl text-white uppercase tracking-widest aaa-title" data-text="${cat.title}">${cat.title}</h4>
+                            <div class="h-px flex-grow bg-gradient-to-r from-white/30 to-transparent ml-4"></div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pl-6">`;
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pl-8">`;
                     
                     cat.items.forEach((cert) => {
                         const safeName = cert.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -767,15 +811,19 @@
                         const safeFileName = cert.file.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                         
                         html += `
-                            <div class="hud-panel p-5 flex flex-col h-full cursor-none magnetic group hover:border-${cat.theme}-400" onclick="viewCertificate('${safeName}', '${safeCategory}', '${safeFileName}')">
-                                <div class="relative z-10 flex flex-col h-full">
-                                    <div class="flex-grow">
-                                        <p class="font-mono text-[8px] text-[#00f0ff] uppercase mb-2 truncate">> ${cat.title.split('/')[0].replace(/[^\w\s]/gi, '').trim()}</p>
-                                        <h5 class="font-display text-[10px] font-bold text-gray-200 group-hover:text-white transition-colors leading-snug mb-4">${cert.name}</h5>
-                                    </div>
-                                    <div class="mt-auto flex justify-between items-end border-t border-white/5 pt-3">
-                                        <p class="font-mono text-[8px] text-gray-600 uppercase">SYS_${(globalCertId++).toString().padStart(2,'0')}</p>
-                                        <span class="text-[8px] text-gray-400 font-mono group-hover:text-[#00f0ff] transition-colors font-bold">DECRYPT</span>
+                            <div class="hud-panel tilt-card p-0 flex flex-col h-full cursor-none magnetic group hover:border-${cat.theme}-500 min-h-[200px]" onclick="viewCertificate('${safeName}', '${safeCategory}', '${safeFileName}')">
+                                <div class="transform-3d-layer p-6 flex flex-col h-full">
+                                    <div class="holographic-glare"></div>
+                                    <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
+                                    <div class="relative z-10 flex flex-col h-full">
+                                        <div class="flex-grow">
+                                            <p class="font-mono text-[9px] text-[#00f0ff] uppercase mb-3 tracking-widest truncate">> ${cat.title.split('/')[0].replace(/[^\w\s]/gi, '').trim()}</p>
+                                            <h5 class="font-display text-[11px] font-bold text-gray-200 group-hover:text-white transition-colors leading-relaxed mb-5">${cert.name}</h5>
+                                        </div>
+                                        <div class="mt-auto flex justify-between items-end border-t border-white/10 pt-4">
+                                            <p class="font-mono text-[9px] text-gray-500 uppercase tracking-widest">SYS_${(globalCertId++).toString().padStart(2,'0')}</p>
+                                            <span class="text-[9px] text-gray-400 font-mono group-hover:text-[#00f0ff] transition-colors font-bold tracking-widest">DECRYPT</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>`;
@@ -788,7 +836,7 @@
             if(certCountDisplay) certCountDisplay.innerText = certCount;
         }
 
-        // 2. AUDIO ENGINE
+        // 2. ULTRA-PREMIUM AAA AUDIO ENGINE
         const AudioEngine = {
             ctx: new (window.AudioContext || window.webkitAudioContext)(),
             unlocked: false, droneGain: null, droneOsc: null, panner: null,
@@ -804,8 +852,8 @@
                 this.droneOsc = this.ctx.createOscillator();
                 this.droneGain = this.ctx.createGain();
                 this.panner = this.ctx.createStereoPanner();
-                this.droneOsc.type = 'sine'; this.droneOsc.frequency.value = 55;
-                this.droneGain.gain.value = 0.05; 
+                this.droneOsc.type = 'sine'; this.droneOsc.frequency.value = 50; // Deep hum
+                this.droneGain.gain.value = 0.08; // Noticeable atmospheric hum
                 this.droneOsc.connect(this.droneGain);
                 this.droneGain.connect(this.panner);
                 this.panner.connect(this.ctx.destination);
@@ -819,30 +867,49 @@
                 const t = this.ctx.currentTime;
                 
                 if (type === 'hover') {
-                    osc.type = 'square'; osc.frequency.setValueAtTime(4000, t); osc.frequency.exponentialRampToValueAtTime(100, t + 0.05);
-                    gain.gain.setValueAtTime(0.15, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05); 
-                    osc.start(t); osc.stop(t + 0.05);
+                    // Rich Glass Tap (High volume, short duration)
+                    osc.type = 'sine'; 
+                    osc.frequency.setValueAtTime(2500, t); 
+                    osc.frequency.exponentialRampToValueAtTime(1000, t + 0.08);
+                    gain.gain.setValueAtTime(0.3, t); 
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08); 
+                    osc.start(t); osc.stop(t + 0.08);
                 } else if (type === 'click') {
+                    // Heavy Cinematic Thud + High Chime
                     const osc2 = this.ctx.createOscillator();
-                    osc2.connect(gain);
-                    osc.type = 'sine'; osc.frequency.setValueAtTime(1500, t); osc.frequency.setValueAtTime(2000, t + 0.05);
-                    osc2.type = 'triangle'; osc2.frequency.setValueAtTime(300, t); osc2.frequency.exponentialRampToValueAtTime(50, t + 0.1);
-                    gain.gain.setValueAtTime(0.35, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15); 
-                    osc.start(t); osc.stop(t + 0.15);
-                    osc2.start(t); osc2.stop(t + 0.15);
-                } else if (type === 'decrypt') {
-                    osc.type = 'sawtooth';
-                    for(let i=0; i<10; i++) osc.frequency.setValueAtTime(400 + Math.random()*1000, t + i*0.05);
-                    gain.gain.setValueAtTime(0.3, t); gain.gain.linearRampToValueAtTime(0.2, t + 0.4); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5); 
-                    osc.start(t); osc.stop(t + 0.5);
-                } else if (type === 'warp') {
-                    osc.type = 'square'; osc.frequency.setValueAtTime(50, t); osc.frequency.exponentialRampToValueAtTime(800, t + 0.2); osc.frequency.exponentialRampToValueAtTime(20, t + 0.6);
-                    gain.gain.setValueAtTime(0.5, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.8); 
-                    osc.start(t); osc.stop(t + 0.8);
-                } else if (type === 'error') {
-                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, t); osc.frequency.linearRampToValueAtTime(100, t + 0.3);
-                    gain.gain.setValueAtTime(0.3, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+                    const osc3 = this.ctx.createOscillator();
+                    osc2.connect(gain); osc3.connect(gain);
+                    
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(100, t); osc.frequency.exponentialRampToValueAtTime(20, t + 0.3); // Deep Bass
+                    osc2.type = 'sine'; osc2.frequency.setValueAtTime(2000, t); osc2.frequency.exponentialRampToValueAtTime(1500, t + 0.2); // High Chime
+                    osc3.type = 'triangle'; osc3.frequency.setValueAtTime(800, t); osc3.frequency.exponentialRampToValueAtTime(400, t + 0.15); // Mid punch
+                    
+                    gain.gain.setValueAtTime(0.8, t); // LOUD
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3); 
+                    
                     osc.start(t); osc.stop(t + 0.3);
+                    osc2.start(t); osc2.stop(t + 0.3);
+                    osc3.start(t); osc3.stop(t + 0.3);
+                } else if (type === 'decrypt') {
+                    // Sci-Fi Processing/Matrix effect
+                    osc.type = 'square';
+                    for(let i=0; i<15; i++) osc.frequency.setValueAtTime(300 + Math.random()*2000, t + i*0.04);
+                    gain.gain.setValueAtTime(0.4, t); 
+                    gain.gain.linearRampToValueAtTime(0.3, t + 0.5); 
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6); 
+                    osc.start(t); osc.stop(t + 0.6);
+                } else if (type === 'warp') {
+                    // Cinematic Bass Drop
+                    osc.type = 'sine'; 
+                    osc.frequency.setValueAtTime(200, t); 
+                    osc.frequency.exponentialRampToValueAtTime(20, t + 1.0);
+                    gain.gain.setValueAtTime(1.0, t); // VERY LOUD
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 1.2); 
+                    osc.start(t); osc.stop(t + 1.2);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, t); osc.frequency.linearRampToValueAtTime(80, t + 0.4);
+                    gain.gain.setValueAtTime(0.5, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+                    osc.start(t); osc.stop(t + 0.4);
                 }
             }
         };
@@ -868,12 +935,12 @@
                 mouse.vx = mouse.x - lastMouse.x; mouse.vy = mouse.y - lastMouse.y;
                 
                 if(Math.abs(mouse.vx) > 1 || Math.abs(mouse.vy) > 1) {
-                    for(let i=0; i<2; i++) {
+                    for(let i=0; i<3; i++) {
                         particles.push({
                             x: mouse.x, y: mouse.y,
-                            vx: mouse.vx * 0.1 + (Math.random()-0.5)*2,
-                            vy: mouse.vy * 0.1 + (Math.random()-0.5)*2,
-                            life: 1, size: Math.random() * 3 + 1
+                            vx: mouse.vx * 0.15 + (Math.random()-0.5)*3,
+                            vy: mouse.vy * 0.15 + (Math.random()-0.5)*3,
+                            life: 1, size: Math.random() * 4 + 2
                         });
                     }
                 }
@@ -889,11 +956,11 @@
                     let p = particles[i];
                     p.x += p.vx; p.y += p.vy;
                     p.life -= 0.03;
-                    p.size *= 0.95;
+                    p.size *= 0.96;
                     if(p.life <= 0) { particles.splice(i, 1); i--; continue; }
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(0, 240, 255, ${p.life * 0.8})`;
+                    ctx.fillStyle = `rgba(0, 240, 255, ${p.life})`;
                     ctx.fill();
                 }
                 requestAnimationFrame(render);
@@ -905,8 +972,8 @@
             document.querySelectorAll('.magnetic').forEach(el => {
                 el.addEventListener('mousemove', e => {
                     const rect = el.getBoundingClientRect();
-                    const x = (e.clientX - rect.left - rect.width / 2) * 0.2;
-                    const y = (e.clientY - rect.top - rect.height / 2) * 0.2;
+                    const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
+                    const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
                     gsap.to(el, { x, y, duration: 0.4, ease: "power2.out" });
                 });
                 el.addEventListener('mouseleave', () => {
@@ -915,7 +982,36 @@
             });
         };
 
-        // 4. THREE JS
+        // NEW: True 3D Tilt Effect
+        const init3DTilt = () => {
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -12;
+                    const rotateY = ((x - centerX) / centerX) * 12;
+                    
+                    gsap.to(card, { rotateX, rotateY, transformPerspective: 1000, duration: 0.4, ease: "power2.out" });
+                    
+                    const glare = card.querySelector('.holographic-glare');
+                    if(glare) {
+                        glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(0, 240, 255, 0.4), transparent 60%)`;
+                    }
+                });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.7, ease: "power3.out" });
+                    const glare = card.querySelector('.holographic-glare');
+                    if(glare) {
+                        glare.style.background = `radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.15), transparent 60%)`;
+                    }
+                });
+            });
+        };
+
+        // 4. THREE JS (Massive Scale Upgrade)
         const initThreeJSCore = () => {
             const canvas = document.getElementById('webgl-bg');
             if(!canvas) return;
@@ -925,37 +1021,46 @@
 
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 40;
+            camera.position.z = 45; // Pulled back for wider view
 
             const sceneGroup = new THREE.Group();
             scene.add(sceneGroup);
             window.glSceneGroup = sceneGroup; 
 
+            // More & Brighter Stars
             const starGeo = new THREE.BufferGeometry();
-            const starCount = 800;
+            const starCount = 1500;
             const starPos = new Float32Array(starCount * 3);
-            for(let i=0; i<starCount*3; i++) { starPos[i] = (Math.random() - 0.5) * 150; }
+            for(let i=0; i<starCount*3; i++) { starPos[i] = (Math.random() - 0.5) * 250; }
             starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-            const starMat = new THREE.PointsMaterial({color: 0x00f0ff, size: 0.1, transparent: true, opacity: 0.3});
+            const starMat = new THREE.PointsMaterial({color: 0x00f0ff, size: 0.2, transparent: true, opacity: 0.5});
             const stars = new THREE.Points(starGeo, starMat);
             sceneGroup.add(stars);
 
-            const coreGeo = new THREE.OctahedronGeometry(8, 0);
-            const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.2 });
+            // Larger Complex Core
+            const coreGeo = new THREE.IcosahedronGeometry(12, 1); // Much larger and complex
+            const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.3 });
             const core = new THREE.Mesh(coreGeo, coreMat);
             
-            const innerGeo = new THREE.OctahedronGeometry(6, 0);
-            const innerMat = new THREE.MeshBasicMaterial({ color: 0x050912 });
+            const innerGeo = new THREE.IcosahedronGeometry(9, 0);
+            const innerMat = new THREE.MeshBasicMaterial({ color: 0x020409 });
             const innerCore = new THREE.Mesh(innerGeo, innerMat);
             
             core.add(innerCore);
             sceneGroup.add(core);
 
-            const ringGeo = new THREE.TorusGeometry(14, 0.05, 16, 100);
-            const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05 });
-            const ring1 = new THREE.Mesh(ringGeo, ringMat);
+            // Multiple Orbiting Rings
+            const ring1Geo = new THREE.TorusGeometry(20, 0.05, 16, 100);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.1 });
+            const ring1 = new THREE.Mesh(ring1Geo, ringMat);
             ring1.rotation.x = Math.PI / 2;
             sceneGroup.add(ring1);
+
+            const ring2Geo = new THREE.TorusGeometry(30, 0.1, 16, 100);
+            const ring2Mat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.05 });
+            const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+            ring2.rotation.y = Math.PI / 3;
+            sceneGroup.add(ring2);
 
             let mouseX = 0; let mouseY = 0;
             document.addEventListener('mousemove', (e) => {
@@ -964,10 +1069,14 @@
             });
 
             const animate = () => {
-                core.rotation.y += 0.003;
+                core.rotation.y += 0.002;
                 core.rotation.x -= 0.001;
+                innerCore.rotation.y -= 0.004;
                 stars.rotation.y += 0.0005;
-                gsap.to(sceneGroup.rotation, { x: mouseY * 0.15, y: mouseX * 0.15, duration: 2, ease: "power2.out" });
+                ring1.rotation.z += 0.002;
+                ring2.rotation.x -= 0.001;
+
+                gsap.to(sceneGroup.rotation, { x: mouseY * 0.2, y: mouseX * 0.2, duration: 2, ease: "power2.out" });
                 renderer.render(scene, camera);
                 requestAnimationFrame(animate);
             };
@@ -1044,15 +1153,15 @@
         window.openNode = (targetId, event) => {
             playAudio('warp');
             if(window.glSceneGroup) {
-                gsap.to(window.glSceneGroup.position, {z: 50, duration: 0.8, ease: "power2.in"});
-                gsap.to(window.glSceneGroup.rotation, {y: "+=3", duration: 1, ease: "power2.in"});
+                gsap.to(window.glSceneGroup.position, {z: 60, duration: 1.0, ease: "power3.in"});
+                gsap.to(window.glSceneGroup.rotation, {y: "+=4", duration: 1.2, ease: "power3.in"});
             }
 
             const tLine = document.getElementById('t-line');
-            gsap.to(tLine, {width: '100%', duration: 0.4, ease: "power2.inOut"});
+            gsap.to(tLine, {width: '100%', duration: 0.5, ease: "power3.inOut"});
 
             gsap.to('#quantum-transition', {
-                opacity: 1, duration: 0.4, ease: "power2.in",
+                opacity: 1, duration: 0.5, ease: "power3.in",
                 onComplete: () => {
                     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
                     const target = document.getElementById(targetId);
@@ -1062,19 +1171,19 @@
                     if(backBtn) { backBtn.classList.remove('invisible', 'pointer-events-none'); gsap.to(backBtn, {autoAlpha: 1, duration: 0.5}); }
 
                     if(window.glSceneGroup) {
-                        window.glSceneGroup.position.z = -20;
-                        gsap.to(window.glSceneGroup.position, {z: 0, duration: 1.5, ease: "power3.out"});
+                        window.glSceneGroup.position.z = -30;
+                        gsap.to(window.glSceneGroup.position, {z: 0, duration: 2.0, ease: "power4.out"});
                     }
 
-                    gsap.to(tLine, {width: '0%', duration: 0.4, delay: 0.1});
-                    gsap.to('#quantum-transition', {opacity: 0, duration: 0.6, ease: "power2.out", delay: 0.1});
+                    gsap.to(tLine, {width: '0%', duration: 0.5, delay: 0.1});
+                    gsap.to('#quantum-transition', {opacity: 0, duration: 0.8, ease: "power3.out", delay: 0.1});
 
                     if(target) {
-                        gsap.fromTo(target.querySelectorAll('.gs-reveal'), {y: 30, opacity: 0}, {y: 0, opacity: 1, duration: 0.6, stagger: 0.05, ease: "power3.out", delay: 0.2});
+                        gsap.fromTo(target.querySelectorAll('.gs-reveal'), {y: 40, opacity: 0}, {y: 0, opacity: 1, duration: 0.8, stagger: 0.05, ease: "power3.out", delay: 0.3});
                         if(targetId === 'skills') {
                             target.querySelectorAll('.gs-skill-bar').forEach(bar => {
                                 const width = bar.getAttribute('data-width');
-                                gsap.fromTo(bar, {width: "0%"}, {width: width, duration: 1.2, ease: "power3.out", delay: 0.4});
+                                gsap.fromTo(bar, {width: "0%"}, {width: width, duration: 1.5, ease: "power4.out", delay: 0.5});
                             });
                         }
                     }
@@ -1085,10 +1194,10 @@
         window.returnToHub = () => {
             playAudio('click');
             const tLine = document.getElementById('t-line');
-            gsap.to(tLine, {width: '100%', duration: 0.3, ease: "power2.inOut"});
+            gsap.to(tLine, {width: '100%', duration: 0.4, ease: "power3.inOut"});
 
             gsap.to('#quantum-transition', {
-                opacity: 1, duration: 0.3, ease: "power2.in",
+                opacity: 1, duration: 0.4, ease: "power3.in",
                 onComplete: () => {
                     document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
                     const homeHub = document.getElementById('home-hub');
@@ -1096,16 +1205,16 @@
                     window.scrollTo(0,0);
                     
                     const backBtn = document.getElementById('back-to-hub');
-                    if(backBtn) { gsap.to(backBtn, {autoAlpha: 0, duration: 0.2, onComplete: () => { backBtn.classList.add('invisible', 'pointer-events-none'); }}); }
+                    if(backBtn) { gsap.to(backBtn, {autoAlpha: 0, duration: 0.3, onComplete: () => { backBtn.classList.add('invisible', 'pointer-events-none'); }}); }
                     
                     if(window.glSceneGroup) {
-                        window.glSceneGroup.position.z = 20;
-                        gsap.to(window.glSceneGroup.position, {z: 0, duration: 1.2, ease: "power3.out"});
+                        window.glSceneGroup.position.z = 30;
+                        gsap.to(window.glSceneGroup.position, {z: 0, duration: 1.5, ease: "power4.out"});
                     }
                     
-                    gsap.to(tLine, {width: '0%', duration: 0.3, delay: 0.1});
-                    gsap.to('#quantum-transition', {opacity: 0, duration: 0.5, ease: "power2.out", delay: 0.1});
-                    if(homeHub) gsap.fromTo(homeHub.querySelectorAll('.gs-reveal'), {scale: 0.95, opacity: 0}, {scale: 1, opacity: 1, duration: 0.6, stagger: 0.05, ease: "power2.out", delay: 0.2});
+                    gsap.to(tLine, {width: '0%', duration: 0.4, delay: 0.1});
+                    gsap.to('#quantum-transition', {opacity: 0, duration: 0.6, ease: "power3.out", delay: 0.1});
+                    if(homeHub) gsap.fromTo(homeHub.querySelectorAll('.gs-reveal'), {scale: 0.9, opacity: 0}, {scale: 1, opacity: 1, duration: 0.8, stagger: 0.05, ease: "back.out(1.2)", delay: 0.2});
                 }
             });
         };
@@ -1126,18 +1235,18 @@
             setTimeout(() => {
                 playAudio('error');
                 res.innerHTML = `
-                    <div class="border border-[#ff9f00]/50 bg-[#ff9f00]/10 p-4 mt-4 text-left shadow-[0_0_15px_rgba(255,159,0,0.2)]" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);">
-                        <div class="flex justify-between items-center mb-3 border-b border-[#ff9f00]/30 pb-2">
-                            <span class="text-[#ff9f00] font-bold text-sm md:text-lg">DIAGNOSTIC REPORT</span>
-                            <span class="text-red-500 font-display text-xl md:text-2xl font-bold animate-pulse">SCORE: 42/100</span>
+                    <div class="border border-[#ff9f00]/50 bg-[#ff9f00]/10 p-5 mt-5 text-left shadow-[0_0_20px_rgba(255,159,0,0.3)]" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);">
+                        <div class="flex justify-between items-center mb-4 border-b border-[#ff9f00]/30 pb-3">
+                            <span class="text-[#ff9f00] font-bold text-sm md:text-xl tracking-widest">DIAGNOSTIC REPORT</span>
+                            <span class="text-red-500 font-display text-2xl md:text-3xl font-bold animate-pulse">SCORE: 42/100</span>
                         </div>
-                        <ul class="text-gray-300 space-y-3 mb-5 font-mono text-[9px] md:text-[10px]">
-                            <li class="flex items-start gap-2"><span class="text-red-500 font-bold">[FAIL]</span> <span>High Load Time / Render Blocking Scripts Detected.</span></li>
-                            <li class="flex items-start gap-2"><span class="text-red-500 font-bold">[FAIL]</span> <span>Legacy Architecture & Outdated Frameworks.</span></li>
-                            <li class="flex items-start gap-2"><span class="text-[#ff9f00] font-bold">[WARN]</span> <span>Sub-optimal Mobile Responsiveness.</span></li>
-                            <li class="flex items-start gap-2"><span class="text-[#ff9f00] font-bold">[WARN]</span> <span>UI/UX Patterns require modernization.</span></li>
+                        <ul class="text-gray-300 space-y-4 mb-6 font-mono text-[10px] md:text-xs">
+                            <li class="flex items-start gap-3"><span class="text-red-500 font-bold">[FAIL]</span> <span>High Load Time / Render Blocking Scripts Detected.</span></li>
+                            <li class="flex items-start gap-3"><span class="text-red-500 font-bold">[FAIL]</span> <span>Legacy Architecture & Outdated Frameworks.</span></li>
+                            <li class="flex items-start gap-3"><span class="text-[#ff9f00] font-bold">[WARN]</span> <span>Sub-optimal Mobile Responsiveness.</span></li>
+                            <li class="flex items-start gap-3"><span class="text-[#ff9f00] font-bold">[WARN]</span> <span>UI/UX Patterns require modernization.</span></li>
                         </ul>
-                        <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Upgrade+Request+for+${encodeURIComponent(url)}" class="block w-full text-black bg-[#00f0ff] hover:bg-white p-3 text-center font-bold tracking-widest cursor-none magnetic transition-colors text-[10px] md:text-xs" onclick="playAudio('click')">
+                        <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Upgrade+Request+for+${encodeURIComponent(url)}" class="block w-full text-black bg-[#00f0ff] hover:bg-white p-4 text-center font-bold tracking-widest cursor-none magnetic transition-colors text-xs md:text-sm" onclick="playAudio('click')">
                             [ INITIATE UPGRADE VIA SYS.OP ]
                         </a>
                     </div>
@@ -1159,8 +1268,8 @@
 
             const modal = document.getElementById('project-modal');
             modal.classList.remove('hidden', 'pointer-events-none');
-            gsap.fromTo(modal, {opacity: 0}, {opacity: 1, duration: 0.3});
-            gsap.fromTo('#project-modal-content', {scale: 0.95, y: 20}, {scale: 1, y: 0, duration: 0.5, ease: "power3.out"});
+            gsap.fromTo(modal, {opacity: 0}, {opacity: 1, duration: 0.4});
+            gsap.fromTo('#project-modal-content', {scale: 0.9, y: 30}, {scale: 1, y: 0, duration: 0.6, ease: "power4.out"});
         };
 
         window.closeProjectLog = () => {
@@ -1197,7 +1306,7 @@
                 gsap.fromTo(modal, {opacity: 0}, {opacity: 1, duration: 0.4});
             }
             if(content) {
-                gsap.fromTo(content, {scale: 0.95, y: 30}, {scale: 1, y: 0, duration: 0.6, ease: "power3.out"});
+                gsap.fromTo(content, {scale: 0.9, y: 40}, {scale: 1, y: 0, duration: 0.7, ease: "power4.out"});
             }
 
             setTimeout(async () => {
@@ -1232,7 +1341,7 @@
             }
         }
 
-        // 8. VISITOR TRACKING (Fixed for Safety & Professionalism)
+        // 8. VISITOR TRACKING 
         const initVisitorTracking = async () => {
             const el = document.getElementById('geo-greeting');
             const termOutput = document.getElementById('cmd-output');
@@ -1311,18 +1420,22 @@
             initThreeJSCore();
             if(document.getElementById('app-wireframe-canvas')) initAppWireframe();
 
+            // Re-init true 3D tilt
+            init3DTilt();
+            initMagnetic();
+
             const tl = gsap.timeline();
             
-            tl.to('#progress-bar', {width: '100%', duration: 1.5, ease: "power2.inOut", onUpdate: function() {
-                if(Math.random() > 0.9) playAudio('hover');
+            tl.to('#progress-bar', {width: '100%', duration: 2.0, ease: "power3.inOut", onUpdate: function() {
+                if(Math.random() > 0.8) playAudio('hover');
             }});
             
             tl.to('#loader-flash', {opacity: 1, duration: 0.1})
               .to('#loader', {display: 'none', duration: 0})
-              .to('#loader-flash', {opacity: 0, duration: 1, ease: "power2.out"})
+              .to('#loader-flash', {opacity: 0, duration: 1.5, ease: "power3.out"})
               .add(() => {
                   initCardCanvas(); 
-                  gsap.fromTo('#home-hub .gs-reveal', {y: 40, opacity: 0}, {y: 0, opacity: 1, duration: 1, stagger: 0.1, ease: "power4.out"});
+                  gsap.fromTo('#home-hub .gs-reveal', {y: 50, opacity: 0}, {y: 0, opacity: 1, duration: 1.2, stagger: 0.1, ease: "power4.out"});
                   document.body.style.overflowY = 'auto';
               });
         };
@@ -1330,7 +1443,7 @@
         // 11. EVENT LISTENERS & ONLOAD
         document.getElementById('init-btn').addEventListener('click', (e) => {
             AudioEngine.init(); 
-            AudioEngine.play('click');
+            AudioEngine.play('warp'); // Massive start sound
             e.target.style.display = 'none';
             document.getElementById('progress-wrapper').classList.remove('hidden');
             document.getElementById('loader-text').classList.remove('hidden');
@@ -1355,7 +1468,6 @@
         window.onload = () => { 
             document.body.style.overflowY = 'hidden'; 
             initFluidCursor(); 
-            initMagnetic(); 
         };
     </script>
 </body>
