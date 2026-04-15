@@ -43,7 +43,7 @@
         h1, h2, h3, h4, h5, .font-display { font-family: 'Syncopate', sans-serif; letter-spacing: -0.02em; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* AAA Global HUD Decor (Corners & Vignette) */
+        /* AAA Global HUD Decor */
         .hud-vignette { position: fixed; inset: 0; background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.8) 100%); pointer-events: none; z-index: 9900; }
         .hud-noise { position: fixed; inset: 0; background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E'); pointer-events: none; z-index: 9901; opacity: 0.6; }
         .corner-brkt { position: fixed; width: 40px; height: 40px; border: 2px solid var(--accent-core); opacity: 0.5; z-index: 9902; pointer-events: none; transition: all 0.3s; }
@@ -64,7 +64,7 @@
         .cursor-active { width: 40px !important; height: 40px !important; background: transparent !important; border: 1px dashed var(--accent-warn); mix-blend-mode: normal !important; box-shadow: inset 0 0 10px rgba(255,159,0,0.5) !important; animation: spin-slow 4s linear infinite; }
 
         /* 3D Background & Dynamic Floor */
-        #webgl-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; pointer-events: auto; opacity: 0.8; }
+        #webgl-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; pointer-events: none; opacity: 0.8; }
         .tech-grid-floor {
             position: fixed; bottom: -20%; left: -50%; width: 200%; height: 80vh;
             background-image: linear-gradient(to top, rgba(0,240,255,0.1) 2px, transparent 2px), linear-gradient(to right, rgba(0,240,255,0.1) 2px, transparent 2px);
@@ -74,7 +74,7 @@
         }
         @keyframes gridMove { from { transform: perspective(800px) rotateX(75deg) translateY(0); } to { transform: perspective(800px) rotateX(75deg) translateY(80px); } }
 
-        /* TRUE 3D POP-OUT CARDS (AAA Upgrade) */
+        /* TRUE 3D POP-OUT CARDS */
         .hud-panel {
             background: var(--hud-bg);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -114,7 +114,7 @@
             background: rgba(0, 240, 255, 0.05); color: var(--text-main); border: 1px solid var(--hud-border);
             clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
             font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em;
-            padding: 16px 32px; position: relative; overflow: hidden; transition: all 0.3s ease; cursor: none; display: inline-flex; align-items: center; justify-content: center;
+            padding: 16px 32px; position: relative; overflow: hidden; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center;
         }
         .btn-elite::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--accent-core); transform: scaleX(0); transform-origin: right; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: -1; }
         .btn-elite:hover::before { transform: scaleX(1); transform-origin: left; }
@@ -136,6 +136,17 @@
         .neon-text { text-shadow: 0 0 10px var(--accent-glow), 0 0 30px var(--accent-glow); }
         .neon-text-red { text-shadow: 0 0 10px rgba(255,0,60,0.8), 0 0 30px rgba(255,0,60,0.6); color: #ff003c; }
 
+        /* Orbit Tech Stack */
+        .orbit-container { position: relative; width: 300px; height: 300px; margin: 0 auto; }
+        .orbit-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; background: var(--accent-mute); border: 2px solid var(--accent-core); box-shadow: 0 0 30px var(--accent-glow); display: flex; align-items: center; justify-content: center; font-family: 'Syncopate'; font-weight: bold; color: #fff; z-index: 10; animation: pulse 2s infinite; }
+        .orbit-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 1px dashed rgba(0,240,255,0.3); border-radius: 50%; }
+        .orbit-ring-1 { width: 180px; height: 180px; animation: spin 15s linear infinite; }
+        .orbit-ring-2 { width: 280px; height: 280px; animation: spin 25s linear infinite reverse; }
+        .orbit-node { position: absolute; width: 40px; height: 40px; background: #050912; border: 1px solid var(--accent-core); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono'; font-size: 8px; color: #fff; transform: translate(-50%, -50%); box-shadow: 0 0 10px rgba(0,240,255,0.5); }
+        
+        .ring-1-node-1 { top: 0%; left: 50%; } .ring-1-node-2 { top: 75%; left: 93%; } .ring-1-node-3 { top: 75%; left: 7%; }
+        .ring-2-node-1 { top: 15%; left: 15%; } .ring-2-node-2 { top: 15%; left: 85%; } .ring-2-node-3 { top: 85%; left: 50%; }
+
         /* General SPA */
         .view-section { display: none; opacity: 0; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; padding-top: 100px; padding-bottom: 100px; pointer-events: none; }
         .view-section.active { display: flex; flex-direction: column; opacity: 1; pointer-events: auto; position: relative; }
@@ -145,17 +156,18 @@
         #quantum-transition { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); z-index: 9900; opacity: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .transition-line { width: 0; height: 3px; background: var(--accent-core); box-shadow: 0 0 30px var(--accent-core), 0 0 60px var(--accent-core); }
         
+        /* Initialization Screen */
         #loader { position: fixed; inset: 0; background: rgba(2,4,9,1); z-index: 11000; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .loader-ring { width: 180px; height: 180px; border: 2px solid rgba(0, 240, 255, 0.1); border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 50px rgba(0,240,255,0.1) inset; }
+        .loader-ring { border: 2px solid rgba(0, 240, 255, 0.1); border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 50px rgba(0,240,255,0.1) inset; }
         .loader-ring::before { content: ''; position: absolute; inset: -12px; border-top: 3px solid var(--accent-core); border-right: 3px solid transparent; border-radius: 50%; animation: spin 1.5s linear infinite; }
         .loader-ring::after { content: ''; position: absolute; inset: -24px; border-bottom: 3px solid var(--accent-warn); border-left: 3px solid transparent; border-radius: 50%; animation: spin 2.5s linear infinite reverse; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spin-slow { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-        .progress-container { width: 300px; height: 3px; background: rgba(255,255,255,0.1); overflow: hidden; margin-top: 30px; }
+        .progress-container { width: 300px; height: 3px; background: rgba(255,255,255,0.1); overflow: hidden; margin-top: 30px; max-width: 80vw; }
         #progress-bar { width: 0%; height: 100%; background: var(--accent-core); box-shadow: 0 0 15px var(--accent-core); }
         #loader-flash { position: fixed; inset: 0; background: #fff; z-index: 11001; opacity: 0; pointer-events: none; mix-blend-mode: overlay; }
 
-        /* BUG FIX: Command Terminal Overflow Fix */
+        /* Command Terminal */
         #cmd-terminal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 40vh; background: rgba(3,7,14,0.98);
             backdrop-filter: blur(20px); border-bottom: 2px solid var(--accent-core); z-index: 10001;
@@ -167,6 +179,20 @@
         #cmd-output { flex-grow: 1; overflow-y: auto; margin-bottom: 10px; font-size: 14px; white-space: pre-wrap; text-shadow: 0 0 5px rgba(0,229,255,0.5); }
         #cmd-input-line { display: flex; align-items: center; border-top: 1px solid rgba(0,240,255,0.2); padding-top: 10px; }
         #cmd-input { background: transparent; border: none; color: #fff; flex-grow: 1; outline: none; font-family: inherit; font-size: 14px; margin-left: 10px; }
+
+        /* ==== MOBILE OPTIMIZATIONS ==== */
+        @media (max-width: 768px) {
+            body, .btn-elite, .hud-panel, .magnetic, a, button, input, textarea { cursor: auto !important; }
+            #fluid-cursor, #cursor-dot { display: none !important; }
+            .transform-3d-layer { transform: translateZ(0) !important; transition: none !important; }
+            .hud-panel:hover .transform-3d-layer { transform: translateZ(0) scale(1) !important; }
+            .hud-panel { transform-style: flat; }
+            .target-bracket { display: none !important; }
+            .aaa-title { text-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+            .loader-ring { width: 120px; height: 120px; }
+            .loader-ring::before { inset: -8px; }
+            .loader-ring::after { inset: -16px; }
+        }
     </style>
 </head>
 <body>
@@ -179,8 +205,8 @@
 
     <!-- Cinematic Loader -->
     <div id="loader">
-        <div class="loader-ring font-display text-5xl text-white tracking-widest font-bold mb-10" style="text-shadow: 0 0 20px #00f0ff;">SA</div>
-        <button id="init-btn" class="btn-elite magnetic !border-[#00f0ff] !text-[#00f0ff] hover:!bg-[#00f0ff] hover:!text-black transition-all text-base md:text-lg px-8 py-4">INITIALIZE UPLINK</button>
+        <div class="loader-ring font-display text-4xl md:text-5xl text-white tracking-widest font-bold mb-8 md:mb-10" style="text-shadow: 0 0 20px #00f0ff;">SA</div>
+        <button id="init-btn" class="btn-elite magnetic !border-[#00f0ff] !text-[#00f0ff] hover:!bg-[#00f0ff] hover:!text-black transition-all text-sm md:text-lg px-6 py-3 md:px-8 md:py-4">INITIALIZE UPLINK</button>
         
         <div class="progress-container hidden" id="progress-wrapper"><div id="progress-bar"></div></div>
         <div class="font-mono text-[10px] text-[#00f0ff] mt-4 tracking-[0.4em] uppercase hidden animate-pulse" id="loader-text">DECRYPTING ARCHITECTURE...</div>
@@ -190,7 +216,7 @@
     <!-- Magical Transition Overlay -->
     <div id="quantum-transition"><div class="transition-line" id="t-line"></div></div>
 
-    <!-- Hidden Terminal (FIXED OVERFLOW) -->
+    <!-- Hidden Terminal -->
     <div id="cmd-terminal">
         <div id="cmd-output">QUANTUM OS v3.0.0<br>Enter 'help' for available commands.</div>
         <div id="cmd-input-line"><span class="text-gray-500">root@sys.op:~#</span><input type="text" id="cmd-input" autocomplete="off" spellcheck="false"></div>
@@ -206,19 +232,19 @@
 
     <!-- AAA Global Header -->
     <header class="fixed top-0 w-full z-50 bg-[rgba(2,4,9,0.85)] backdrop-blur-lg border-b border-white/10" id="main-header">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-4 group magnetic cursor-none" onclick="returnToHub()">
-                <div class="w-12 h-12 bg-[#050912] border-2 border-[#00f0ff]/50 flex items-center justify-center text-sm font-display text-white transition-all group-hover:border-[var(--accent-core)] group-hover:shadow-[0_0_20px_var(--accent-glow)] group-hover:bg-[#00f0ff] group-hover:text-black" style="clip-path: polygon(30% 0%, 100% 0%, 100% 70%, 70% 100%, 0% 100%, 0% 30%);">SA</div>
-                <div class="font-mono text-[10px] text-gray-400 tracking-[0.2em] hidden sm:block decrypt-text" id="geo-greeting">ANALYZING UPLINK...</div>
+        <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3 md:gap-4 group magnetic" onclick="returnToHub()">
+                <div class="w-10 h-10 bg-[#050912] border-2 border-[#00f0ff]/50 flex items-center justify-center text-sm font-display text-white transition-all group-hover:border-[var(--accent-core)] group-hover:shadow-[0_0_20px_var(--accent-glow)] group-hover:bg-[#00f0ff] group-hover:text-black cursor-pointer" style="clip-path: polygon(30% 0%, 100% 0%, 100% 70%, 70% 100%, 0% 100%, 0% 30%);">SA</div>
+                <div class="font-mono text-[9px] md:text-[10px] text-gray-400 tracking-[0.2em] hidden sm:block" id="geo-greeting">ANALYZING UPLINK...</div>
             </div>
-            <div class="font-mono text-xs text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-4 py-2 hidden sm:flex items-center gap-3 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+            <div class="font-mono text-[10px] md:text-xs text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-3 py-1.5 md:px-4 md:py-2 flex items-center gap-2 md:gap-3 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
                 <div class="w-2 h-2 bg-[#00f0ff] animate-pulse"></div> HUD_ONLINE
             </div>
         </div>
     </header>
 
     <!-- Global Return Button -->
-    <button id="back-to-hub" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[8000] btn-elite btn-warn magnetic opacity-0 pointer-events-none invisible" onclick="returnToHub()">
+    <button id="back-to-hub" class="fixed bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-[8000] btn-elite btn-warn magnetic opacity-0 pointer-events-none invisible text-xs md:text-sm px-4 py-2 md:px-6 md:py-3" onclick="returnToHub()">
         [ ABORT / RETURN TO CORE ]
     </button>
 
@@ -226,67 +252,79 @@
     <main class="max-w-7xl mx-auto px-4 md:px-6 w-full relative z-10" id="spa-wrapper">
         
         <!-- 1. DASHBOARD HUB SCENE -->
-        <section id="home-hub" class="view-section active flex-col justify-center items-center pt-20 min-h-screen">
+        <section id="home-hub" class="view-section active flex-col justify-center items-center pt-16 md:pt-20 min-h-screen">
             
-            <div class="text-center mb-12 relative z-10 gs-reveal w-full pt-10">
-                <p class="font-mono text-[#00f0ff] tracking-[0.5em] text-[10px] sm:text-xs uppercase mb-6 decrypt-text" data-original="> ARCHITECT IDENTIFIED">> ARCHITECT IDENTIFIED</p>
-                <h1 class="text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] font-display font-bold uppercase tracking-tighter mb-8 aaa-title leading-none" data-text="SYED AHMED">SYED AHMED</h1>
+            <div class="text-center mb-8 md:mb-12 relative z-10 gs-reveal w-full pt-8 md:pt-10">
+                <p class="font-mono text-[#00f0ff] tracking-[0.3em] md:tracking-[0.5em] text-[9px] sm:text-xs uppercase mb-4 md:mb-6">> ARCHITECT IDENTIFIED</p>
+                <h1 class="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-display font-bold uppercase tracking-tighter mb-6 md:mb-8 aaa-title leading-none" data-text="SYED AHMED">SYED AHMED</h1>
                 
-                <div class="mt-12 font-mono text-sm sm:text-base text-gray-300 max-w-4xl mx-auto leading-relaxed hud-panel p-10 text-left border-l-4 border-l-[#00f0ff] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-5 h-5 text-[#00f0ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            <span class="text-[#00f0ff] font-bold tracking-[0.2em] text-lg decrypt-text" data-original="SYSTEM_SUMMARY">SYSTEM_SUMMARY</span>
+                <div class="mt-8 md:mt-12 font-mono text-xs sm:text-sm md:text-base text-gray-300 max-w-4xl mx-auto leading-relaxed hud-panel p-6 md:p-10 text-left border-l-4 border-l-[#00f0ff] shadow-[0_10px_30px_rgba(0,0,0,0.5)] md:shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 gap-3">
+                        <div class="flex items-center gap-2 md:gap-3">
+                            <svg class="w-4 h-4 md:w-5 md:h-5 text-[#00f0ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <span class="text-[#00f0ff] font-bold tracking-[0.1em] md:tracking-[0.2em] text-sm md:text-lg">SYSTEM_SUMMARY</span>
                         </div>
-                        <div class="flex items-center gap-2 text-green-400 text-xs tracking-widest border border-green-500/30 px-3 py-1 bg-green-500/10">
-                            <div class="w-2 h-2 bg-green-500 animate-pulse"></div> READY FOR COMMISSION
+                        <div class="flex items-center gap-2 text-green-400 text-[10px] md:text-xs tracking-widest border border-green-500/30 px-2 py-1 md:px-3 md:py-1 bg-green-500/10">
+                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 animate-pulse"></div> READY FOR COMMISSION
                         </div>
                     </div>
-                    <span class="decrypt-text" data-original="A highly optimized development entity specializing in the architecture of robust, scalable digital platforms. Operating across the full technological stack, executing end-to-end deployment of Enterprise Websites, intricate Web Applications, and natively compiled Mobile Software architectures.">A highly optimized development entity specializing in the architecture of robust, scalable digital platforms. Operating across the full technological stack, executing end-to-end deployment of <strong class="text-white">Enterprise Websites</strong>, intricate <strong class="text-white">Web Applications</strong>, and natively compiled <strong class="text-white">Mobile Software</strong> architectures.</span>
+                    <span>A highly optimized development entity specializing in the architecture of robust, scalable digital platforms. Operating across the full technological stack, executing end-to-end deployment of <strong class="text-white">Enterprise Websites</strong>, intricate <strong class="text-white">Web Applications</strong>, and natively compiled <strong class="text-white">Mobile Software</strong> architectures.</span>
                 </div>
             </div>
 
+            <!-- SCANNER LEAD MAGNET -->
+            <div class="w-full max-w-3xl mx-auto mb-10 md:mb-12 gs-reveal">
+                <div class="hud-panel p-5 md:p-6 flex flex-col md:flex-row items-center gap-4">
+                    <div class="flex-grow w-full">
+                        <p class="font-mono text-[9px] md:text-[10px] text-gray-500 mb-2">RUN ARCHITECTURE DIAGNOSTIC ON CURRENT URL</p>
+                        <input type="text" id="scan-url" placeholder="https://your-current-website.com" class="w-full bg-black/50 border border-white/20 p-2.5 md:p-3 font-mono text-[10px] md:text-xs text-white outline-none focus:border-[#00f0ff]">
+                    </div>
+                    <button class="btn-elite magnetic w-full md:w-auto h-[40px] md:h-[46px] mt-4 md:mt-0 text-xs" onclick="runScanner()">SCAN SYSTEM</button>
+                </div>
+                <div id="scan-result" class="font-mono text-[9px] md:text-[10px] mt-4 hidden"></div>
+            </div>
+
             <!-- Core 4 Nodes -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl relative z-20 gs-reveal mb-14">
-                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-72" onclick="openNode('identity', event)">
-                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8 w-full max-w-6xl relative z-20 gs-reveal mb-10 md:mb-14">
+                <div class="hud-panel tilt-card p-0 group magnetic h-48 md:h-72 cursor-pointer" onclick="openNode('identity', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-6 md:p-8">
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="w-20 h-20 mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-2xl text-white group-hover:text-black">01</span></div>
-                        <h3 class="font-display text-xl text-white tracking-widest uppercase relative z-10 decrypt-text" data-original="Identity">Identity</h3>
+                        <div class="w-16 h-16 md:w-20 md:h-20 mb-4 md:mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-xl md:text-2xl text-white group-hover:text-black">01</span></div>
+                        <h3 class="font-display text-lg md:text-xl text-white tracking-widest uppercase relative z-10">Identity</h3>
                     </div>
                 </div>
                 
-                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-72" onclick="openNode('skills', event)">
-                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8">
+                <div class="hud-panel tilt-card p-0 group magnetic h-48 md:h-72 cursor-pointer" onclick="openNode('skills', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-6 md:p-8">
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="w-20 h-20 mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-2xl text-white group-hover:text-black">02</span></div>
-                        <h3 class="font-display text-xl text-white tracking-widest uppercase relative z-10 decrypt-text" data-original="Tech">Tech</h3>
+                        <div class="w-16 h-16 md:w-20 md:h-20 mb-4 md:mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-xl md:text-2xl text-white group-hover:text-black">02</span></div>
+                        <h3 class="font-display text-lg md:text-xl text-white tracking-widest uppercase relative z-10">Tech</h3>
                     </div>
                 </div>
 
-                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-72" onclick="openNode('work-hub', event)">
-                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8">
+                <div class="hud-panel tilt-card p-0 group magnetic h-48 md:h-72 cursor-pointer" onclick="openNode('work-hub', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-6 md:p-8">
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="w-20 h-20 mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-2xl text-white group-hover:text-black">03</span></div>
-                        <h3 class="font-display text-xl text-white tracking-widest uppercase relative z-10 decrypt-text" data-original="Work">Work</h3>
+                        <div class="w-16 h-16 md:w-20 md:h-20 mb-4 md:mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-xl md:text-2xl text-white group-hover:text-black">03</span></div>
+                        <h3 class="font-display text-lg md:text-xl text-white tracking-widest uppercase relative z-10">Work</h3>
                     </div>
                 </div>
 
-                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-72" onclick="openNode('certificates', event)">
-                    <div class="transform-3d-layer flex flex-col items-center justify-center p-8">
+                <div class="hud-panel tilt-card p-0 group magnetic h-48 md:h-72 cursor-pointer" onclick="openNode('certificates', event)">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center p-6 md:p-8">
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="w-20 h-20 mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-2xl text-white group-hover:text-black">04</span></div>
-                        <h3 class="font-display text-xl text-white tracking-widest uppercase relative z-10 decrypt-text" data-original="Records">Records</h3>
+                        <div class="w-16 h-16 md:w-20 md:h-20 mb-4 md:mb-6 border-2 border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(0,240,255,0.2)]" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"><span class="font-display font-bold text-xl md:text-2xl text-white group-hover:text-black">04</span></div>
+                        <h3 class="font-display text-lg md:text-xl text-white tracking-widest uppercase relative z-10">Records</h3>
                     </div>
                 </div>
             </div>
 
             <!-- Direct Gmail Link -->
-            <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Contract+Inquiry" class="block w-full max-w-6xl gs-reveal cursor-none magnetic tilt-card" onclick="playAudio('click')">
-                <div class="hud-panel p-0 group bg-[rgba(0,240,255,0.05)] border-[#00f0ff]/40 hover:border-[#00f0ff] hover:bg-[#00f0ff]/15 text-center h-40">
-                    <div class="transform-3d-layer flex flex-col items-center justify-center w-full h-full">
-                        <h2 class="font-display text-3xl md:text-5xl text-[#00f0ff] tracking-[0.2em] uppercase mb-3 group-hover:animate-pulse relative z-10 font-bold decrypt-text" data-original="INITIATE CONTRACT" style="text-shadow: 0 0 20px rgba(0,240,255,0.5);">INITIATE CONTRACT</h2>
-                        <p class="font-mono text-sm text-white relative z-10 tracking-widest decrypt-text" data-original="> ESTABLISH DIRECT SECURE COMM_LINK (GMAIL)">> ESTABLISH DIRECT SECURE COMM_LINK (GMAIL)</p>
+            <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Contract+Inquiry" class="block w-full max-w-6xl gs-reveal magnetic tilt-card" onclick="playAudio('click')">
+                <div class="hud-panel p-0 group bg-[rgba(0,240,255,0.05)] border-[#00f0ff]/40 hover:border-[#00f0ff] hover:bg-[#00f0ff]/15 text-center h-32 md:h-40">
+                    <div class="transform-3d-layer flex flex-col items-center justify-center w-full h-full p-4">
+                        <h2 class="font-display text-xl sm:text-3xl md:text-5xl text-[#00f0ff] tracking-[0.1em] md:tracking-[0.2em] uppercase mb-2 md:mb-3 group-hover:animate-pulse relative z-10 font-bold" style="text-shadow: 0 0 20px rgba(0,240,255,0.5);">INITIATE CONTRACT</h2>
+                        <p class="font-mono text-[9px] md:text-sm text-white relative z-10 tracking-widest">> ESTABLISH DIRECT SECURE COMM_LINK (GMAIL)</p>
                     </div>
                 </div>
             </a>
@@ -294,81 +332,84 @@
 
         <!-- 2. IDENTITY SCENE -->
         <section id="identity" class="view-section">
-            <div class="flex items-center gap-6 mb-16 gs-reveal">
-                <h2 class="text-3xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text decrypt-text" data-original="Identity Core">Identity Core</h2>
+            <div class="flex items-center gap-4 md:gap-6 mb-10 md:mb-16 gs-reveal">
+                <h2 class="text-2xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Identity Core</h2>
                 <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50"></div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                <div class="lg:col-span-5 hud-panel tilt-card p-0 relative min-h-[500px] gs-reveal border-l-4 border-l-[#00f0ff]">
-                    <div class="transform-3d-layer p-8 flex flex-col items-center justify-center">
-                        <div class="w-56 h-56 border border-white/20 absolute animate-[spin_20s_linear_infinite] z-0" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); top: 8%;"></div>
-                        <div class="w-48 h-48 border-[3px] border-[#00f0ff]/70 absolute animate-[spin_10s_linear_infinite_reverse] z-0" style="clip-path: polygon(20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%, 0% 20%); top: 12%;"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
+                <!-- High-End Graphical Profile -->
+                <div class="lg:col-span-5 hud-panel tilt-card p-0 relative min-h-[400px] md:min-h-[500px] gs-reveal border-l-4 border-l-[#00f0ff]">
+                    <div class="transform-3d-layer p-6 md:p-8 flex flex-col items-center justify-center">
+                        <div class="holographic-glare"></div>
                         
-                        <div class="w-64 h-64 rounded-full overflow-hidden relative shadow-[0_0_50px_rgba(0,240,255,0.7)] z-10 border-4 border-[#00f0ff]">
+                        <div class="w-40 h-40 md:w-56 md:h-56 border border-white/20 absolute animate-[spin_20s_linear_infinite] z-0" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); top: 8%;"></div>
+                        <div class="w-32 h-32 md:w-48 md:h-48 border-[3px] border-[#00f0ff]/70 absolute animate-[spin_10s_linear_infinite_reverse] z-0" style="clip-path: polygon(20% 0%, 100% 0%, 100% 80%, 80% 100%, 0% 100%, 0% 20%); top: 12%;"></div>
+                        
+                        <div class="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden relative shadow-[0_0_30px_rgba(0,240,255,0.7)] md:shadow-[0_0_50px_rgba(0,240,255,0.7)] z-10 border-4 border-[#00f0ff]">
                             <img src="assets/images/profile.jpg" alt="Syed Ahmed" class="w-full h-full object-cover filter brightness-125 contrast-150 saturate-150 relative z-0" onerror="this.style.display='none'">
                             <div class="absolute inset-0 bg-[#00f0ff] mix-blend-overlay opacity-40 z-10 pointer-events-none"></div>
                             <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,240,255,0.3)_50%)] bg-[length:100%_4px] pointer-events-none z-20"></div>
                         </div>
                         
-                        <div class="mt-10 w-full relative z-20 text-left border border-[#00f0ff]/40 bg-[#00f0ff]/10 p-6" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px); backdrop-filter: blur(5px);">
-                            <div class="flex flex-col gap-4 font-mono text-xs sm:text-sm text-gray-200">
-                                <div class="flex justify-between border-b border-white/10 pb-2">
-                                    <span class="text-[#00f0ff] font-bold">AGE</span> <span class="decrypt-text" data-original="UNKNOWN">UNKNOWN</span>
+                        <!-- Technical Grid Stats -->
+                        <div class="mt-8 md:mt-10 w-full relative z-20 text-left border border-[#00f0ff]/40 bg-[#00f0ff]/10 p-5 md:p-6" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px); backdrop-filter: blur(5px);">
+                            <div class="flex flex-col gap-3 md:gap-4 font-mono text-[10px] sm:text-xs md:text-sm text-gray-200">
+                                <div class="flex justify-between border-b border-white/10 pb-1.5 md:pb-2">
+                                    <span class="text-[#00f0ff] font-bold">AGE</span> <span>UNKNOWN</span>
                                 </div>
-                                <div class="flex justify-between border-b border-white/10 pb-2">
-                                    <span class="text-[#00f0ff] font-bold">LOCATION</span> <span class="decrypt-text" data-original="HYDERABAD">HYDERABAD</span>
+                                <div class="flex justify-between border-b border-white/10 pb-1.5 md:pb-2">
+                                    <span class="text-[#00f0ff] font-bold">LOCATION</span> <span>HYDERABAD</span>
                                 </div>
-                                <div class="flex justify-between border-b border-white/10 pb-2">
-                                    <span class="text-[#00f0ff] font-bold">ROLE</span> <span class="font-bold text-white decrypt-text" data-original="WEB & APP DEVELOPER">WEB & APP DEVELOPER</span>
+                                <div class="flex justify-between border-b border-white/10 pb-1.5 md:pb-2">
+                                    <span class="text-[#00f0ff] font-bold">ROLE</span> <span class="font-bold text-white">WEB & APP DEV</span>
                                 </div>
-                                <div class="flex justify-between border-b border-white/10 pb-2">
-                                    <span class="text-[#00f0ff] font-bold">SPECIALTY</span> <span class="decrypt-text" data-original="UI/UX + HIGH-END DESIGN">UI/UX + HIGH-END DESIGN</span>
+                                <div class="flex justify-between border-b border-white/10 pb-1.5 md:pb-2">
+                                    <span class="text-[#00f0ff] font-bold">SPECIALTY</span> <span>UI/UX + HIGH-END</span>
                                 </div>
-                                <div class="flex justify-between border-b border-white/10 pb-2">
-                                    <span class="text-[#00f0ff] font-bold">SERVICES</span> <span class="decrypt-text" data-original="WEBSITES | MOBILE APPS">WEBSITES | MOBILE APPS</span>
+                                <div class="flex justify-between border-b border-white/10 pb-1.5 md:pb-2">
+                                    <span class="text-[#00f0ff] font-bold">SERVICES</span> <span>WEBSITES | APPS</span>
                                 </div>
-                                <div class="flex justify-between items-center mt-3 p-3 bg-[#ff9f00]/15 border border-[#ff9f00]/50 text-[#ff9f00]">
-                                    <span class="flex items-center gap-3"><span class="w-3 h-3 bg-[#ff9f00] rounded-sm animate-pulse shadow-[0_0_15px_#ff9f00]"></span> <span class="font-bold tracking-widest text-sm">STATUS</span></span>
-                                    <span class="font-bold text-sm decrypt-text" data-original="AVAILABLE">AVAILABLE</span>
+                                <div class="flex justify-between items-center mt-2 md:mt-3 p-2 md:p-3 bg-[#ff9f00]/15 border border-[#ff9f00]/50 text-[#ff9f00]">
+                                    <span class="flex items-center gap-2 md:gap-3"><span class="w-2 h-2 md:w-3 md:h-3 bg-[#ff9f00] rounded-sm animate-pulse shadow-[0_0_15px_#ff9f00]"></span> <span class="font-bold tracking-widest text-[10px] md:text-sm">STATUS</span></span>
+                                    <span class="font-bold text-[10px] md:text-sm">AVAILABLE</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-7 flex flex-col gap-10">
+                <!-- Academic Data & Comms -->
+                <div class="lg:col-span-7 flex flex-col gap-8 md:gap-10">
                     <div class="hud-panel tilt-card p-0 gs-reveal">
-                        <div class="transform-3d-layer p-10">
-                            <p class="font-mono text-xs text-[#00f0ff] uppercase tracking-widest mb-8 relative z-10 border-b border-white/10 pb-3">> ACADEMIC_ARCHITECTURE</p>
-                            <div class="space-y-8 relative z-10">
-                                <div class="bg-white/5 p-6 border-l-4 border-[#00f0ff] shadow-[0_0_20px_rgba(0,240,255,0.1)]">
-                                    <h4 class="font-display text-lg text-white mb-2 font-bold decrypt-text" data-original="MASTER OF COMPUTER APPLICATIONS">MASTER OF COMPUTER APPLICATIONS</h4>
-                                    <p class="font-mono text-xs text-[#00f0ff] tracking-widest">> PURSUING</p>
+                        <div class="transform-3d-layer p-6 md:p-10">
+                            <div class="holographic-glare"></div>
+                            <p class="font-mono text-[10px] md:text-xs text-[#00f0ff] uppercase tracking-widest mb-6 md:mb-8 relative z-10 border-b border-white/10 pb-2 md:pb-3">> ACADEMIC_ARCHITECTURE</p>
+                            <div class="space-y-6 md:space-y-8 relative z-10">
+                                <div class="bg-white/5 p-5 md:p-6 border-l-4 border-[#00f0ff] shadow-[0_0_20px_rgba(0,240,255,0.1)]">
+                                    <h4 class="font-display text-sm md:text-lg text-white mb-2 font-bold">MASTER OF COMPUTER APPLICATIONS</h4>
+                                    <p class="font-mono text-[10px] md:text-xs text-[#00f0ff] tracking-widest">> PURSUING</p>
                                 </div>
-                                <div class="bg-white/5 p-6 border-l-4 border-gray-600">
-                                    <h4 class="font-display text-lg text-gray-400 mb-2 font-bold decrypt-text" data-original="BACHELOR OF COMMERCE">BACHELOR OF COMMERCE</h4>
-                                    <p class="font-mono text-xs text-gray-500 tracking-widest">> COMPLETED: 2023</p>
+                                <div class="bg-white/5 p-5 md:p-6 border-l-4 border-gray-600">
+                                    <h4 class="font-display text-sm md:text-lg text-gray-400 mb-2 font-bold">BACHELOR OF COMMERCE</h4>
+                                    <p class="font-mono text-[10px] md:text-xs text-gray-500 tracking-widest">> COMPLETED: 2023</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="hud-panel tilt-card p-0 bg-[#02050a] gs-reveal border-t-4 border-t-[#00f0ff]">
-                        <div class="transform-3d-layer p-10">
-                            <p class="font-mono text-xs text-gray-400 uppercase tracking-[0.3em] mb-8 relative z-10 border-b border-white/10 pb-3">Comms_Link</p>
-                            <div class="flex flex-col gap-5 relative z-10">
-                                <a href="tel:+918019416016" class="magnetic flex items-center justify-between group bg-[rgba(0,240,255,0.05)] border border-[#00f0ff]/30 p-6 hover:bg-[#00f0ff]/20 transition-colors" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">
-                                    <span class="font-mono text-sm text-gray-300 group-hover:text-white font-bold tracking-widest">MOBILE_UPLINK</span>
-                                    <span class="font-mono text-sm text-[#00f0ff] font-bold decrypt-text" data-original="+91 8019416016">+91 8019416016</span>
+                        <div class="transform-3d-layer p-6 md:p-10">
+                            <div class="holographic-glare"></div>
+                            <p class="font-mono text-[10px] md:text-xs text-gray-400 uppercase tracking-[0.2em] md:tracking-[0.3em] mb-6 md:mb-8 relative z-10 border-b border-white/10 pb-2 md:pb-3">Comms_Link</p>
+                            <div class="flex flex-col gap-4 md:gap-5 relative z-10">
+                                <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com" class="magnetic flex flex-col sm:flex-row items-start sm:items-center justify-between group bg-[rgba(0,240,255,0.05)] border border-[#00f0ff]/30 p-4 md:p-6 hover:bg-[#00f0ff]/20 transition-colors gap-2" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">
+                                    <span class="font-mono text-xs md:text-sm text-gray-300 group-hover:text-white font-bold tracking-widest">SECURE_MAIL</span>
+                                    <span class="font-mono text-[10px] md:text-sm text-[#00f0ff] font-bold break-all">SYEDAHMED.SA43@GMAIL.COM</span>
                                 </a>
-                                <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com" class="magnetic flex items-center justify-between group bg-[rgba(0,240,255,0.05)] border border-[#00f0ff]/30 p-6 hover:bg-[#00f0ff]/20 transition-colors" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">
-                                    <span class="font-mono text-sm text-gray-300 group-hover:text-white font-bold tracking-widest">SECURE_MAIL</span>
-                                    <span class="font-mono text-sm text-[#00f0ff] font-bold decrypt-text" data-original="SYEDAHMED.SA43@GMAIL.COM">SYEDAHMED.SA43@GMAIL.COM</span>
-                                </a>
-                                <div class="flex gap-5 mt-2">
-                                    <a href="https://wa.me/918019416016" target="_blank" class="magnetic flex-1 text-center font-mono text-sm font-bold tracking-widest text-black hover:bg-green-400 bg-green-500 py-4 transition-colors" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">WHATSAPP</a>
-                                    <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="magnetic flex-1 text-center font-mono text-sm font-bold tracking-widest text-black hover:bg-[#00f0ff] bg-[#007acc] py-4 transition-colors" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">LINKEDIN</a>
+                                <div class="flex gap-4 md:gap-5 mt-2">
+                                    <a href="https://wa.me/918019416016" target="_blank" class="magnetic flex-1 text-center font-mono text-[10px] md:text-sm font-bold tracking-widest text-black hover:bg-green-400 bg-green-500 py-3 md:py-4 transition-colors" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">WHATSAPP</a>
+                                    <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="magnetic flex-1 text-center font-mono text-[10px] md:text-sm font-bold tracking-widest text-black hover:bg-[#00f0ff] bg-[#007acc] py-3 md:py-4 transition-colors" style="clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);" onclick="playAudio('click')">LINKEDIN</a>
                                 </div>
                             </div>
                         </div>
@@ -379,56 +420,59 @@
 
         <!-- 3. SKILLS SCENE -->
         <section id="skills" class="view-section">
-            <div class="flex items-center gap-6 mb-12 gs-reveal">
-                <h2 class="text-3xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text decrypt-text" data-original="Capabilities">Capabilities</h2>
+            <div class="flex items-center gap-4 md:gap-6 mb-10 md:mb-12 gs-reveal">
+                <h2 class="text-2xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Capabilities</h2>
                 <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50"></div>
             </div>
 
-            <div class="w-full py-16 gs-reveal mb-16 flex justify-center hud-panel bg-[rgba(0,240,255,0.02)] border-[#00f0ff]/20">
-                <div class="orbit-container" style="transform: scale(1.2);">
-                    <div class="orbit-core font-display text-lg tracking-widest text-[#00f0ff]">CORE</div>
+            <!-- Tech Orbit System -->
+            <div class="w-full py-10 md:py-16 gs-reveal mb-10 md:mb-16 flex justify-center hud-panel bg-[rgba(0,240,255,0.02)] border-[#00f0ff]/20 overflow-hidden">
+                <div class="orbit-container transform scale-75 md:scale-110">
+                    <div class="orbit-core font-display text-sm md:text-lg tracking-widest text-[#00f0ff]">CORE</div>
                     <div class="orbit-ring orbit-ring-1 border-[#00f0ff]/40">
-                        <div class="orbit-node ring-1-node-1 text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">REACT</div>
-                        <div class="orbit-node ring-1-node-2 text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">NODE</div>
-                        <div class="orbit-node ring-1-node-3 text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">DB</div>
+                        <div class="orbit-node ring-1-node-1 text-[8px] md:text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">REACT</div>
+                        <div class="orbit-node ring-1-node-2 text-[8px] md:text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">NODE</div>
+                        <div class="orbit-node ring-1-node-3 text-[8px] md:text-[10px] font-bold shadow-[0_0_15px_#00f0ff]">DB</div>
                     </div>
                     <div class="orbit-ring orbit-ring-2 border-[#ff9f00]/30">
-                        <div class="orbit-node ring-2-node-1 text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">UI/UX</div>
-                        <div class="orbit-node ring-2-node-2 text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">AWS</div>
-                        <div class="orbit-node ring-2-node-3 text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">THREE</div>
+                        <div class="orbit-node ring-2-node-1 text-[8px] md:text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">UI/UX</div>
+                        <div class="orbit-node ring-2-node-2 text-[8px] md:text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">AWS</div>
+                        <div class="orbit-node ring-2-node-3 text-[8px] md:text-[10px] border-[#ff9f00] text-[#ff9f00] shadow-[0_0_15px_#ff9f00]">THREE</div>
                     </div>
                 </div>
             </div>
             
-            <div id="skills-container" class="space-y-20"></div>
+            <div id="skills-container" class="space-y-12 md:space-y-20"></div>
         </section>
 
         <!-- 4. WORK HUB SCENE -->
-        <section id="work-hub" class="view-section flex-col justify-center items-center pt-24 min-h-screen">
-            <div class="text-center mb-20 relative z-10 gs-reveal w-full">
-                <p class="font-mono text-[#00f0ff] tracking-[0.5em] text-xs uppercase mb-6">> SELECT_DOMAIN</p>
-                <h2 class="text-5xl md:text-7xl font-display font-bold text-white tracking-widest uppercase aaa-title" data-text="ARCHITECTURE">ARCHITECTURE</h2>
+        <section id="work-hub" class="view-section flex-col justify-center items-center pt-20 md:pt-24 min-h-screen">
+            <div class="text-center mb-12 md:mb-20 relative z-10 gs-reveal w-full">
+                <p class="font-mono text-[#00f0ff] tracking-[0.3em] md:tracking-[0.5em] text-[10px] md:text-xs uppercase mb-4 md:mb-6">> SELECT_DOMAIN</p>
+                <h2 class="text-4xl sm:text-5xl md:text-7xl font-display font-bold text-white tracking-widest uppercase aaa-title" data-text="ARCHITECTURE">ARCHITECTURE</h2>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl relative z-20 gs-reveal">
-                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-96" onclick="openNode('deployments', event)">
-                    <div class="transform-3d-layer p-12 flex flex-col items-center justify-center h-full">
-                        <div class="target-bracket tl" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket tr" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket bl" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket br" style="width:40px; height:40px; border-width: 3px;"></div>
-                        <div class="w-32 h-32 mb-8 border-2 border-[#00f0ff]/40 flex items-center justify-center bg-[#00f0ff]/10 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_30px_rgba(0,240,255,0.3)]" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
-                            <svg class="w-14 h-14 text-[#00f0ff] group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 w-full max-w-5xl relative z-20 gs-reveal">
+                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-64 md:h-96" onclick="openNode('deployments', event)">
+                    <div class="transform-3d-layer p-8 md:p-12 flex flex-col items-center justify-center h-full">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket tr" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket bl" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket br" style="width:30px; height:30px; border-width: 2px;"></div>
+                        <div class="w-20 h-20 md:w-32 md:h-32 mb-6 md:mb-8 border-2 border-[#00f0ff]/40 flex items-center justify-center bg-[#00f0ff]/10 group-hover:bg-[#00f0ff] group-hover:border-[#00f0ff] transition-all duration-300 relative z-10 shadow-[0_0_20px_rgba(0,240,255,0.3)]" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
+                            <svg class="w-10 h-10 md:w-14 md:h-14 text-[#00f0ff] group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
                         </div>
-                        <h3 class="font-display text-3xl text-white tracking-widest uppercase relative z-10 font-bold decrypt-text" data-original="Websites">Websites</h3>
-                        <p class="font-mono text-xs text-[#00f0ff] mt-4 tracking-widest relative z-10">> VIEW DEPLOYMENTS</p>
+                        <h3 class="font-display text-2xl md:text-3xl text-white tracking-widest uppercase relative z-10 font-bold">Websites</h3>
+                        <p class="font-mono text-[10px] md:text-xs text-[#00f0ff] mt-3 md:mt-4 tracking-widest relative z-10">> VIEW DEPLOYMENTS</p>
                     </div>
                 </div>
                 
-                <div class="hud-panel tilt-card p-0 cursor-none group magnetic h-96" onclick="openNode('applications', event)">
-                    <div class="transform-3d-layer p-12 flex flex-col items-center justify-center h-full">
-                        <div class="target-bracket tl" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket tr" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket bl" style="width:40px; height:40px; border-width: 3px;"></div><div class="target-bracket br" style="width:40px; height:40px; border-width: 3px;"></div>
-                        <div class="w-32 h-32 mb-8 border-2 border-[#ff9f00]/40 flex items-center justify-center bg-[#ff9f00]/10 group-hover:bg-[#ff9f00] group-hover:border-[#ff9f00] transition-all duration-300 relative z-10 shadow-[0_0_30px_rgba(255,159,0,0.3)]" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
-                            <svg class="w-14 h-14 text-[#ff9f00] group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                <div class="hud-panel tilt-card p-0 cursor-pointer group magnetic h-64 md:h-96" onclick="openNode('applications', event)">
+                    <div class="transform-3d-layer p-8 md:p-12 flex flex-col items-center justify-center h-full">
+                        <div class="holographic-glare"></div>
+                        <div class="target-bracket tl" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket tr" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket bl" style="width:30px; height:30px; border-width: 2px;"></div><div class="target-bracket br" style="width:30px; height:30px; border-width: 2px;"></div>
+                        <div class="w-20 h-20 md:w-32 md:h-32 mb-6 md:mb-8 border-2 border-[#ff9f00]/40 flex items-center justify-center bg-[#ff9f00]/10 group-hover:bg-[#ff9f00] group-hover:border-[#ff9f00] transition-all duration-300 relative z-10 shadow-[0_0_20px_rgba(255,159,0,0.3)]" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);">
+                            <svg class="w-10 h-10 md:w-14 md:h-14 text-[#ff9f00] group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h3 class="font-display text-3xl text-white tracking-widest uppercase relative z-10 font-bold decrypt-text" data-original="Applications">Applications</h3>
-                        <p class="font-mono text-xs text-[#ff9f00] mt-4 tracking-widest relative z-10">> RESTRICTED ACCESS</p>
+                        <h3 class="font-display text-2xl md:text-3xl text-white tracking-widest uppercase relative z-10 font-bold">Applications</h3>
+                        <p class="font-mono text-[10px] md:text-xs text-[#ff9f00] mt-3 md:mt-4 tracking-widest relative z-10">> RESTRICTED ACCESS</p>
                     </div>
                 </div>
             </div>
@@ -437,66 +481,71 @@
         <!-- 5. APPLICATIONS SCENE -->
         <section id="applications" class="view-section flex-col justify-center items-center min-h-screen">
             <div class="hud-panel tilt-card p-0 max-w-3xl w-full border-t-4 border-t-[#ff9f00] gs-reveal relative z-20">
-                <div class="transform-3d-layer p-16 flex flex-col items-center text-center">
-                    <div id="app-wireframe-canvas" class="w-64 h-64 mb-8 pointer-events-none relative z-10 shadow-[0_0_50px_rgba(255,159,0,0.2)] rounded-full"></div>
-                    <h2 class="text-4xl md:text-5xl font-display font-bold text-[#ff9f00] tracking-widest uppercase mb-6 neon-text-red relative z-10 decrypt-text" data-original="RESTRICTED_AREA">RESTRICTED_AREA</h2>
-                    <p class="font-mono text-gray-200 text-base md:text-lg mb-12 leading-relaxed relative z-10">
+                <div class="transform-3d-layer p-8 md:p-16 flex flex-col items-center text-center">
+                    <div class="holographic-glare"></div>
+                    <div id="app-wireframe-canvas" class="w-48 h-48 md:w-64 md:h-64 mb-6 md:mb-8 pointer-events-none relative z-10 shadow-[0_0_50px_rgba(255,159,0,0.2)] rounded-full"></div>
+                    <h2 class="text-2xl md:text-5xl font-display font-bold text-[#ff9f00] tracking-widest uppercase mb-4 md:mb-6 neon-text-red relative z-10">RESTRICTED_AREA</h2>
+                    <p class="font-mono text-gray-200 text-xs md:text-lg mb-8 md:mb-12 leading-relaxed relative z-10">
                         Custom iOS/Android architectures are built strictly on commission. Current proprietary modules are classified.
                     </p>
-                    <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Custom+App+Build+Inquiry" class="btn-elite btn-warn magnetic block w-auto text-center relative z-10 text-lg py-5 px-10" onclick="playAudio('click')">REQUEST CUSTOM APP BUILD</a>
+                    <a target="_blank" href="https://mail.google.com/mail/?view=cm&fs=1&to=Syedahmed.sa43@gmail.com&su=Custom+App+Build+Inquiry" class="btn-elite btn-warn magnetic block w-full md:w-auto text-center relative z-10 text-sm md:text-lg py-4 md:py-5 px-6 md:px-10" onclick="playAudio('click')">REQUEST CUSTOM APP BUILD</a>
                 </div>
             </div>
         </section>
 
         <!-- 6. DEPLOYMENTS SCENE (Websites) -->
         <section id="deployments" class="view-section">
-            <div class="flex items-center gap-6 mb-12 gs-reveal">
-                <h2 class="text-3xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text decrypt-text" data-original="Websites">Websites</h2>
+            <div class="flex items-center gap-4 md:gap-6 mb-10 md:mb-12 gs-reveal">
+                <h2 class="text-2xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Websites</h2>
                 <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Crownz Barbershop', 'Enhance digital presence and booking flow.', 'React, Tailwind CSS', '40% increase in user retention.', 'https://crownzbarbershop.github.io')">
-                    <div class="transform-3d-layer p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic" onclick="openProjectLog('Crownz Barbershop', 'Enhance digital presence and booking flow.', 'React, Tailwind CSS', '40% increase in user retention.', 'https://crownzbarbershop.github.io')">
+                    <div class="transform-3d-layer p-6 md:p-8">
+                        <div class="holographic-glare"></div>
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="h-64 w-full mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
+                        <div class="h-48 md:h-64 w-full mb-6 md:mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
                              <img src="assets/images/crownz.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-70 group-hover:opacity-100 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80';">
                         </div>
-                        <h4 class="text-2xl font-display font-bold mb-4 text-white relative z-10">Crownz Barbershop</h4>
-                        <p class="font-mono text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
+                        <h4 class="text-xl md:text-2xl font-display font-bold mb-3 md:mb-4 text-white relative z-10">Crownz Barbershop</h4>
+                        <p class="font-mono text-[10px] md:text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
                     </div>
                 </div>
 
-                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Clip Kings', 'Premium digital experience showcase.', 'GSAP, Custom JS', 'Elevated brand authority.', 'https://clipkings.github.io/clip-kings-website/')">
-                    <div class="transform-3d-layer p-8">
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic" onclick="openProjectLog('Clip Kings', 'Premium digital experience showcase.', 'GSAP, Custom JS', 'Elevated brand authority.', 'https://clipkings.github.io/clip-kings-website/')">
+                    <div class="transform-3d-layer p-6 md:p-8">
+                        <div class="holographic-glare"></div>
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="h-64 w-full mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
+                        <div class="h-48 md:h-64 w-full mb-6 md:mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
                              <img src="assets/images/clipkings.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-70 group-hover:opacity-100 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80';">
                         </div>
-                        <h4 class="text-2xl font-display font-bold mb-4 text-white relative z-10">Clip Kings</h4>
-                        <p class="font-mono text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
+                        <h4 class="text-xl md:text-2xl font-display font-bold mb-3 md:mb-4 text-white relative z-10">Clip Kings</h4>
+                        <p class="font-mono text-[10px] md:text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
                     </div>
                 </div>
 
-                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Opus Al Qudsi', 'Corporate portal for specialized services.', 'Enterprise CMS', 'Enhanced security and load times.', 'https://opusalqudsi.com')">
-                    <div class="transform-3d-layer p-8">
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic" onclick="openProjectLog('Opus Al Qudsi', 'Corporate portal for specialized services.', 'Enterprise CMS', 'Enhanced security and load times.', 'https://opusalqudsi.com')">
+                    <div class="transform-3d-layer p-6 md:p-8">
+                        <div class="holographic-glare"></div>
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="h-64 w-full mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
+                        <div class="h-48 md:h-64 w-full mb-6 md:mb-8 bg-black relative overflow-hidden z-10 border-2 border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.2)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
                              <img src="assets/images/opus.jpg" class="w-full h-full object-cover filter brightness-75 contrast-125 opacity-70 group-hover:opacity-100 group-hover:brightness-110 transition-all duration-700" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80';">
                         </div>
-                        <h4 class="text-2xl font-display font-bold mb-4 text-white relative z-10">Opus Al Qudsi</h4>
-                        <p class="font-mono text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
+                        <h4 class="text-xl md:text-2xl font-display font-bold mb-3 md:mb-4 text-white relative z-10">Opus Al Qudsi</h4>
+                        <p class="font-mono text-[10px] md:text-xs tracking-widest text-[#00f0ff] relative z-10">> ACCESS DATA LOG</p>
                     </div>
                 </div>
                 
-                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-none magnetic" onclick="openProjectLog('Quantum OS Portfolio', 'Create an immersive AAA experience.', 'Three.js, WebGL, GSAP', 'Ultimate client retention.', '#')">
-                    <div class="transform-3d-layer p-8">
+                <div class="hud-panel tilt-card p-0 group flex flex-col interactive-card gs-reveal cursor-pointer magnetic" onclick="openProjectLog('Quantum OS Portfolio', 'Create an immersive AAA experience.', 'Three.js, WebGL, GSAP', 'Ultimate client retention.', '#')">
+                    <div class="transform-3d-layer p-6 md:p-8">
+                        <div class="holographic-glare"></div>
                         <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
-                        <div class="h-64 w-full mb-8 bg-[rgba(0,240,255,0.05)] relative overflow-hidden flex items-center justify-center z-10 border-2 border-[#00f0ff]/50 shadow-[0_0_30px_rgba(0,240,255,0.3)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
+                        <div class="h-48 md:h-64 w-full mb-6 md:mb-8 bg-[rgba(0,240,255,0.05)] relative overflow-hidden flex items-center justify-center z-10 border-2 border-[#00f0ff]/50 shadow-[0_0_30px_rgba(0,240,255,0.3)]" style="clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);">
                             <div class="project-3d-canvas absolute inset-0" data-type="cube"></div>
                         </div>
-                        <h4 class="text-2xl font-display font-bold mb-4 text-[#00f0ff] relative z-10">Quantum OS Portfolio</h4>
-                        <p class="font-mono text-xs tracking-widest text-gray-400 relative z-10">> CURRENT SYSTEM ACTIVE</p>
+                        <h4 class="text-xl md:text-2xl font-display font-bold mb-3 md:mb-4 text-[#00f0ff] relative z-10">Quantum OS Portfolio</h4>
+                        <p class="font-mono text-[10px] md:text-xs tracking-widest text-gray-400 relative z-10">> CURRENT SYSTEM ACTIVE</p>
                     </div>
                 </div>
             </div>
@@ -504,12 +553,12 @@
 
         <!-- 7. CERTIFICATES SCENE -->
         <section id="certificates" class="view-section">
-            <div class="flex items-center gap-6 mb-12 gs-reveal">
-                <h2 class="text-3xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text decrypt-text" data-original="Verified Records">Verified Records</h2>
-                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50"></div>
-                <span class="font-mono text-xs text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-4 py-2 shadow-[0_0_10px_rgba(0,240,255,0.2)]">RECORDS: <span id="cert-count-display" class="font-bold">0</span></span>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 md:gap-6 mb-10 md:mb-12 gs-reveal">
+                <h2 class="text-2xl md:text-5xl font-display font-bold text-white tracking-widest uppercase neon-text">Verified Records</h2>
+                <div class="h-px bg-gradient-to-r from-[#00f0ff] to-transparent flex-grow opacity-50 hidden sm:block"></div>
+                <span class="font-mono text-[10px] md:text-xs text-[#00f0ff] bg-[#00f0ff]/10 border border-[#00f0ff]/30 px-3 py-1.5 md:px-4 md:py-2 shadow-[0_0_10px_rgba(0,240,255,0.2)] self-start sm:self-auto">RECORDS: <span id="cert-count-display" class="font-bold">0</span></span>
             </div>
-            <div id="cert-container" class="space-y-20"></div>
+            <div id="cert-container" class="space-y-12 md:space-y-20"></div>
         </section>
 
     </main>
@@ -517,43 +566,43 @@
     <!-- FULLSCREEN DATA LOG MODAL -->
     <div id="project-modal" class="fixed inset-0 z-[105] hidden flex items-center justify-center opacity-0 pointer-events-none">
         <div class="absolute inset-0 bg-black/95 backdrop-blur-2xl" onclick="closeProjectLog()"></div>
-        <div class="hud-panel p-12 max-w-3xl w-full mx-4 relative z-10 border-[3px] border-[#00f0ff]/60 shadow-[0_0_100px_rgba(0,240,255,0.2)]" id="project-modal-content">
-            <button onclick="closeProjectLog()" class="absolute top-8 right-8 text-white font-mono text-xs magnetic px-6 py-3 border border-[#00f0ff] bg-[#00f0ff]/20 hover:bg-[#00f0ff] hover:text-black uppercase transition-all" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);"> [ CLOSE_LOG ] </button>
-            <p class="font-mono text-[#00f0ff] text-xs tracking-[0.3em] mb-4">> DECLASSIFIED_DATA_LOG</p>
-            <h3 id="plog-title" class="text-4xl md:text-5xl font-display font-bold text-white mb-10 uppercase aaa-title">Project Title</h3>
+        <div class="hud-panel p-6 md:p-12 max-w-3xl w-full mx-4 relative z-10 border-[3px] border-[#00f0ff]/60 shadow-[0_0_100px_rgba(0,240,255,0.2)]" id="project-modal-content">
+            <button onclick="closeProjectLog()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white font-mono text-[10px] md:text-xs magnetic px-4 py-2 md:px-6 md:py-3 border border-[#00f0ff] bg-[#00f0ff]/20 hover:bg-[#00f0ff] hover:text-black uppercase transition-all" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);"> [ CLOSE_LOG ] </button>
+            <p class="font-mono text-[#00f0ff] text-[9px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] mb-3 md:mb-4 mt-8 md:mt-0">> DECLASSIFIED_DATA_LOG</p>
+            <h3 id="plog-title" class="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-white mb-6 md:mb-10 uppercase aaa-title">Project Title</h3>
             
-            <div class="space-y-8 font-mono text-base text-gray-300 mb-12 bg-black/50 p-8 border border-white/10" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
-                <div class="border-b border-white/10 pb-4"><span class="text-[#00f0ff] font-bold block mb-2">> OBJECTIVE:</span> <span id="plog-obj" class="text-white">...</span></div>
-                <div class="border-b border-white/10 pb-4"><span class="text-[#00f0ff] font-bold block mb-2">> TECH_STACK:</span> <span id="plog-tech" class="text-white">...</span></div>
-                <div><span class="text-[#00f0ff] font-bold block mb-2">> RESULT:</span> <span id="plog-res" class="text-green-400 font-bold text-lg">...</span></div>
+            <div class="space-y-6 md:space-y-8 font-mono text-xs md:text-base text-gray-300 mb-8 md:mb-12 bg-black/50 p-5 md:p-8 border border-white/10" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
+                <div class="border-b border-white/10 pb-3 md:pb-4"><span class="text-[#00f0ff] font-bold block mb-1 md:mb-2">> OBJECTIVE:</span> <span id="plog-obj" class="text-white">...</span></div>
+                <div class="border-b border-white/10 pb-3 md:pb-4"><span class="text-[#00f0ff] font-bold block mb-1 md:mb-2">> TECH_STACK:</span> <span id="plog-tech" class="text-white">...</span></div>
+                <div><span class="text-[#00f0ff] font-bold block mb-1 md:mb-2">> RESULT:</span> <span id="plog-res" class="text-green-400 font-bold text-sm md:text-lg">...</span></div>
             </div>
             
-            <a id="plog-link" href="#" target="_blank" class="btn-elite w-full text-center py-6 text-xl tracking-widest bg-[#00f0ff]/10" onclick="playAudio('click')">INITIALIZE LIVE PREVIEW</a>
+            <a id="plog-link" href="#" target="_blank" class="btn-elite w-full text-center py-4 md:py-6 text-sm md:text-xl tracking-widest bg-[#00f0ff]/10" onclick="playAudio('click')">INITIALIZE LIVE PREVIEW</a>
         </div>
     </div>
 
     <!-- FULLSCREEN PDF MODAL -->
     <div id="cert-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none">
         <div class="absolute inset-0 bg-black/95 backdrop-blur-2xl" onclick="closeModal()"></div>
-        <div class="hud-panel p-8 md:p-12 max-w-6xl w-full mx-4 relative transform scale-95 transition-transform duration-500 bg-[rgba(5,9,18,0.98)] border-2 border-[#00f0ff]/60 shadow-[0_0_100px_rgba(0,240,255,0.2)] z-10" id="cert-modal-content">
-            <button onclick="closeModal()" class="absolute top-8 right-8 text-white font-mono text-xs magnetic px-6 py-3 border border-[#00f0ff] bg-[#00f0ff]/20 hover:bg-[#00f0ff] hover:text-black uppercase transition-all z-30" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);"> 
+        <div class="hud-panel p-4 md:p-12 max-w-6xl w-full mx-2 md:mx-4 relative transform scale-95 transition-transform duration-500 bg-[rgba(5,9,18,0.98)] border-2 border-[#00f0ff]/60 shadow-[0_0_100px_rgba(0,240,255,0.2)] z-10" id="cert-modal-content">
+            <button onclick="closeModal()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white font-mono text-[10px] md:text-xs magnetic px-4 py-2 md:px-6 md:py-3 border border-[#00f0ff] bg-[#00f0ff]/20 hover:bg-[#00f0ff] hover:text-black uppercase transition-all z-30" style="clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);"> 
                 [ CLOSE_LOG ]
             </button>
-            <div class="mb-8 border-b border-white/10 pb-6 pr-32">
-                <p class="font-mono text-[#00f0ff] text-xs tracking-[0.3em] mb-3">> DECRYPTION_SUCCESS</p>
-                <h3 id="modal-cert-title" class="text-2xl md:text-4xl font-display font-bold text-white mb-3 leading-tight uppercase truncate aaa-title">Title</h3>
-                <p id="modal-cert-category" class="font-mono text-gray-500 text-xs uppercase tracking-widest bg-white/5 inline-block px-3 py-1">DOMAIN: </p>
+            <div class="mb-6 md:mb-8 border-b border-white/10 pb-4 md:pb-6 pr-20 md:pr-32 mt-10 md:mt-0">
+                <p class="font-mono text-[#00f0ff] text-[9px] md:text-xs tracking-[0.2em] md:tracking-[0.3em] mb-2 md:mb-3">> DECRYPTION_SUCCESS</p>
+                <h3 id="modal-cert-title" class="text-lg md:text-4xl font-display font-bold text-white mb-2 md:mb-3 leading-tight uppercase truncate aaa-title">Title</h3>
+                <p id="modal-cert-category" class="font-mono text-gray-500 text-[9px] md:text-xs uppercase tracking-widest bg-white/5 inline-block px-2 py-1 md:px-3 md:py-1">DOMAIN: </p>
             </div>
-            <div class="w-full h-[65vh] md:h-[650px] border-2 border-[#00f0ff]/30 bg-black flex items-center justify-center relative overflow-hidden shadow-[0_0_30px_rgba(0,240,255,0.1)inset]" style="clip-path: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px);">
+            <div class="w-full h-[50vh] md:h-[650px] border-2 border-[#00f0ff]/30 bg-black flex items-center justify-center relative overflow-hidden shadow-[0_0_30px_rgba(0,240,255,0.1)inset]" style="clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);">
                 <iframe id="modal-cert-iframe" src="" class="w-full h-full relative z-20 hidden bg-white" frameborder="0"></iframe>
                 <div id="cert-loading" class="z-30 text-center flex flex-col items-center">
-                    <div class="w-24 h-24 border-[3px] border-transparent border-t-[#00f0ff] border-b-[#00f0ff] rounded-full animate-spin mb-8 shadow-[0_0_20px_#00f0ff]"></div>
-                    <p class="font-mono text-[#00f0ff] tracking-[0.3em] text-sm animate-pulse font-bold">DECRYPTING DATABANK...</p>
+                    <div class="w-16 h-16 md:w-24 md:h-24 border-[3px] border-transparent border-t-[#00f0ff] border-b-[#00f0ff] rounded-full animate-spin mb-4 md:mb-8 shadow-[0_0_20px_#00f0ff]"></div>
+                    <p class="font-mono text-[#00f0ff] tracking-[0.2em] md:tracking-[0.3em] text-xs md:text-sm animate-pulse font-bold">DECRYPTING DATABANK...</p>
                 </div>
-                <div id="cert-error" class="hidden z-30 text-center flex flex-col items-center bg-black/90 p-12 border-t-4 border-t-red-500 shadow-[0_0_50px_rgba(255,0,0,0.2)]">
-                    <span class="text-red-500 font-display text-6xl font-bold mb-6 animate-pulse" style="text-shadow: 0 0 30px red;">!</span>
-                    <p class="font-mono text-red-500 tracking-[0.2em] text-xl font-bold uppercase mb-4">FILE NOT FOUND</p>
-                    <p id="missing-file-path" class="font-mono text-gray-400 tracking-widest text-xs mt-4 select-all text-center bg-white/5 p-4 border border-white/10">assets/certificates/filename.pdf</p>
+                <div id="cert-error" class="hidden z-30 text-center flex flex-col items-center bg-black/90 p-8 md:p-12 border-t-4 border-t-red-500 shadow-[0_0_50px_rgba(255,0,0,0.2)] w-full mx-4">
+                    <span class="text-red-500 font-display text-4xl md:text-6xl font-bold mb-4 md:mb-6 animate-pulse" style="text-shadow: 0 0 30px red;">!</span>
+                    <p class="font-mono text-red-500 tracking-[0.1em] md:tracking-[0.2em] text-sm md:text-xl font-bold uppercase mb-2 md:mb-4 text-center">FILE NOT FOUND</p>
+                    <p id="missing-file-path" class="font-mono text-gray-400 tracking-widest text-[9px] md:text-xs mt-2 md:mt-4 select-all text-center bg-white/5 p-3 md:p-4 border border-white/10 break-all w-full">assets/certificates/filename.pdf</p>
                 </div>
             </div>
         </div>
@@ -726,59 +775,36 @@
             ]}
         ];
 
-        // AAA Glitch Text Animation Logic
-        function scrambleText(element) {
-            const originalText = element.getAttribute('data-original');
-            if(!originalText) return;
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*';
-            let iterations = 0;
-            const interval = setInterval(() => {
-                element.innerText = originalText.split('').map((char, index) => {
-                    if (index < iterations) return originalText[index];
-                    return chars[Math.floor(Math.random() * chars.length)];
-                }).join('');
-                if (iterations >= originalText.length) {
-                    clearInterval(interval);
-                    element.innerText = originalText;
-                }
-                iterations += 1/3;
-            }, 30);
-        }
-
-        function triggerDecryptAnimations(container) {
-            container.querySelectorAll('.decrypt-text').forEach(el => scrambleText(el));
-        }
-
         function renderData() {
             const skillContainer = document.getElementById('skills-container');
             if(skillContainer) {
                 skillsData.forEach(cat => {
                     let html = `
-                    <div class="mb-14 gs-reveal">
-                        <div class="flex items-center gap-5 mb-6">
-                            <div class="w-3 h-8 bg-${cat.theme}-500 shadow-[0_0_20px_var(--${cat.theme}-core)]"></div>
-                            <h4 class="font-display text-2xl md:text-3xl text-white uppercase tracking-widest aaa-title decrypt-text" data-text="${cat.title}" data-original="${cat.title}">${cat.title}</h4>
-                            <div class="h-px flex-grow bg-gradient-to-r from-white/30 to-transparent ml-4"></div>
+                    <div class="mb-10 md:mb-14 gs-reveal">
+                        <div class="flex items-center gap-3 md:gap-5 mb-4 md:mb-6">
+                            <div class="w-2 h-6 md:w-3 md:h-8 bg-${cat.theme}-500 shadow-[0_0_20px_var(--${cat.theme}-core)]"></div>
+                            <h4 class="font-display text-lg sm:text-2xl md:text-3xl text-white uppercase tracking-widest aaa-title" data-text="${cat.title}">${cat.title}</h4>
+                            <div class="h-px flex-grow bg-gradient-to-r from-white/30 to-transparent ml-2 md:ml-4"></div>
                         </div>
-                        <div class="mb-8 max-w-md pl-8">
-                            <div class="flex justify-between font-mono text-xs text-[#00f0ff] mb-3 font-bold tracking-widest"><span class="decrypt-text" data-original="SYS_PROFICIENCY">SYS_PROFICIENCY</span><span>${cat.percent}</span></div>
-                            <div class="h-2 w-full bg-white/5 overflow-hidden border border-white/10" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);">
+                        <div class="mb-6 md:mb-8 max-w-md pl-4 md:pl-8">
+                            <div class="flex justify-between font-mono text-[9px] md:text-xs text-[#00f0ff] mb-2 md:mb-3 font-bold tracking-widest"><span>SYS_PROFICIENCY</span><span>${cat.percent}</span></div>
+                            <div class="h-1.5 md:h-2 w-full bg-white/5 overflow-hidden border border-white/10" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);">
                                 <div class="h-full bg-[#00f0ff] w-0 gs-skill-bar shadow-[0_0_15px_#00f0ff]" data-width="${cat.percent}"></div>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pl-8">`;
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pl-4 md:pl-8">`;
                     
                     cat.items.forEach((skill, i) => {
-                        let tags = skill.tags.map(t => `<span class="font-mono text-[9px] uppercase tracking-[0.2em] px-3 py-1.5 bg-white/5 text-gray-300 font-bold border border-white/10 shadow-[0_0_10px_rgba(255,255,255,0.05)inset]" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);">${t}</span>`).join('');
+                        let tags = skill.tags.map(t => `<span class="font-mono text-[7px] md:text-[9px] uppercase tracking-[0.1em] md:tracking-[0.2em] px-2 py-1 md:px-3 md:py-1.5 bg-white/5 text-gray-300 font-bold border border-white/10 shadow-[0_0_10px_rgba(255,255,255,0.05)inset]" style="clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);">${t}</span>`).join('');
                         html += `
-                            <div class="hud-panel tilt-card p-0 flex flex-col justify-between magnetic cursor-none group hover:border-${cat.theme}-500 min-h-[160px]">
-                                <div class="transform-3d-layer p-6 flex flex-col h-full">
+                            <div class="hud-panel tilt-card p-0 flex flex-col justify-between magnetic cursor-none group hover:border-${cat.theme}-500 min-h-[140px] md:min-h-[160px]">
+                                <div class="transform-3d-layer p-4 md:p-6 flex flex-col h-full">
                                     <div class="holographic-glare"></div>
                                     <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
                                     <div class="relative z-10 flex-grow">
-                                        <p class="font-mono text-[9px] text-[#00f0ff] uppercase mb-4 tracking-widest border-b border-white/10 pb-2">ID_${(i+1).toString().padStart(2,'0')}</p>
-                                        <h5 class="font-display text-sm font-bold text-white mb-6 leading-snug tracking-wide decrypt-text" data-original="${skill.name}">${skill.name}</h5>
-                                        <div class="flex flex-wrap gap-2 mt-auto">${tags}</div>
+                                        <p class="font-mono text-[7px] md:text-[9px] text-[#00f0ff] uppercase mb-2 md:mb-4 tracking-widest border-b border-white/10 pb-1 md:pb-2">ID_${(i+1).toString().padStart(2,'0')}</p>
+                                        <h5 class="font-display text-[10px] md:text-sm font-bold text-white mb-3 md:mb-6 leading-snug tracking-wide">${skill.name}</h5>
+                                        <div class="flex flex-wrap gap-1 md:gap-1.5 mt-auto">${tags}</div>
                                     </div>
                                 </div>
                             </div>`;
@@ -795,13 +821,13 @@
                 certCategoryData.forEach(cat => {
                     certCount += cat.items.length;
                     let html = `
-                    <div class="mb-16 gs-reveal">
-                        <div class="flex items-center gap-5 mb-8">
-                            <div class="w-3 h-8 bg-${cat.theme}-500 shadow-[0_0_20px_var(--${cat.theme}-core)]"></div>
-                            <h4 class="font-display text-2xl md:text-3xl text-white uppercase tracking-widest aaa-title decrypt-text" data-text="${cat.title}" data-original="${cat.title}">${cat.title}</h4>
-                            <div class="h-px flex-grow bg-gradient-to-r from-white/30 to-transparent ml-4"></div>
+                    <div class="mb-12 md:mb-16 gs-reveal">
+                        <div class="flex items-center gap-3 md:gap-5 mb-6 md:mb-8">
+                            <div class="w-2 h-6 md:w-3 md:h-8 bg-${cat.theme}-500 shadow-[0_0_20px_var(--${cat.theme}-core)]"></div>
+                            <h4 class="font-display text-lg sm:text-2xl md:text-3xl text-white uppercase tracking-widest aaa-title" data-text="${cat.title}">${cat.title}</h4>
+                            <div class="h-px flex-grow bg-gradient-to-r from-white/30 to-transparent ml-2 md:ml-4"></div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pl-8">`;
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 pl-4 md:pl-8">`;
                     
                     cat.items.forEach((cert) => {
                         const safeName = cert.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -809,18 +835,18 @@
                         const safeFileName = cert.file.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                         
                         html += `
-                            <div class="hud-panel tilt-card p-0 flex flex-col h-full cursor-none magnetic group hover:border-${cat.theme}-500 min-h-[200px]" onclick="viewCertificate('${safeName}', '${safeCategory}', '${safeFileName}')">
-                                <div class="transform-3d-layer p-6 flex flex-col h-full">
+                            <div class="hud-panel tilt-card p-0 flex flex-col h-full cursor-none magnetic group hover:border-${cat.theme}-400 min-h-[160px] md:min-h-[200px]" onclick="viewCertificate('${safeName}', '${safeCategory}', '${safeFileName}')">
+                                <div class="transform-3d-layer p-4 md:p-6 flex flex-col h-full">
                                     <div class="holographic-glare"></div>
                                     <div class="target-bracket tl"></div><div class="target-bracket tr"></div><div class="target-bracket bl"></div><div class="target-bracket br"></div>
                                     <div class="relative z-10 flex flex-col h-full">
                                         <div class="flex-grow">
-                                            <p class="font-mono text-[9px] text-[#00f0ff] uppercase mb-3 tracking-widest truncate">> ${cat.title.split('/')[0].replace(/[^\w\s]/gi, '').trim()}</p>
-                                            <h5 class="font-display text-[11px] font-bold text-gray-200 group-hover:text-white transition-colors leading-relaxed mb-5 decrypt-text" data-original="${cert.name}">${cert.name}</h5>
+                                            <p class="font-mono text-[7px] md:text-[9px] text-[#00f0ff] uppercase mb-2 md:mb-3 tracking-widest truncate">> ${cat.title.split('/')[0].replace(/[^\w\s]/gi, '').trim()}</p>
+                                            <h5 class="font-display text-[9px] md:text-[11px] font-bold text-gray-200 group-hover:text-white transition-colors leading-relaxed mb-3 md:mb-5">${cert.name}</h5>
                                         </div>
-                                        <div class="mt-auto flex justify-between items-end border-t border-white/10 pt-4">
-                                            <p class="font-mono text-[9px] text-gray-500 uppercase tracking-widest">SYS_${(globalCertId++).toString().padStart(2,'0')}</p>
-                                            <span class="text-[9px] text-gray-400 font-mono group-hover:text-[#00f0ff] transition-colors font-bold tracking-widest">DECRYPT</span>
+                                        <div class="mt-auto flex justify-between items-end border-t border-white/10 pt-2 md:pt-4">
+                                            <p class="font-mono text-[7px] md:text-[9px] text-gray-500 uppercase tracking-widest">SYS_${(globalCertId++).toString().padStart(2,'0')}</p>
+                                            <span class="text-[7px] md:text-[9px] text-gray-400 font-mono group-hover:text-[#00f0ff] transition-colors font-bold tracking-widest">DECRYPT</span>
                                         </div>
                                     </div>
                                 </div>
@@ -850,8 +876,8 @@
                 this.droneOsc = this.ctx.createOscillator();
                 this.droneGain = this.ctx.createGain();
                 this.panner = this.ctx.createStereoPanner();
-                this.droneOsc.type = 'sine'; this.droneOsc.frequency.value = 50; // Deep hum
-                this.droneGain.gain.value = 0.08; // Noticeable atmospheric hum
+                this.droneOsc.type = 'sine'; this.droneOsc.frequency.value = 50; 
+                this.droneGain.gain.value = 0.08; 
                 this.droneOsc.connect(this.droneGain);
                 this.droneGain.connect(this.panner);
                 this.panner.connect(this.ctx.destination);
@@ -865,7 +891,6 @@
                 const t = this.ctx.currentTime;
                 
                 if (type === 'hover') {
-                    // Rich Glass Tap (High volume, short duration)
                     osc.type = 'sine'; 
                     osc.frequency.setValueAtTime(2500, t); 
                     osc.frequency.exponentialRampToValueAtTime(1000, t + 0.08);
@@ -873,23 +898,21 @@
                     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08); 
                     osc.start(t); osc.stop(t + 0.08);
                 } else if (type === 'click') {
-                    // Heavy Cinematic Thud + High Chime
                     const osc2 = this.ctx.createOscillator();
                     const osc3 = this.ctx.createOscillator();
                     osc2.connect(gain); osc3.connect(gain);
                     
-                    osc.type = 'sine'; osc.frequency.setValueAtTime(100, t); osc.frequency.exponentialRampToValueAtTime(20, t + 0.3); // Deep Bass
-                    osc2.type = 'sine'; osc2.frequency.setValueAtTime(2000, t); osc2.frequency.exponentialRampToValueAtTime(1500, t + 0.2); // High Chime
-                    osc3.type = 'triangle'; osc3.frequency.setValueAtTime(800, t); osc3.frequency.exponentialRampToValueAtTime(400, t + 0.15); // Mid punch
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(100, t); osc.frequency.exponentialRampToValueAtTime(20, t + 0.3); 
+                    osc2.type = 'sine'; osc2.frequency.setValueAtTime(2000, t); osc2.frequency.exponentialRampToValueAtTime(1500, t + 0.2); 
+                    osc3.type = 'triangle'; osc3.frequency.setValueAtTime(800, t); osc3.frequency.exponentialRampToValueAtTime(400, t + 0.15); 
                     
-                    gain.gain.setValueAtTime(0.8, t); // LOUD
+                    gain.gain.setValueAtTime(0.8, t); 
                     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3); 
                     
                     osc.start(t); osc.stop(t + 0.3);
                     osc2.start(t); osc2.stop(t + 0.3);
                     osc3.start(t); osc3.stop(t + 0.3);
                 } else if (type === 'decrypt') {
-                    // Sci-Fi Processing/Matrix effect
                     osc.type = 'square';
                     for(let i=0; i<15; i++) osc.frequency.setValueAtTime(300 + Math.random()*2000, t + i*0.04);
                     gain.gain.setValueAtTime(0.4, t); 
@@ -897,11 +920,10 @@
                     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6); 
                     osc.start(t); osc.stop(t + 0.6);
                 } else if (type === 'warp') {
-                    // Cinematic Bass Drop
                     osc.type = 'sine'; 
                     osc.frequency.setValueAtTime(200, t); 
                     osc.frequency.exponentialRampToValueAtTime(20, t + 1.0);
-                    gain.gain.setValueAtTime(1.0, t); // VERY LOUD
+                    gain.gain.setValueAtTime(1.0, t); 
                     gain.gain.exponentialRampToValueAtTime(0.001, t + 1.2); 
                     osc.start(t); osc.stop(t + 1.2);
                 } else if (type === 'error') {
@@ -981,8 +1003,10 @@
         };
 
         const init3DTilt = () => {
+            // Disabled on mobile via CSS, but JS logic stays same
             document.querySelectorAll('.tilt-card').forEach(card => {
                 card.addEventListener('mousemove', e => {
+                    if (window.innerWidth <= 768) return; // Prevent tilt on mobile
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
@@ -999,6 +1023,7 @@
                     }
                 });
                 card.addEventListener('mouseleave', () => {
+                    if (window.innerWidth <= 768) return;
                     gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.7, ease: "power3.out" });
                     const glare = card.querySelector('.holographic-glare');
                     if(glare) {
@@ -1008,7 +1033,7 @@
             });
         };
 
-        // 4. THREE JS (Massive Scale Upgrade)
+        // 4. THREE JS 
         const initThreeJSCore = () => {
             const canvas = document.getElementById('webgl-bg');
             if(!canvas) return;
@@ -1018,15 +1043,14 @@
 
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 45; // Pulled back for wider view
+            camera.position.z = 45; 
 
             const sceneGroup = new THREE.Group();
             scene.add(sceneGroup);
             window.glSceneGroup = sceneGroup; 
 
-            // More & Brighter Stars
             const starGeo = new THREE.BufferGeometry();
-            const starCount = 1500;
+            const starCount = window.innerWidth > 768 ? 1500 : 500; // Less stars on mobile
             const starPos = new Float32Array(starCount * 3);
             for(let i=0; i<starCount*3; i++) { starPos[i] = (Math.random() - 0.5) * 250; }
             starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
@@ -1034,8 +1058,7 @@
             const stars = new THREE.Points(starGeo, starMat);
             sceneGroup.add(stars);
 
-            // Larger Complex Core
-            const coreGeo = new THREE.IcosahedronGeometry(12, 1); // Much larger and complex
+            const coreGeo = new THREE.IcosahedronGeometry(12, 1); 
             const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.3 });
             const core = new THREE.Mesh(coreGeo, coreMat);
             
@@ -1046,7 +1069,6 @@
             core.add(innerCore);
             sceneGroup.add(core);
 
-            // Multiple Orbiting Rings
             const ring1Geo = new THREE.TorusGeometry(20, 0.05, 16, 100);
             const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.1 });
             const ring1 = new THREE.Mesh(ring1Geo, ringMat);
@@ -1063,6 +1085,7 @@
             let targetX = 0; let targetY = 0;
             
             document.addEventListener('mousemove', (e) => {
+                if(window.innerWidth <= 768) return; // Disable parallax on mobile
                 mouseX = (e.clientX / window.innerWidth) * 2 - 1;
                 mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
             });
@@ -1075,11 +1098,12 @@
                 ring1.rotation.z += 0.002;
                 ring2.rotation.x -= 0.001;
 
-                // Smooth camera lerp
-                targetX = mouseX * 0.2;
-                targetY = mouseY * 0.2;
-                sceneGroup.rotation.x += 0.05 * (targetY - sceneGroup.rotation.x);
-                sceneGroup.rotation.y += 0.05 * (targetX - sceneGroup.rotation.y);
+                if(window.innerWidth > 768) {
+                    targetX = mouseX * 0.2;
+                    targetY = mouseY * 0.2;
+                    sceneGroup.rotation.x += 0.05 * (targetY - sceneGroup.rotation.x);
+                    sceneGroup.rotation.y += 0.05 * (targetX - sceneGroup.rotation.y);
+                }
 
                 renderer.render(scene, camera);
                 requestAnimationFrame(animate);
@@ -1094,6 +1118,7 @@
         };
 
         const initCardCanvas = () => {
+            if(window.innerWidth <= 768) return; // Skip extra 3D on mobile to save battery
             const containers = document.querySelectorAll('.project-3d-canvas');
             containers.forEach(container => {
                 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -1172,7 +1197,6 @@
                     if(target) { 
                         target.classList.add('active'); 
                         window.scrollTo(0,0); 
-                        triggerDecryptAnimations(target); // Trigger text scramble
                     }
 
                     const backBtn = document.getElementById('back-to-hub');
@@ -1212,7 +1236,6 @@
                     if(homeHub) {
                         homeHub.classList.add('active');
                         window.scrollTo(0,0);
-                        triggerDecryptAnimations(homeHub);
                     }
                     
                     const backBtn = document.getElementById('back-to-hub');
@@ -1373,7 +1396,6 @@
 
                 if(el) {
                     el.innerHTML = `GOOD ${timeGreet}. SECURE UPLINK: ${city}, ${country}`;
-                    el.setAttribute('data-original', `GOOD ${timeGreet}. SECURE UPLINK: ${city}, ${country}`);
                 }
                 
                 if(termOutput) {
@@ -1388,7 +1410,6 @@
                 if (city === "CALCUTTA" || city === "KOLKATA" || city === "DELHI") { city = "HYDERABAD"; }
                 if(el) {
                     el.innerText = `GOOD ${timeGreet}. SECURE UPLINK FROM ${city}.`;
-                    el.setAttribute('data-original', `GOOD ${timeGreet}. SECURE UPLINK FROM ${city}.`);
                 }
             }
         };
@@ -1399,13 +1420,12 @@
                 e.preventDefault();
                 const term = document.getElementById('cmd-terminal');
                 if(term) {
-                    // Terminal visibility fix applied here.
                     if(term.classList.contains('active')) {
                         term.classList.remove('active');
-                        gsap.to(term, {autoAlpha: 0, duration: 0.3}); // hide
+                        gsap.to(term, {autoAlpha: 0, duration: 0.3}); 
                     } else {
                         term.classList.add('active');
-                        gsap.to(term, {autoAlpha: 1, duration: 0.3}); // show
+                        gsap.to(term, {autoAlpha: 1, duration: 0.3}); 
                         const input = document.getElementById('cmd-input');
                         if(input) input.focus();
                         playAudio('hover');
@@ -1457,7 +1477,6 @@
               .add(() => {
                   initCardCanvas(); 
                   gsap.fromTo('#home-hub .gs-reveal', {y: 50, opacity: 0}, {y: 0, opacity: 1, duration: 1.2, stagger: 0.1, ease: "power4.out"});
-                  triggerDecryptAnimations(document.getElementById('home-hub'));
                   document.body.style.overflowY = 'auto';
               });
         };
