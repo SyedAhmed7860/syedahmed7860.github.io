@@ -138,6 +138,12 @@
             100% { clip-path: inset(5% 0 80% 0); transform: translate(-1px, -2px); }
         }
 
+        /* Glitch & Neons */
+        .text-gradient { background: linear-gradient(180deg, #ffffff 0%, #8892b0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .accent-glow { text-shadow: 0 0 20px var(--accent-glow); }
+        .neon-text { text-shadow: 0 0 10px var(--accent-glow), 0 0 20px var(--accent-glow); }
+        .neon-text-red { text-shadow: 0 0 10px rgba(255,0,60,0.6), 0 0 20px rgba(255,0,60,0.4); color: #ff003c; }
+
         /* Orbit Tech Stack */
         .orbit-container { position: relative; width: 300px; height: 300px; margin: 0 auto; }
         .orbit-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; background: var(--accent-mute); border: 2px solid var(--accent-core); box-shadow: 0 0 30px var(--accent-glow); display: flex; align-items: center; justify-content: center; font-family: 'Syncopate'; font-weight: bold; color: #fff; z-index: 10; animation: pulse 2s infinite; }
@@ -1246,7 +1252,7 @@
             }
         }
 
-        // 8. VISITOR TRACKING
+        // 8. VISITOR TRACKING (Fixed for Safety & Professionalism)
         const initVisitorTracking = async () => {
             const el = document.getElementById('geo-greeting');
             const termOutput = document.getElementById('cmd-output');
@@ -1257,21 +1263,19 @@
                 const response = await fetch('https://ipinfo.io/json');
                 const data = await response.json();
                 
-                const ip = data.ip || 'UNKNOWN';
                 let city = data.city ? data.city.toUpperCase() : 'UNKNOWN NODE';
-                
                 if (city === "CALCUTTA" || city === "KOLKATA" || city === "DELHI") {
                     city = "HYDERABAD"; 
                 }
 
                 const country = data.country || '';
-                const isp = data.org ? data.org.toUpperCase() : 'UNKNOWN ISP';
+                const isp = data.org ? data.org.toUpperCase() : 'SECURE NETWORK';
 
-                if(el) el.innerHTML = `GOOD ${timeGreet}. <span class="text-[#00f0ff]">[IP: ${ip}]</span> UPLINK: ${city}, ${country}`;
+                if(el) el.innerHTML = `GOOD ${timeGreet}. SECURE UPLINK: ${city}, ${country}`;
                 
                 if(termOutput) {
                     setTimeout(() => {
-                        termOutput.innerHTML += `\n> TRACING CONNECTION...\n> IP IDENTIFIED: ${ip}\n> LOCATION: ${city}, ${country}\n> ISP: ${isp}\n> WARNING: EXPOSED CONNECTION. PROCEED WITH CAUTION.\n`;
+                        termOutput.innerHTML += `\n> VERIFYING CONNECTION...\n> LOCATION: ${city}, ${country}\n> NETWORK: ${isp}\n> SECURE HANDSHAKE SUCCESSFUL. ALL SYSTEMS NOMINAL.\n`;
                         termOutput.scrollTop = termOutput.scrollHeight;
                     }, 2000);
                 }
@@ -1279,7 +1283,7 @@
                 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
                 let city = tz.split('/')[1] ? tz.split('/')[1].replace('_', ' ').toUpperCase() : "SECURE NODE";
                 if (city === "CALCUTTA" || city === "KOLKATA" || city === "DELHI") { city = "HYDERABAD"; }
-                if(el) el.innerText = `GOOD ${timeGreet}. UPLINK FROM ${city}.`;
+                if(el) el.innerText = `GOOD ${timeGreet}. SECURE UPLINK FROM ${city}.`;
             }
         };
 
