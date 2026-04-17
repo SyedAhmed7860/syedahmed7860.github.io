@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>System Architect | Syed Ahmed</title>
     
     <!-- Libraries -->
@@ -25,7 +25,7 @@
             --sys-white: #f1f5f9;
         }
 
-        * { box-sizing: border-box; cursor: none !important; }
+        * { box-sizing: border-box; cursor: none !important; -webkit-tap-highlight-color: transparent; }
         
         body {
             background-color: var(--sys-dark);
@@ -142,6 +142,11 @@
         .tab-btn.active { color: var(--sys-blue); border-bottom-color: var(--sys-blue); text-shadow: 0 0 10px var(--sys-blue-glow); background: linear-gradient(to top, rgba(0,210,255,0.1), transparent); }
         .tab-btn:hover:not(.active) { color: white; border-bottom-color: rgba(255,255,255,0.3); }
 
+        /* Mobile Bottom HUD Buttons */
+        .mob-nav-btn { position: relative; transition: all 0.3s; }
+        .mob-nav-btn.active { color: var(--sys-blue); text-shadow: 0 0 10px var(--sys-blue-glow); }
+        .mob-nav-btn.active svg { filter: drop-shadow(0 0 5px var(--sys-blue)); transform: scale(1.1); transition: transform 0.3s; }
+
         /* Glitch Title */
         .glitch-text { position: relative; display: inline-block; font-weight: 700; }
         .glitch-text::before, .glitch-text::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8; }
@@ -187,7 +192,7 @@
 
         /* System Command Terminal Override */
         #sys-terminal {
-            position: fixed; top: 0; left: 0; w: 100vw; height: 35vh; background: rgba(3, 7, 14, 0.98);
+            position: fixed; top: 0; left: 0; w: 100vw; height: 40vh; max-height: 400px; background: rgba(3, 7, 14, 0.98);
             backdrop-filter: blur(20px); border-bottom: 2px solid var(--sys-blue); z-index: 10001;
             transform: translateY(-100%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
             font-family: 'Share Tech Mono', monospace; padding: 20px; color: #00d2ff; display: flex; flex-direction: column;
@@ -206,7 +211,7 @@
             clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
             display: flex; align-items: center; justify-content: center; gap: 10px;
             padding: 12px 24px; color: var(--sys-blue); font-family: 'Share Tech Mono', monospace;
-            font-weight: bold; tracking: widest; text-transform: uppercase;
+            font-weight: bold; letter-spacing: 2px; text-transform: uppercase;
             transition: all 0.3s ease; animation: pulse-glow 2s infinite;
         }
         #comms-fab:hover { background: var(--sys-blue); color: black; box-shadow: 0 0 30px rgba(0,210,255,0.8); }
@@ -220,13 +225,23 @@
         }
         .sys-input:focus { border-color: var(--sys-blue); box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); background: rgba(0, 210, 255, 0.05); }
 
+        /* Mobile specific optimizations */
         @media (max-width: 768px) {
             * { cursor: auto !important; }
             #cursor-dot, #cursor-ring { display: none !important; }
             .sys-panel { clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); transform: none !important; }
             .panel-glare { display: none; }
             .scanlines { display: none; }
-            #comms-fab { bottom: 20px; right: 20px; padding: 10px 16px; font-size: 10px; }
+            
+            /* Bottom HUD spacing and adjustments */
+            #main-content { padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px)); }
+            .view-section { padding: 90px 0 20px 0; }
+            
+            /* Move FAB above bottom HUD */
+            #comms-fab { bottom: calc(85px + env(safe-area-inset-bottom, 20px)); right: 16px; padding: 10px 14px; }
+            
+            /* Swipe handles */
+            .swipe-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; margin: 0 auto 15px auto; }
         }
     </style>
 </head>
@@ -248,10 +263,10 @@
     <div id="cursor-ring"></div>
 
     <!-- SECURE OVERRIDE TERMINAL -->
-    <div id="sys-terminal" class="fixed top-0 left-0 w-full h-[35vh]">
+    <div id="sys-terminal" class="fixed top-0 left-0 w-full h-[40vh]">
         <div id="term-output">ARCHITECT OS v4.0 (QUANTUM EDITION)
 Type 'help' to view available system commands.
-Press '~' (tilde/backtick) to close terminal.</div>
+[Desktop] Press '~' to close. [Mobile] Tap terminal icon to close.</div>
         <div id="term-input-line">
             <span class="text-gray-500">root@architect:~#</span>
             <input type="text" id="term-input" autocomplete="off" spellcheck="false" class="interactive">
@@ -265,8 +280,8 @@ Press '~' (tilde/backtick) to close terminal.</div>
             <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest mb-4">> SYSTEM ARCHITECTURE INITIALIZATION</p>
             <div id="boot-text" class="font-sys text-base md:text-lg text-gray-300 mb-8 min-h-[100px] leading-relaxed"></div>
             <div class="flex justify-between items-center opacity-0 border-t border-gray-800 pt-6 mt-4" id="boot-action">
-                <div class="font-sys text-xs text-gray-500">CLIENT CLEARANCE: <span class="text-white">REQUIRED</span></div>
-                <button class="sys-btn sys-btn-solid interactive text-sm magnetic" onclick="acceptQuest()">[ GRANT ACCESS ]</button>
+                <div class="font-sys text-xs text-gray-500 hidden sm:block">CLIENT CLEARANCE: <span class="text-white">REQUIRED</span></div>
+                <button class="sys-btn sys-btn-solid interactive text-sm w-full sm:w-auto magnetic" onclick="acceptQuest()">[ GRANT ACCESS ]</button>
             </div>
         </div>
     </div>
@@ -277,179 +292,209 @@ Press '~' (tilde/backtick) to close terminal.</div>
         <div class="font-sys text-[var(--sys-blue)] text-xl tracking-[0.3em] animate-pulse font-bold">PROCESSING DATA</div>
     </div>
 
-    <!-- MAIN NAV HEADER -->
-    <header class="fixed top-0 w-full z-50 bg-[rgba(2,5,10,0.85)] backdrop-blur-md border-b border-gray-800 hidden" id="main-header">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-2">
-            <div class="flex items-center gap-4 cursor-pointer interactive group magnetic" onclick="navTo('status')">
-                <div class="w-10 h-10 border border-[var(--sys-blue)] flex items-center justify-center bg-[var(--sys-blue-bg)] group-hover:bg-[var(--sys-blue)] transition-colors duration-300">
-                    <span class="font-bold text-white leading-none">SA</span>
+    <!-- MAIN NAV HEADER (TOP) -->
+    <header class="fixed top-0 w-full z-40 bg-[rgba(2,5,10,0.85)] backdrop-blur-md border-b border-gray-800 hidden" id="main-header">
+        <div class="max-w-7xl mx-auto px-4 py-3 md:py-4 flex justify-between items-center gap-2">
+            
+            <!-- Architect Logo -->
+            <div class="flex items-center gap-3 md:gap-4 cursor-pointer interactive group magnetic" onclick="navTo('status')">
+                <div class="w-8 h-8 md:w-10 md:h-10 border border-[var(--sys-blue)] flex items-center justify-center bg-[var(--sys-blue-bg)] group-hover:bg-[var(--sys-blue)] transition-colors duration-300">
+                    <span class="font-bold text-white text-sm md:text-base leading-none">SA</span>
                 </div>
                 <div>
-                    <div class="font-bold text-sm tracking-[0.2em] text-white glitch-periodic">SYED AHMED</div>
-                    <div class="font-sys text-[10px] text-[var(--sys-blue)] tracking-widest">ARCHITECT_LEVEL: MAX</div>
+                    <div class="font-bold text-sm md:text-sm tracking-[0.2em] text-white glitch-periodic">SYED AHMED</div>
+                    <div class="font-sys text-[9px] md:text-[10px] text-[var(--sys-blue)] tracking-widest">ARCHITECT_LEVEL: MAX</div>
                 </div>
             </div>
             
-            <nav class="flex flex-wrap gap-1 md:gap-4 font-sys text-xs md:text-sm">
-                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group magnetic" onclick="navTo('status')">
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex flex-wrap gap-4 font-sys text-sm" id="desktop-nav">
+                <button class="desk-nav-btn text-gray-400 hover:text-white transition-colors interactive px-3 py-2 relative group magnetic active" data-target="status" onclick="navTo('status')">
                     STATUS
-                    <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                    <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left nav-indicator"></div>
                 </button>
-                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group magnetic" onclick="navTo('abilities')">
+                <button class="desk-nav-btn text-gray-400 hover:text-white transition-colors interactive px-3 py-2 relative group magnetic" data-target="abilities" onclick="navTo('abilities')">
                     ABILITIES
-                    <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                    <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left nav-indicator"></div>
                 </button>
-                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group magnetic" onclick="navTo('quests')">
+                <button class="desk-nav-btn text-gray-400 hover:text-white transition-colors interactive px-3 py-2 relative group magnetic" data-target="quests" onclick="navTo('quests')">
                     DEPLOYMENTS
-                    <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                    <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left nav-indicator"></div>
                 </button>
-                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group magnetic" onclick="navTo('inventory')">
+                <button class="desk-nav-btn text-gray-400 hover:text-white transition-colors interactive px-3 py-2 relative group magnetic" data-target="inventory" onclick="navTo('inventory')">
                     CREDENTIALS
-                    <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                    <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left nav-indicator"></div>
                 </button>
             </nav>
 
-            <div class="hidden lg:flex font-sys text-[10px] text-[var(--sys-blue)] bg-black/50 border border-[var(--sys-blue)] px-4 py-2 items-center gap-4 tracking-[0.2em] shadow-[0_0_10px_rgba(0,210,255,0.2)]">
-                <span id="sys-node" class="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]">NODE: DETECTING...</span>
-                <span class="w-px h-3 bg-[var(--sys-blue)]/50"></span>
-                <span id="sys-time">SYS.TIME: 00:00:00</span>
+            <!-- Mobile Terminal Trigger & Geo Data -->
+            <div class="flex items-center gap-3">
+                <div class="hidden lg:flex font-sys text-[10px] text-[var(--sys-blue)] bg-black/50 border border-[var(--sys-blue)] px-4 py-2 items-center gap-4 tracking-[0.2em] shadow-[0_0_10px_rgba(0,210,255,0.2)]">
+                    <span id="sys-node" class="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]">NODE: DETECTING...</span>
+                    <span class="w-px h-3 bg-[var(--sys-blue)]/50"></span>
+                    <span id="sys-time">SYS.TIME: 00:00:00</span>
+                </div>
+                <!-- Mobile Only Terminal Toggle -->
+                <button class="md:hidden interactive p-2 text-[var(--sys-blue)] border border-[var(--sys-blue)]/30 bg-[var(--sys-blue-bg)] rounded-sm active:bg-[var(--sys-blue)] active:text-black transition-colors" onclick="toggleTerminal()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M4 17h16a2 2 0 002-2V9a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- MOBILE SYSTEM BOTTOM HUD -->
+    <nav id="mobile-nav" class="fixed bottom-0 left-0 w-full z-40 bg-[rgba(3,7,14,0.95)] border-t border-gray-800 backdrop-blur-xl flex md:hidden justify-around items-center pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_30px_rgba(0,0,0,0.8)] transition-transform duration-500 translate-y-full hidden font-sys">
+        <button class="mob-nav-btn active flex flex-col items-center p-3 w-1/4 text-gray-500 hover:text-[var(--sys-blue)] interactive" data-target="status" onclick="navTo('status')">
+            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            <span class="text-[9px] tracking-widest">STATUS</span>
+        </button>
+        <button class="mob-nav-btn flex flex-col items-center p-3 w-1/4 text-gray-500 hover:text-[var(--sys-blue)] interactive" data-target="abilities" onclick="navTo('abilities')">
+            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <span class="text-[9px] tracking-widest">ABILITIES</span>
+        </button>
+        <button class="mob-nav-btn flex flex-col items-center p-3 w-1/4 text-gray-500 hover:text-[var(--sys-blue)] interactive" data-target="quests" onclick="navTo('quests')">
+            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+            <span class="text-[9px] tracking-widest">QUESTS</span>
+        </button>
+        <button class="mob-nav-btn flex flex-col items-center p-3 w-1/4 text-gray-500 hover:text-[var(--sys-blue)] interactive" data-target="inventory" onclick="navTo('inventory')">
+            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+            <span class="text-[9px] tracking-widest">INVENTORY</span>
+        </button>
+    </nav>
 
     <main class="max-w-7xl mx-auto px-4 md:px-8 relative z-10 hidden" id="main-content">
         
         <!-- 1. STATUS WINDOW (Home) -->
         <section id="status" class="view-section active">
-            <div class="flex flex-col items-center pt-12 md:pt-20">
-                <div class="sys-panel p-6 md:p-14 w-full max-w-6xl gs-reveal mb-10">
+            <div class="flex flex-col items-center">
+                <div class="sys-panel p-5 md:p-14 w-full max-w-6xl gs-reveal mb-10">
                     <div class="panel-glare"></div>
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-800 pb-6 mb-8 gap-4 relative z-10">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-800 pb-4 md:pb-6 mb-6 md:mb-8 gap-4 relative z-10">
                         <div>
-                            <p class="font-sys text-[var(--sys-blue)] text-sm tracking-widest mb-2">> IDENTITY CONFIRMED</p>
-                            <h1 class="text-4xl md:text-6xl font-bold tracking-widest text-white glitch-text uppercase" data-text="STATUS WINDOW">STATUS WINDOW</h1>
+                            <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1">> IDENTITY CONFIRMED</p>
+                            <h1 class="text-3xl md:text-6xl font-bold tracking-widest text-white glitch-text uppercase" data-text="STATUS WINDOW">STATUS WINDOW</h1>
                         </div>
-                        <span class="font-sys text-[var(--sys-blue)] border border-[var(--sys-blue)] px-4 py-2 bg-[var(--sys-blue-bg)] text-xs font-bold tracking-widest flex items-center gap-2 shadow-[0_0_15px_rgba(0,210,255,0.2)]">
-                            <span class="w-2 h-2 rounded-full bg-[var(--sys-blue)] animate-pulse shadow-[0_0_8px_var(--sys-blue)]"></span> SYSTEM ONLINE
+                        <span class="font-sys text-[var(--sys-blue)] border border-[var(--sys-blue)] px-3 md:px-4 py-1.5 md:py-2 bg-[var(--sys-blue-bg)] text-[10px] md:text-xs font-bold tracking-widest flex items-center gap-2 shadow-[0_0_15px_rgba(0,210,255,0.2)]">
+                            <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[var(--sys-blue)] animate-pulse shadow-[0_0_8px_var(--sys-blue)]"></span> SYSTEM ONLINE
                         </span>
                     </div>
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 relative z-10">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 relative z-10">
                         <!-- Left Col: Elite Identity Frame -->
                         <div class="lg:col-span-5 flex flex-col">
                             <!-- MASSSIVE EXCELLENT SYSTEM AVATAR -->
-                            <div class="flex flex-col items-center justify-center border border-gray-800 p-8 md:p-10 bg-black/40 relative mb-8 overflow-hidden">
+                            <div class="flex flex-col items-center justify-center border border-gray-800 p-6 md:p-10 bg-black/40 relative mb-6 md:mb-8 overflow-hidden">
                                 <div class="absolute inset-0 bg-[linear-gradient(rgba(0,210,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,210,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
                                 
-                                <div class="relative w-40 h-40 md:w-56 md:h-56 shrink-0 group z-10 mb-6">
-                                    <div class="absolute -inset-6 border-2 border-[var(--sys-blue)] rounded-full border-t-transparent border-b-transparent animate-[spin_6s_linear_infinite] opacity-40 shadow-[0_0_20px_var(--sys-blue)]"></div>
-                                    <div class="absolute -inset-3 border border-white/50 rounded-full border-l-transparent border-r-transparent animate-[spin_8s_linear_infinite_reverse] opacity-30"></div>
+                                <div class="relative w-36 h-36 md:w-56 md:h-56 shrink-0 group z-10 mb-5 md:mb-6">
+                                    <div class="absolute -inset-4 md:-inset-6 border-2 border-[var(--sys-blue)] rounded-full border-t-transparent border-b-transparent animate-[spin_6s_linear_infinite] opacity-40 shadow-[0_0_20px_var(--sys-blue)]"></div>
+                                    <div class="absolute -inset-2 md:-inset-3 border border-white/50 rounded-full border-l-transparent border-r-transparent animate-[spin_8s_linear_infinite_reverse] opacity-30"></div>
                                     
                                     <div class="absolute inset-0 bg-black border-2 border-[var(--sys-blue)] overflow-hidden z-10 shadow-[0_0_40px_rgba(0,210,255,0.4)] avatar-cut group-hover:border-[#00ffcc] transition-colors duration-500">
-                                        <img src="assets/images/profile.jpg" alt="Syed Ahmed" class="w-full h-full object-cover object-top scale-105 group-hover:scale-100 transition-transform duration-700 filter brightness-110 contrast-105" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full bg-[var(--sys-blue-bg)] flex items-center justify-center font-sys text-sm text-[var(--sys-blue)] tracking-widest\'>[ IMG_NULL ]</div>'">
+                                        <img src="assets/images/profile.jpg" alt="Syed Ahmed" class="w-full h-full object-cover object-top scale-105 group-hover:scale-100 transition-transform duration-700 filter brightness-110 contrast-105" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full bg-[var(--sys-blue-bg)] flex items-center justify-center font-sys text-[10px] md:text-sm text-[var(--sys-blue)] tracking-widest\'>[ IMG_NULL ]</div>'">
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
                                     </div>
 
-                                    <div class="absolute -top-3 -left-3 w-8 h-8 border-t-2 border-l-2 border-[var(--sys-blue)] z-20"></div>
-                                    <div class="absolute -bottom-3 -right-3 w-8 h-8 border-b-2 border-r-2 border-[var(--sys-blue)] z-20"></div>
+                                    <div class="absolute -top-2 -left-2 md:-top-3 md:-left-3 w-6 h-6 md:w-8 md:h-8 border-t-2 border-l-2 border-[var(--sys-blue)] z-20"></div>
+                                    <div class="absolute -bottom-2 -right-2 md:-bottom-3 md:-right-3 w-6 h-6 md:w-8 md:h-8 border-b-2 border-r-2 border-[var(--sys-blue)] z-20"></div>
                                     
-                                    <div class="absolute -bottom-5 left-1/2 transform -translate-x-1/2 z-30 bg-black border border-[var(--sys-blue)] px-6 py-1.5 font-sys text-white text-[10px] md:text-xs tracking-[0.2em] font-bold shadow-[0_0_20px_rgba(0,210,255,0.6)] whitespace-nowrap">
+                                    <div class="absolute -bottom-4 md:-bottom-5 left-1/2 transform -translate-x-1/2 z-30 bg-black border border-[var(--sys-blue)] px-4 md:px-6 py-1 md:py-1.5 font-sys text-white text-[9px] md:text-[10px] lg:text-xs tracking-[0.2em] font-bold shadow-[0_0_20px_rgba(0,210,255,0.6)] whitespace-nowrap">
                                         LVL. MAX
                                     </div>
                                 </div>
                                 
                                 <div class="text-center relative z-10 mt-2">
-                                    <h2 class="text-3xl md:text-4xl font-bold text-white tracking-widest uppercase mb-2 drop-shadow-[0_0_10px_rgba(0,210,255,0.3)]">Syed Ahmed</h2>
-                                    <div class="inline-block bg-[var(--sys-blue-bg)] border border-[var(--sys-blue)] px-4 py-1 font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest">
+                                    <h2 class="text-2xl md:text-4xl font-bold text-white tracking-widest uppercase mb-1 md:mb-2 drop-shadow-[0_0_10px_rgba(0,210,255,0.3)]">Syed Ahmed</h2>
+                                    <div class="inline-block bg-[var(--sys-blue-bg)] border border-[var(--sys-blue)] px-3 md:px-4 py-1 font-sys text-[var(--sys-blue)] text-[10px] md:text-sm tracking-widest">
                                         TITLE: <span class="text-white font-bold">THE ARCHITECT</span>
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- NEW: IMPACT METRICS (CLIENT VALUE PROOF) -->
-                            <div class="grid grid-cols-2 gap-4 mb-8">
-                                <div class="bg-black/50 border border-gray-800 p-4 text-center relative overflow-hidden group">
+                            <!-- IMPACT METRICS -->
+                            <div class="grid grid-cols-2 gap-3 md:gap-4 mb-6 md:mb-8">
+                                <div class="bg-black/50 border border-gray-800 p-3 md:p-4 text-center relative overflow-hidden group">
                                     <div class="absolute bottom-0 left-0 w-full h-1 bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
-                                    <div class="text-3xl md:text-4xl font-bold text-[var(--sys-blue)] font-display tracking-tighter counter" data-target="9">+</div>
-                                    <div class="font-sys text-[10px] md:text-xs text-gray-400 mt-2 tracking-widest">YEARS EXP</div>
+                                    <div class="text-2xl md:text-4xl font-bold text-[var(--sys-blue)] font-display tracking-tighter counter" data-target="9">+</div>
+                                    <div class="font-sys text-[9px] md:text-[10px] lg:text-xs text-gray-400 mt-1 md:mt-2 tracking-widest">YEARS EXP</div>
                                 </div>
-                                <div class="bg-black/50 border border-gray-800 p-4 text-center relative overflow-hidden group">
+                                <div class="bg-black/50 border border-gray-800 p-3 md:p-4 text-center relative overflow-hidden group">
                                     <div class="absolute bottom-0 left-0 w-full h-1 bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
-                                    <div class="text-3xl md:text-4xl font-bold text-[var(--sys-blue)] font-display tracking-tighter counter" data-target="52">+</div>
-                                    <div class="font-sys text-[10px] md:text-xs text-gray-400 mt-2 tracking-widest">CREDENTIALS</div>
+                                    <div class="text-2xl md:text-4xl font-bold text-[var(--sys-blue)] font-display tracking-tighter counter" data-target="52">+</div>
+                                    <div class="font-sys text-[9px] md:text-[10px] lg:text-xs text-gray-400 mt-1 md:mt-2 tracking-widest">CREDENTIALS</div>
                                 </div>
                             </div>
                             
-                            <div class="space-y-4 font-sys text-xs md:text-sm text-gray-400 bg-black/40 p-6 border border-gray-800 relative flex-grow">
+                            <div class="space-y-3 md:space-y-4 font-sys text-[10px] md:text-xs lg:text-sm text-gray-400 bg-black/40 p-4 md:p-6 border border-gray-800 relative flex-grow">
                                 <div class="absolute top-0 right-0 w-3 h-3 border-t border-r border-[var(--sys-blue)] opacity-50"></div>
-                                <div class="flex justify-between border-b border-gray-800/80 pb-3">
+                                <div class="flex justify-between border-b border-gray-800/80 pb-2 md:pb-3">
                                     <span>CLASS</span> <span class="text-white font-bold tracking-wide">FULL-STACK & DATA LEAD</span>
                                 </div>
-                                <div class="flex justify-between border-b border-gray-800/80 pb-3">
+                                <div class="flex justify-between border-b border-gray-800/80 pb-2 md:pb-3">
                                     <span>LOCATION</span> <span class="text-white tracking-wide">HYDERABAD (INDIA)</span>
                                 </div>
-                                <div class="flex justify-between items-center pt-1">
-                                    <span>HIGHER_ED</span> <span class="text-white text-[10px] md:text-xs font-bold text-right max-w-[65%] tracking-widest leading-tight">MASTER OF COMPUTER APPLICATIONS</span>
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center pt-1 gap-1">
+                                    <span>HIGHER_ED</span> <span class="text-white font-bold sm:text-right max-w-full sm:max-w-[65%] tracking-widest leading-tight">MASTER OF COMPUTER APPLICATIONS</span>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Right Col: Attributes & Solutions -->
                         <div class="lg:col-span-7 flex flex-col justify-between">
-                            <div class="bg-black/40 p-6 md:p-8 border border-gray-800 mb-8">
-                                <div class="flex flex-wrap justify-between items-end border-b border-gray-800 pb-4 mb-6 gap-4">
-                                    <h3 class="font-sys text-[var(--sys-blue)] text-sm md:text-base tracking-[0.2em]">> SYSTEM ATTRIBUTES</h3>
-                                    <button onclick="generateResumePDF()" class="sys-btn sys-btn-solid text-[10px] md:text-xs py-2 px-4 shadow-[0_0_15px_rgba(0,210,255,0.4)] interactive magnetic">
+                            <div class="bg-black/40 p-5 md:p-8 border border-gray-800 mb-6 md:mb-8">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-gray-800 pb-4 mb-5 md:mb-6 gap-3">
+                                    <h3 class="font-sys text-[var(--sys-blue)] text-xs md:text-sm lg:text-base tracking-[0.2em]">> SYSTEM ATTRIBUTES</h3>
+                                    <button onclick="generateResumePDF()" class="sys-btn sys-btn-solid text-[9px] md:text-[10px] lg:text-xs py-2 px-4 shadow-[0_0_15px_rgba(0,210,255,0.4)] interactive magnetic w-full sm:w-auto">
                                         [ EXTRACT RESUME ]
                                     </button>
                                 </div>
                                 
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-8 font-sys">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6 md:gap-y-8 font-sys">
                                     <div>
-                                        <div class="flex justify-between text-xs mb-2 tracking-widest"><span class="text-gray-400">ARCHITECTURE (STR)</span><span class="text-white font-bold">LVL. 99</span></div>
+                                        <div class="flex justify-between text-[10px] md:text-xs mb-1 md:mb-2 tracking-widest"><span class="text-gray-400">ARCHITECTURE (STR)</span><span class="text-white font-bold">LVL. 99</span></div>
                                         <div class="stat-bar-bg"><div class="stat-bar-fill w-0" data-width="98%"></div></div>
-                                        <p class="text-[10px] text-gray-500 mt-2 leading-relaxed tracking-wide">Enterprise-grade website & native app building.</p>
+                                        <p class="text-[9px] md:text-[10px] text-gray-500 mt-2 leading-relaxed tracking-wide">Enterprise-grade website & native app building.</p>
                                     </div>
                                     <div>
-                                        <div class="flex justify-between text-xs mb-2 tracking-widest"><span class="text-gray-400">BUSINESS INTELLIGENCE (INT)</span><span class="text-white font-bold">LVL. 95</span></div>
+                                        <div class="flex justify-between text-[10px] md:text-xs mb-1 md:mb-2 tracking-widest"><span class="text-gray-400">BUSINESS INTELLIGENCE (INT)</span><span class="text-white font-bold">LVL. 95</span></div>
                                         <div class="stat-bar-bg"><div class="stat-bar-fill w-0" data-width="95%"></div></div>
-                                        <p class="text-[10px] text-gray-500 mt-2 leading-relaxed tracking-wide">Power BI, data models, automating workflows.</p>
+                                        <p class="text-[9px] md:text-[10px] text-gray-500 mt-2 leading-relaxed tracking-wide">Power BI, data models, automating workflows.</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- NEW: ARCHITECT SOLUTIONS (WHAT CLIENTS BUY) -->
-                            <div class="mb-8">
-                                <h3 class="font-sys text-white text-lg md:text-xl tracking-widest mb-4 uppercase drop-shadow-md">Architect Solutions</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div class="bg-black/60 border border-[var(--sys-blue)]/30 p-5 group hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-all">
-                                        <div class="text-[var(--sys-blue)] mb-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg></div>
-                                        <h4 class="font-bold text-white text-sm tracking-wide mb-2 uppercase">Web Architecture</h4>
-                                        <p class="font-sys text-[10px] text-gray-400 leading-relaxed">Building scalable, high-performance web systems and portals that dominate markets.</p>
+                            <!-- ARCHITECT SOLUTIONS -->
+                            <div class="mb-6 md:mb-8">
+                                <h3 class="font-sys text-white text-base md:text-lg lg:text-xl tracking-widest mb-3 md:mb-4 uppercase drop-shadow-md">Architect Solutions</h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                                    <div class="bg-black/60 border border-[var(--sys-blue)]/30 p-4 md:p-5 group hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-all">
+                                        <div class="text-[var(--sys-blue)] mb-2 md:mb-3"><svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg></div>
+                                        <h4 class="font-bold text-white text-xs md:text-sm tracking-wide mb-1 md:mb-2 uppercase">Web Architecture</h4>
+                                        <p class="font-sys text-[9px] md:text-[10px] text-gray-400 leading-relaxed">Building scalable, high-performance web systems and portals that dominate markets.</p>
                                     </div>
-                                    <div class="bg-black/60 border border-[var(--sys-blue)]/30 p-5 group hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-all">
-                                        <div class="text-[var(--sys-blue)] mb-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg></div>
-                                        <h4 class="font-bold text-white text-sm tracking-wide mb-2 uppercase">Data Intelligence</h4>
-                                        <p class="font-sys text-[10px] text-gray-400 leading-relaxed">Transforming chaotic spreadsheets into automated Power BI pipelines and real-time dashboards.</p>
+                                    <div class="bg-black/60 border border-[var(--sys-blue)]/30 p-4 md:p-5 group hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-all">
+                                        <div class="text-[var(--sys-blue)] mb-2 md:mb-3"><svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg></div>
+                                        <h4 class="font-bold text-white text-xs md:text-sm tracking-wide mb-1 md:mb-2 uppercase">Data Intelligence</h4>
+                                        <p class="font-sys text-[9px] md:text-[10px] text-gray-400 leading-relaxed">Transforming chaotic spreadsheets into automated Power BI pipelines and real-time dashboards.</p>
                                     </div>
-                                    <div class="bg-black/60 border border-[var(--sys-blue)]/30 p-5 group hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-all">
-                                        <div class="text-[var(--sys-blue)] mb-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
-                                        <h4 class="font-bold text-white text-sm tracking-wide mb-2 uppercase">Process Automation</h4>
-                                        <p class="font-sys text-[10px] text-gray-400 leading-relaxed">Engineering digital workflows that eliminate bottlenecks and save enterprises hundreds of manual hours.</p>
+                                    <div class="bg-black/60 border border-[var(--sys-blue)]/30 p-4 md:p-5 group hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-all">
+                                        <div class="text-[var(--sys-blue)] mb-2 md:mb-3"><svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
+                                        <h4 class="font-bold text-white text-xs md:text-sm tracking-wide mb-1 md:mb-2 uppercase">Process Automation</h4>
+                                        <p class="font-sys text-[9px] md:text-[10px] text-gray-400 leading-relaxed">Engineering digital workflows that eliminate bottlenecks and save enterprises hundreds of manual hours.</p>
                                     </div>
                                 </div>
                             </div>
                             
                             <!-- Bio Hub -->
-                            <div class="bg-[var(--sys-blue-bg)] border border-[var(--sys-blue)] p-6 md:p-8 relative shadow-[inset_0_0_40px_rgba(0,210,255,0.05)]">
-                                <div class="absolute top-0 left-0 w-1.5 h-full bg-[var(--sys-blue)] shadow-[0_0_15px_var(--sys-blue)]"></div>
-                                <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-6 font-medium">
+                            <div class="bg-[var(--sys-blue-bg)] border border-[var(--sys-blue)] p-5 md:p-8 relative shadow-[inset_0_0_40px_rgba(0,210,255,0.05)]">
+                                <div class="absolute top-0 left-0 w-1 md:w-1.5 h-full bg-[var(--sys-blue)] shadow-[0_0_15px_var(--sys-blue)]"></div>
+                                <p class="text-gray-300 text-xs md:text-sm lg:text-base leading-relaxed mb-5 md:mb-6 font-medium">
                                     With a "problem-first" mindset developed from hardware infrastructure, I apply systems logic to build elite digital platforms. I don't just analyze numbers or write simple code; <span class="text-white font-bold drop-shadow-md">I build the infrastructure that allows leadership to make decisions instantly.</span>
                                 </p>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                                    <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="sys-btn interactive text-[11px] md:text-xs w-full py-3 magnetic">[ LINKEDIN NODE ]</a>
-                                    <a href="https://wa.me/918019416016" target="_blank" class="sys-btn interactive text-[11px] md:text-xs w-full py-3 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-black hover:shadow-[0_0_20px_#25D366] magnetic">[ WHATSAPP ]</a>
-                                    <a href="tel:+918019416016" class="sys-btn interactive text-[11px] md:text-xs w-full py-3 magnetic border-[var(--sys-blue)] text-[var(--sys-blue)] hover:bg-[var(--sys-blue)] hover:text-black hover:shadow-[0_0_20px_var(--sys-blue)]">[ CALL: 8019416016 ]</a>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mt-6 md:mt-8">
+                                    <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="sys-btn interactive text-[10px] md:text-[11px] lg:text-xs w-full py-3 magnetic">[ LINKEDIN NODE ]</a>
+                                    <a href="https://wa.me/918019416016" target="_blank" class="sys-btn interactive text-[10px] md:text-[11px] lg:text-xs w-full py-3 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-black hover:shadow-[0_0_20px_#25D366] magnetic">[ WHATSAPP ]</a>
+                                    <a href="tel:+918019416016" class="sys-btn interactive text-[10px] md:text-[11px] lg:text-xs w-full py-3 magnetic border-[var(--sys-blue)] text-[var(--sys-blue)] hover:bg-[var(--sys-blue)] hover:text-black hover:shadow-[0_0_20px_var(--sys-blue)]">[ CALL: 8019416016 ]</a>
                                 </div>
                             </div>
                         </div>
@@ -461,145 +506,145 @@ Press '~' (tilde/backtick) to close terminal.</div>
         <!-- 2. ABILITIES (Skills) -->
         <section id="abilities" class="view-section">
             <div class="pt-8 md:pt-16 max-w-7xl mx-auto">
-                <div class="border-b border-gray-800 pb-6 mb-12 gs-reveal flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div class="border-b border-gray-800 pb-4 md:pb-6 mb-8 md:mb-12 gs-reveal flex flex-col md:flex-row md:items-end justify-between gap-3 md:gap-4">
                     <div>
-                        <p class="font-sys text-[var(--sys-blue)] text-sm tracking-widest mb-2">> SKILL TREE EXTRACTED</p>
-                        <h2 class="text-4xl md:text-5xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Architect Abilities</h2>
+                        <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1 md:mb-2">> SKILL TREE EXTRACTED</p>
+                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Architect Abilities</h2>
                     </div>
-                    <div class="font-sys text-xs text-gray-500 border border-[var(--sys-blue)]/30 px-4 py-2 bg-black/60 shadow-inner">
+                    <div class="font-sys text-[10px] md:text-xs text-gray-500 border border-[var(--sys-blue)]/30 px-3 py-1.5 md:px-4 md:py-2 bg-black/60 shadow-inner">
                         EVALUATION BASED ON 9+ YEARS EXP
                     </div>
                 </div>
-                <div id="skills-container" class="space-y-16"></div>
+                <div id="skills-container" class="space-y-12 md:space-y-16"></div>
             </div>
         </section>
 
         <!-- 3. QUESTS (Deployments / Projects) -->
         <section id="quests" class="view-section">
             <div class="pt-8 md:pt-16 max-w-7xl mx-auto">
-                <div class="border-b border-gray-800 pb-6 mb-8 gs-reveal flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div class="border-b border-gray-800 pb-4 md:pb-6 mb-6 md:mb-8 gs-reveal flex flex-col md:flex-row md:items-end justify-between gap-3 md:gap-4">
                     <div>
-                        <p class="font-sys text-[var(--sys-blue)] text-sm tracking-widest mb-2">> SYSTEM DEPLOYMENTS</p>
-                        <h2 class="text-4xl md:text-5xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Completed Quests</h2>
+                        <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1 md:mb-2">> SYSTEM DEPLOYMENTS</p>
+                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Completed Quests</h2>
                     </div>
-                    <div class="font-sys text-xs text-[var(--sys-blue)] tracking-widest">SELECT A SECTOR TO VIEW LOGS</div>
+                    <div class="font-sys text-[10px] md:text-xs text-[var(--sys-blue)] tracking-widest">SELECT A SECTOR TO VIEW LOGS</div>
                 </div>
 
                 <!-- Dual Tabs -->
-                <div class="flex gap-2 mb-10 border-b border-gray-800 pb-px gs-reveal">
-                    <button class="tab-btn active interactive flex items-center gap-3 magnetic" onclick="switchQuestTab('web')">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <div class="flex gap-1 md:gap-2 mb-8 md:mb-10 border-b border-gray-800 pb-px gs-reveal overflow-x-auto whitespace-nowrap">
+                    <button class="tab-btn active interactive flex items-center gap-2 md:gap-3 magnetic flex-shrink-0" onclick="switchQuestTab('web')">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         ENTERPRISE WEBSITES
                     </button>
-                    <button class="tab-btn interactive flex items-center gap-3 magnetic" onclick="switchQuestTab('app')">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    <button class="tab-btn interactive flex items-center gap-2 md:gap-3 magnetic flex-shrink-0" onclick="switchQuestTab('app')">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                         NATIVE APPLICATIONS
                     </button>
                 </div>
 
                 <!-- Web Deployments -->
-                <div id="quests-web" class="grid grid-cols-1 lg:grid-cols-2 gap-10 quest-container transition-opacity duration-300">
-                    <div class="sys-panel p-6 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Crownz Barbershop', 'Complete digital overhaul for high-end barbershop. Enhanced user booking flow and brand presence.', 'React, Tailwind CSS, System Architecture', '40% increase in user retention & booking efficiency.', 'S', 'https://crownzbarbershop.github.io')">
+                <div id="quests-web" class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10 quest-container transition-opacity duration-300">
+                    <div class="sys-panel p-5 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Crownz Barbershop', 'Complete digital overhaul for high-end barbershop. Enhanced user booking flow and brand presence.', 'React, Tailwind CSS, System Architecture', '40% increase in user retention & booking efficiency.', 'S', 'https://crownzbarbershop.github.io')">
                         <div class="panel-glare"></div>
                         <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
-                                <h3 class="text-2xl md:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Crownz Barbershop</h3>
-                                <span class="rank-badge rank-s text-sm">RANK: S</span>
+                            <div class="flex justify-between items-start mb-4 md:mb-5 border-b border-gray-800 pb-3 md:pb-4">
+                                <h3 class="text-xl md:text-2xl lg:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Crownz Barbershop</h3>
+                                <span class="rank-badge rank-s text-xs md:text-sm">RANK: S</span>
                             </div>
-                            <div class="h-56 md:h-64 w-full bg-black border border-gray-800 mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
+                            <div class="h-48 md:h-56 lg:h-64 w-full bg-black border border-gray-800 mb-5 md:mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
                                 <img src="assets/images/crownz.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80'">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
                             </div>
                             <div class="flex justify-between items-center">
-                                <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">REACT</span><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">UI/UX</span></div>
-                                <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
+                                <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[9px] md:text-[10px] px-2 md:px-3 py-1 md:py-1.5 font-sys border border-gray-600 tracking-widest">REACT</span><span class="bg-gray-800/80 text-white text-[9px] md:text-[10px] px-2 md:px-3 py-1 md:py-1.5 font-sys border border-gray-600 tracking-widest">UI/UX</span></div>
+                                <p class="font-sys text-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="sys-panel p-6 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Clip Kings', 'Premium digital experience showcase for multimedia brand. Focus on fluid animations and performance.', 'GSAP, Custom JS, HTML5/CSS3', 'Elevated brand authority and user engagement time.', 'A', 'https://clipkings.github.io/clip-kings-website/')">
+                    <div class="sys-panel p-5 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Clip Kings', 'Premium digital experience showcase for multimedia brand. Focus on fluid animations and performance.', 'GSAP, Custom JS, HTML5/CSS3', 'Elevated brand authority and user engagement time.', 'A', 'https://clipkings.github.io/clip-kings-website/')">
                         <div class="panel-glare"></div>
                         <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
-                                <h3 class="text-2xl md:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Clip Kings</h3>
-                                <span class="rank-badge rank-a text-sm">RANK: A</span>
+                            <div class="flex justify-between items-start mb-4 md:mb-5 border-b border-gray-800 pb-3 md:pb-4">
+                                <h3 class="text-xl md:text-2xl lg:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Clip Kings</h3>
+                                <span class="rank-badge rank-a text-xs md:text-sm">RANK: A</span>
                             </div>
-                            <div class="h-56 md:h-64 w-full bg-black border border-gray-800 mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
+                            <div class="h-48 md:h-56 lg:h-64 w-full bg-black border border-gray-800 mb-5 md:mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
                                 <img src="assets/images/clipkings.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80'">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
                             </div>
                             <div class="flex justify-between items-center">
-                                <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">ANIMATION</span><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">FRONT-END</span></div>
-                                <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
+                                <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[9px] md:text-[10px] px-2 md:px-3 py-1 md:py-1.5 font-sys border border-gray-600 tracking-widest">ANIMATION</span><span class="bg-gray-800/80 text-white text-[9px] md:text-[10px] px-2 md:px-3 py-1 md:py-1.5 font-sys border border-gray-600 tracking-widest">FRONT-END</span></div>
+                                <p class="font-sys text-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="sys-panel p-6 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Opus Al Qudsi', 'Corporate portal designed for specialized services. Required high security, fast load times, and CMS integration.', 'Enterprise CMS, Web Architecture', 'Zero downtime deployment, streamlined client acquisition.', 'A', 'https://opusalqudsi.com')">
+                    <div class="sys-panel p-5 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Opus Al Qudsi', 'Corporate portal designed for specialized services. Required high security, fast load times, and CMS integration.', 'Enterprise CMS, Web Architecture', 'Zero downtime deployment, streamlined client acquisition.', 'A', 'https://opusalqudsi.com')">
                         <div class="panel-glare"></div>
                         <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
-                                <h3 class="text-2xl md:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Opus Al Qudsi</h3>
-                                <span class="rank-badge rank-a text-sm">RANK: A</span>
+                            <div class="flex justify-between items-start mb-4 md:mb-5 border-b border-gray-800 pb-3 md:pb-4">
+                                <h3 class="text-xl md:text-2xl lg:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Opus Al Qudsi</h3>
+                                <span class="rank-badge rank-a text-xs md:text-sm">RANK: A</span>
                             </div>
-                            <div class="h-56 md:h-64 w-full bg-black border border-gray-800 mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
+                            <div class="h-48 md:h-56 lg:h-64 w-full bg-black border border-gray-800 mb-5 md:mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
                                 <img src="assets/images/opus.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80'">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
                             </div>
                             <div class="flex justify-between items-center">
-                                <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">CORPORATE</span><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">CMS</span></div>
-                                <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
+                                <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[9px] md:text-[10px] px-2 md:px-3 py-1 md:py-1.5 font-sys border border-gray-600 tracking-widest">CORPORATE</span><span class="bg-gray-800/80 text-white text-[9px] md:text-[10px] px-2 md:px-3 py-1 md:py-1.5 font-sys border border-gray-600 tracking-widest">CMS</span></div>
+                                <p class="font-sys text-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="sys-panel p-6 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Quantum System OS', 'Design an immersive, high-performance portfolio mimicking a system interface without performance loss.', 'Vanilla JS, Canvas API, Tailwind', 'Ultimate client retention and technical demonstration.', 'S', '#')">
+                    <div class="sys-panel p-5 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Quantum System OS', 'Design an immersive, high-performance portfolio mimicking a system interface without performance loss.', 'Vanilla JS, Canvas API, Tailwind', 'Ultimate client retention and technical demonstration.', 'S', '#')">
                         <div class="panel-glare"></div>
                         <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-5 border-b border-[var(--sys-blue)] pb-4">
-                                <h3 class="text-2xl md:text-3xl font-bold text-[var(--sys-blue)] uppercase tracking-wide drop-shadow-md">System Portfolio</h3>
-                                <span class="rank-badge rank-s text-sm">RANK: S</span>
+                            <div class="flex justify-between items-start mb-4 md:mb-5 border-b border-[var(--sys-blue)] pb-3 md:pb-4">
+                                <h3 class="text-xl md:text-2xl lg:text-3xl font-bold text-[var(--sys-blue)] uppercase tracking-wide drop-shadow-md">System Portfolio</h3>
+                                <span class="rank-badge rank-s text-xs md:text-sm">RANK: S</span>
                             </div>
-                            <div class="h-56 md:h-64 w-full bg-[var(--sys-blue-bg)] border border-[var(--sys-blue)] mb-6 flex items-center justify-center relative overflow-hidden shadow-[inset_0_0_50px_rgba(0,210,255,0.15)] group-hover:bg-[var(--sys-blue)]/20 transition-colors">
-                                <span class="font-sys text-2xl font-bold text-[var(--sys-blue)] animate-pulse tracking-[0.3em] drop-shadow-[0_0_10px_rgba(0,210,255,0.8)]">[ CURRENT SYSTEM ACTIVE ]</span>
+                            <div class="h-48 md:h-56 lg:h-64 w-full bg-[var(--sys-blue-bg)] border border-[var(--sys-blue)] mb-5 md:mb-6 flex items-center justify-center relative overflow-hidden shadow-[inset_0_0_50px_rgba(0,210,255,0.15)] group-hover:bg-[var(--sys-blue)]/20 transition-colors">
+                                <span class="font-sys text-lg md:text-2xl font-bold text-[var(--sys-blue)] animate-pulse tracking-[0.2em] md:tracking-[0.3em] drop-shadow-[0_0_10px_rgba(0,210,255,0.8)] text-center px-4">[ CURRENT SYSTEM ACTIVE ]</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <div class="flex flex-wrap gap-2"><span class="bg-[var(--sys-blue)] text-black font-bold text-[10px] px-3 py-1.5 font-sys tracking-widest">ARCHITECTURE</span></div>
-                                <p class="font-sys text-white text-xs tracking-widest font-bold">> YOU ARE HERE</p>
+                                <div class="flex flex-wrap gap-2"><span class="bg-[var(--sys-blue)] text-black font-bold text-[9px] md:text-[10px] px-2 md:px-3 py-1 md:py-1.5 font-sys tracking-widest">ARCHITECTURE</span></div>
+                                <p class="font-sys text-white text-[10px] md:text-xs tracking-widest font-bold">> YOU ARE HERE</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- App Deployments (Hidden by default) -->
-                <div id="quests-app" class="grid grid-cols-1 lg:grid-cols-2 gap-10 quest-container hidden transition-opacity duration-300 opacity-0">
-                    <div class="sys-panel p-6 md:p-8 cursor-none interactive group border-[#ff3333]/50 bg-[#ff3333]/5" onclick="alertSystem('RESTRICTED. CLIENT NDA IN EFFECT.')">
+                <div id="quests-app" class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10 quest-container hidden transition-opacity duration-300 opacity-0">
+                    <div class="sys-panel p-5 md:p-8 cursor-none interactive group border-[#ff3333]/50 bg-[#ff3333]/5" onclick="alertSystem('RESTRICTED. CLIENT NDA IN EFFECT.')">
                         <div class="panel-glare"></div>
                         <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
-                                <h3 class="text-2xl md:text-3xl font-bold text-[#ff3333] uppercase tracking-wide drop-shadow-[0_0_10px_rgba(255,51,51,0.4)]">Classified Mobile Build</h3>
-                                <span class="rank-badge rank-locked text-sm">LOCKED</span>
+                            <div class="flex justify-between items-start mb-4 md:mb-5 border-b border-gray-800 pb-3 md:pb-4">
+                                <h3 class="text-xl md:text-2xl lg:text-3xl font-bold text-[#ff3333] uppercase tracking-wide drop-shadow-[0_0_10px_rgba(255,51,51,0.4)]">Classified Mobile Build</h3>
+                                <span class="rank-badge rank-locked text-xs md:text-sm">LOCKED</span>
                             </div>
-                            <div class="h-56 md:h-64 w-full bg-black border border-[#ff3333]/30 mb-6 flex items-center justify-center relative overflow-hidden shadow-inner">
+                            <div class="h-48 md:h-56 lg:h-64 w-full bg-black border border-[#ff3333]/30 mb-5 md:mb-6 flex items-center justify-center relative overflow-hidden shadow-inner">
                                 <div class="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_15px,rgba(255,51,51,0.08)_15px,rgba(255,51,51,0.08)_30px)]"></div>
-                                <span class="font-sys text-xl font-bold text-[#ff3333] tracking-widest relative z-10 bg-[#1a0505] px-6 py-3 border border-[#ff3333] shadow-[0_0_20px_rgba(255,51,51,0.5)]">[ CLASSIFIED ARCHITECTURE ]</span>
+                                <span class="font-sys text-sm md:text-xl font-bold text-[#ff3333] tracking-widest relative z-10 bg-[#1a0505] px-4 md:px-6 py-2 md:py-3 border border-[#ff3333] shadow-[0_0_20px_rgba(255,51,51,0.5)] text-center">[ CLASSIFIED ARCHITECTURE ]</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <div class="flex flex-wrap gap-2"><span class="bg-[#2a0808] text-gray-400 text-[10px] px-3 py-1.5 font-sys border border-gray-800 tracking-widest">NATIVE APP</span></div>
-                                <p class="font-sys text-gray-500 text-xs tracking-widest">> COMMISSION ONLY</p>
+                                <div class="flex flex-wrap gap-2"><span class="bg-[#2a0808] text-gray-400 text-[9px] md:text-[10px] px-2 md:px-3 py-1 md:py-1.5 font-sys border border-gray-800 tracking-widest">NATIVE APP</span></div>
+                                <p class="font-sys text-gray-500 text-[10px] md:text-xs tracking-widest">> COMMISSION ONLY</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="sys-panel p-6 md:p-8 cursor-none flex flex-col justify-center items-center bg-[rgba(0,0,0,0.6)] border border-[var(--sys-blue)]">
+                    <div class="sys-panel p-5 md:p-8 cursor-none flex flex-col justify-center items-center bg-[rgba(0,0,0,0.6)] border border-[var(--sys-blue)]">
                         <div class="panel-glare"></div>
                         <div class="relative z-10 flex flex-col items-center w-full">
-                            <div class="w-20 h-20 border-2 border-[var(--sys-blue)] flex items-center justify-center rounded-full mb-6 bg-[var(--sys-blue-bg)] group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(0,210,255,0.2)] relative">
+                            <div class="w-16 h-16 md:w-20 md:h-20 border-2 border-[var(--sys-blue)] flex items-center justify-center rounded-full mb-4 md:mb-6 bg-[var(--sys-blue-bg)] group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(0,210,255,0.2)] relative">
                                 <div class="absolute inset-0 border border-white/50 rounded-full animate-ping opacity-20"></div>
-                                <svg class="w-10 h-10 text-[var(--sys-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                <svg class="w-8 h-8 md:w-10 md:h-10 text-[var(--sys-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                             </div>
-                            <p class="font-sys text-[var(--sys-blue)] text-base md:text-lg tracking-widest mb-8 text-center font-bold drop-shadow-md">> CUSTOM APP PIPELINE OPEN</p>
-                            <a href="mailto:Syedahmed.sa43@gmail.com?subject=Custom+App+Build" class="sys-btn sys-btn-solid interactive text-sm w-full max-w-sm py-4 shadow-[0_0_20px_rgba(0,210,255,0.4)] magnetic">[ INITIATE APP CONTRACT ]</a>
+                            <p class="font-sys text-[var(--sys-blue)] text-sm md:text-base lg:text-lg tracking-widest mb-6 md:mb-8 text-center font-bold drop-shadow-md">> CUSTOM APP PIPELINE OPEN</p>
+                            <a href="mailto:Syedahmed.sa43@gmail.com?subject=Custom+App+Build" class="sys-btn sys-btn-solid interactive text-xs md:text-sm w-full max-w-xs md:max-w-sm py-3 md:py-4 shadow-[0_0_20px_rgba(0,210,255,0.4)] magnetic text-center">[ INITIATE APP CONTRACT ]</a>
                         </div>
                     </div>
                 </div>
@@ -610,58 +655,59 @@ Press '~' (tilde/backtick) to close terminal.</div>
         <!-- 4. INVENTORY (Certifications) -->
         <section id="inventory" class="view-section">
             <div class="pt-8 md:pt-16 max-w-7xl mx-auto">
-                <div class="border-b border-gray-800 pb-6 mb-10 gs-reveal flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div class="border-b border-gray-800 pb-4 md:pb-6 mb-8 md:mb-10 gs-reveal flex flex-col md:flex-row md:items-end justify-between gap-3 md:gap-4">
                     <div>
-                        <p class="font-sys text-[var(--sys-blue)] text-sm tracking-widest mb-2">> VERIFIED TITLES & CREDENTIALS DATABANK</p>
-                        <h2 class="text-4xl md:text-5xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Inventory</h2>
+                        <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1 md:mb-2">> VERIFIED TITLES & CREDENTIALS DATABANK</p>
+                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Inventory</h2>
                     </div>
-                    <div class="font-sys text-[var(--sys-blue)] bg-[var(--sys-blue-bg)] px-4 py-2 border border-[var(--sys-blue)] text-xs tracking-widest font-bold shadow-[0_0_10px_rgba(0,210,255,0.1)]">
+                    <div class="font-sys text-[var(--sys-blue)] bg-[var(--sys-blue-bg)] px-3 py-1.5 md:px-4 md:py-2 border border-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest font-bold shadow-[0_0_10px_rgba(0,210,255,0.1)] self-start md:self-auto">
                         ACQUIRED ITEMS: <span id="item-count" class="text-white text-sm ml-2">0</span>
                     </div>
                 </div>
-                <div id="inventory-container" class="space-y-16"></div>
+                <div id="inventory-container" class="space-y-12 md:space-y-16"></div>
             </div>
         </section>
     </main>
 
-    <!-- NEW FEATURE: FLOATING COMMS HUB (Always Accessible) -->
+    <!-- FLOATING COMMS HUB (Always Accessible) -->
     <button id="comms-fab" class="interactive magnetic z-50" onclick="openCommsModal()">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-        <span class="hidden md:inline">INITIATE COMMS</span>
+        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        <span class="hidden sm:inline">INITIATE COMMS</span>
     </button>
 
-    <!-- NEW FEATURE: SECURE TRANSMISSION MODAL (Contact Form) -->
+    <!-- SECURE TRANSMISSION MODAL (Contact Form) -->
     <div id="comms-modal" class="fixed inset-0 z-[105] hidden flex items-center justify-center opacity-0 pointer-events-none p-4">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-xl interactive" onclick="closeCommsModal()"></div>
-        <div class="sys-alert-box p-8 md:p-12 w-full max-w-2xl relative z-10 transform scale-95 transition-transform border border-[var(--sys-blue)]" id="comms-modal-content">
-            <div class="absolute top-6 right-6 border border-[var(--sys-blue)]/50 text-[var(--sys-blue)] font-sys px-4 py-2 text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors magnetic" onclick="closeCommsModal()">[ ESC ]</div>
+        <div class="sys-alert-box p-6 md:p-8 lg:p-12 w-full max-w-2xl relative z-10 transform scale-95 transition-transform border border-[var(--sys-blue)] max-h-[90vh] overflow-y-auto" id="comms-modal-content">
+            <div class="md:hidden swipe-handle"></div>
+            <div class="absolute top-4 right-4 md:top-6 md:right-6 border border-[var(--sys-blue)]/50 text-[var(--sys-blue)] font-sys px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors magnetic" onclick="closeCommsModal()">[ X ]</div>
             
-            <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest mb-3">> ESTABLISHING SECURE UPLINK...</p>
-            <h2 class="text-3xl md:text-5xl font-bold text-white uppercase tracking-wide drop-shadow-lg mb-8">Transmission</h2>
+            <p class="font-sys text-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest mb-2 md:mb-3">> ESTABLISHING SECURE UPLINK...</p>
+            <h2 class="text-2xl md:text-4xl lg:text-5xl font-bold text-white uppercase tracking-wide drop-shadow-lg mb-6 md:mb-8">Transmission</h2>
             
-            <div id="comms-form-wrapper" class="space-y-5">
+            <div id="comms-form-wrapper" class="space-y-4 md:space-y-5">
                 <div>
-                    <label class="block font-sys text-gray-400 text-xs tracking-widest mb-2">> CLIENT_IDENTIFIER (NAME)</label>
-                    <input type="text" id="comms-name" class="sys-input interactive" placeholder="Enter Designation">
+                    <label class="block font-sys text-gray-400 text-[10px] md:text-xs tracking-widest mb-1.5 md:mb-2">> CLIENT_IDENTIFIER (NAME)</label>
+                    <input type="text" id="comms-name" class="sys-input interactive text-sm" placeholder="Enter Designation">
                 </div>
                 <div>
-                    <label class="block font-sys text-gray-400 text-xs tracking-widest mb-2">> RETURN_SIGNAL_PATH (EMAIL)</label>
-                    <input type="email" id="comms-email" class="sys-input interactive" placeholder="Enter Secure Mail">
+                    <label class="block font-sys text-gray-400 text-[10px] md:text-xs tracking-widest mb-1.5 md:mb-2">> RETURN_SIGNAL_PATH (EMAIL)</label>
+                    <input type="email" id="comms-email" class="sys-input interactive text-sm" placeholder="Enter Secure Mail">
                 </div>
                 <div>
-                    <label class="block font-sys text-gray-400 text-xs tracking-widest mb-2">> DIRECTIVE_SCOPE (MESSAGE)</label>
-                    <textarea id="comms-msg" rows="4" class="sys-input interactive resize-none" placeholder="Enter Project Parameters..."></textarea>
+                    <label class="block font-sys text-gray-400 text-[10px] md:text-xs tracking-widest mb-1.5 md:mb-2">> DIRECTIVE_SCOPE (MESSAGE)</label>
+                    <textarea id="comms-msg" rows="4" class="sys-input interactive resize-none text-sm" placeholder="Enter Project Parameters..."></textarea>
                 </div>
-                <div class="mt-8 pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button class="sys-btn sys-btn-solid w-full interactive text-sm py-4 tracking-widest" onclick="sendTransmission()">[ EXECUTE TRANSMISSION ]</button>
-                    <a href="tel:+918019416016" class="sys-btn w-full interactive text-sm py-4 tracking-widest text-center border-[var(--sys-blue)] text-[var(--sys-blue)] hover:bg-[var(--sys-blue)] hover:text-black shadow-[inset_0_0_15px_rgba(0,210,255,0.1)]">[ CALL: 8019416016 ]</a>
+                <div class="mt-6 md:mt-8 pt-3 md:pt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                    <button class="sys-btn sys-btn-solid w-full interactive text-xs md:text-sm py-3 md:py-4 tracking-widest" onclick="sendTransmission()">[ EXECUTE TRANSMISSION ]</button>
+                    <a href="tel:+918019416016" class="sys-btn w-full interactive text-xs md:text-sm py-3 md:py-4 tracking-widest text-center border-[var(--sys-blue)] text-[var(--sys-blue)] hover:bg-[var(--sys-blue)] hover:text-black shadow-[inset_0_0_15px_rgba(0,210,255,0.1)]">[ CALL: 8019416016 ]</a>
                 </div>
             </div>
 
             <!-- Sending State -->
-            <div id="comms-loading" class="hidden py-10 flex flex-col items-center text-center">
-                <div class="w-16 h-16 border-2 border-t-[var(--sys-blue)] border-r-transparent border-b-[var(--sys-blue)] border-l-transparent rounded-full animate-spin mb-6"></div>
-                <p class="font-sys text-[var(--sys-blue)] tracking-[0.3em] font-bold" id="comms-status-text">ENCRYPTING DATA_PACKET...</p>
+            <div id="comms-loading" class="hidden py-8 md:py-10 flex flex-col items-center text-center">
+                <div class="w-12 h-12 md:w-16 md:h-16 border-2 border-t-[var(--sys-blue)] border-r-transparent border-b-[var(--sys-blue)] border-l-transparent rounded-full animate-spin mb-4 md:mb-6"></div>
+                <p class="font-sys text-[var(--sys-blue)] tracking-[0.2em] md:tracking-[0.3em] font-bold text-xs md:text-sm" id="comms-status-text">ENCRYPTING DATA_PACKET...</p>
             </div>
         </div>
     </div>
@@ -669,62 +715,64 @@ Press '~' (tilde/backtick) to close terminal.</div>
     <!-- QUEST MODAL -->
     <div id="quest-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none p-4">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-xl interactive" onclick="closeModals()"></div>
-        <div class="sys-alert-box p-8 md:p-12 w-full max-w-4xl relative z-10 transform scale-95 transition-transform" id="quest-modal-content">
-            <div class="absolute top-6 right-6 border border-gray-600 text-gray-400 font-sys px-4 py-2 text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:text-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors magnetic" onclick="closeModals()">[ ESC ]</div>
+        <div class="sys-alert-box p-6 md:p-8 lg:p-12 w-full max-w-4xl relative z-10 transform scale-95 transition-transform max-h-[90vh] overflow-y-auto" id="quest-modal-content">
+            <div class="md:hidden swipe-handle"></div>
+            <div class="absolute top-4 right-4 md:top-6 md:right-6 border border-gray-600 text-gray-400 font-sys px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:text-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors magnetic" onclick="closeModals()">[ X ]</div>
             
-            <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest mb-3">> DEPLOYMENT DETAILS DECRYPTED</p>
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-gray-800 pb-6">
-                <h2 id="q-title" class="text-3xl md:text-5xl font-bold text-white uppercase tracking-wide drop-shadow-lg">Quest Title</h2>
-                <span id="q-rank" class="rank-badge rank-s text-sm">RANK: S</span>
+            <p class="font-sys text-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest mb-2 md:mb-3">> DEPLOYMENT DETAILS DECRYPTED</p>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4 mb-6 md:mb-8 border-b border-gray-800 pb-4 md:pb-6">
+                <h2 id="q-title" class="text-2xl md:text-4xl lg:text-5xl font-bold text-white uppercase tracking-wide drop-shadow-lg">Quest Title</h2>
+                <span id="q-rank" class="rank-badge rank-s text-xs md:text-sm self-start md:self-auto">RANK: S</span>
             </div>
             
-            <div class="space-y-8 font-sys text-sm md:text-base text-gray-300 bg-black/60 p-6 md:p-10 border border-gray-800 shadow-inner relative overflow-hidden">
+            <div class="space-y-6 md:space-y-8 font-sys text-xs md:text-sm lg:text-base text-gray-300 bg-black/60 p-5 md:p-8 lg:p-10 border border-gray-800 shadow-inner relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--sys-blue)] to-transparent opacity-50"></div>
-                <div><span class="text-gray-500 font-bold block mb-2 tracking-[0.2em]">> OBJECTIVE & SCOPE</span> <span id="q-obj" class="text-white leading-relaxed">...</span></div>
-                <div><span class="text-gray-500 font-bold block mb-2 tracking-[0.2em]">> ARCHITECTURE STACK</span> <span id="q-tech" class="text-[var(--sys-blue)] font-bold text-lg">...</span></div>
-                <div class="pt-4 border-t border-gray-800/50"><span class="text-gray-500 font-bold block mb-2 tracking-[0.2em]">> REWARD / SYSTEM RESULT</span> <span id="q-res" class="text-[#00ffcc] text-xl md:text-2xl font-bold drop-shadow-[0_0_10px_rgba(0,255,204,0.3)]">...</span></div>
+                <div><span class="text-gray-500 font-bold block mb-1.5 md:mb-2 tracking-[0.2em]">> OBJECTIVE & SCOPE</span> <span id="q-obj" class="text-white leading-relaxed">...</span></div>
+                <div><span class="text-gray-500 font-bold block mb-1.5 md:mb-2 tracking-[0.2em]">> ARCHITECTURE STACK</span> <span id="q-tech" class="text-[var(--sys-blue)] font-bold text-base md:text-lg">...</span></div>
+                <div class="pt-3 md:pt-4 border-t border-gray-800/50"><span class="text-gray-500 font-bold block mb-1.5 md:mb-2 tracking-[0.2em]">> REWARD / SYSTEM RESULT</span> <span id="q-res" class="text-[#00ffcc] text-lg md:text-xl lg:text-2xl font-bold drop-shadow-[0_0_10px_rgba(0,255,204,0.3)]">...</span></div>
             </div>
             
-            <div class="mt-10 flex justify-end">
-                <a id="q-link" href="#" target="_blank" class="sys-btn sys-btn-solid interactive text-sm py-4 px-8 shadow-[0_0_20px_rgba(0,210,255,0.4)] magnetic">[ INITIALIZE DEPLOYMENT (LIVE URL) ]</a>
+            <div class="mt-8 md:mt-10 flex justify-end">
+                <a id="q-link" href="#" target="_blank" class="sys-btn sys-btn-solid interactive text-xs md:text-sm py-3 md:py-4 px-6 md:px-8 shadow-[0_0_20px_rgba(0,210,255,0.4)] magnetic w-full md:w-auto text-center">[ INITIALIZE DEPLOYMENT (LIVE URL) ]</a>
             </div>
         </div>
     </div>
 
     <!-- ITEM MODAL (Certs) -->
-    <div id="item-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none p-4">
+    <div id="item-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none p-4 pb-[env(safe-area-inset-bottom)]">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-xl interactive" onclick="closeModals()"></div>
-        <div class="sys-alert-box p-6 md:p-10 w-full max-w-6xl h-[90vh] flex flex-col relative z-10 transform scale-95 transition-transform" id="item-modal-content">
-            <div class="absolute top-6 right-6 border border-gray-600 text-gray-400 font-sys px-4 py-2 text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:text-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors z-20 magnetic" onclick="closeModals()">[ ESC ]</div>
+        <div class="sys-alert-box p-4 md:p-8 lg:p-10 w-full max-w-6xl h-[85vh] md:h-[90vh] flex flex-col relative z-10 transform scale-95 transition-transform" id="item-modal-content">
+            <div class="md:hidden swipe-handle mt-1"></div>
+            <div class="absolute top-4 right-4 md:top-6 md:right-6 border border-gray-600 text-gray-400 font-sys px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:text-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors z-20 magnetic" onclick="closeModals()">[ X ]</div>
             
-            <div class="mb-6 pr-24 shrink-0">
-                <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest mb-2 mt-4 md:mt-0">> CREDENTIAL VERIFICATION</p>
-                <h2 id="i-title" class="text-2xl md:text-4xl font-bold text-white uppercase mb-3 truncate drop-shadow-md">Item Title</h2>
-                <span id="i-type" class="font-sys bg-[var(--sys-blue)] text-black px-4 py-1.5 text-[10px] md:text-xs font-bold tracking-widest inline-block">DOMAIN: UNKNOWN</span>
+            <div class="mb-4 md:mb-6 pr-16 md:pr-24 shrink-0">
+                <p class="font-sys text-[var(--sys-blue)] text-[9px] md:text-xs tracking-widest mb-1 md:mb-2 mt-2 md:mt-0">> CREDENTIAL VERIFICATION</p>
+                <h2 id="i-title" class="text-lg md:text-3xl lg:text-4xl font-bold text-white uppercase mb-2 md:mb-3 truncate drop-shadow-md">Item Title</h2>
+                <span id="i-type" class="font-sys bg-[var(--sys-blue)] text-black px-2 py-1 md:px-4 md:py-1.5 text-[8px] md:text-[10px] lg:text-xs font-bold tracking-widest inline-block truncate max-w-full">DOMAIN: UNKNOWN</span>
             </div>
             
             <div class="w-full flex-grow border border-gray-800 bg-[#020408] relative flex items-center justify-center overflow-hidden shadow-inner">
-                <iframe id="i-frame" src="" class="w-full h-full absolute inset-0 z-10 hidden bg-white"></iframe>
+                <iframe id="i-frame" src="" class="w-full h-full absolute inset-0 z-10 hidden bg-white border-0"></iframe>
                 
                 <div id="i-state" class="text-center font-sys z-0">
-                    <div class="w-24 h-24 border-4 border-t-[var(--sys-blue)] border-r-transparent border-b-transparent border-l-[var(--sys-blue)] rounded-full animate-spin mx-auto mb-6 shadow-[0_0_20px_rgba(0,210,255,0.2)]"></div>
-                    <p class="text-[var(--sys-blue)] animate-pulse tracking-[0.3em] font-bold text-lg">DECRYPTING SECURE DATA...</p>
+                    <div class="w-16 h-16 md:w-24 md:h-24 border-4 border-t-[var(--sys-blue)] border-r-transparent border-b-transparent border-l-[var(--sys-blue)] rounded-full animate-spin mx-auto mb-4 md:mb-6 shadow-[0_0_20px_rgba(0,210,255,0.2)]"></div>
+                    <p class="text-[var(--sys-blue)] animate-pulse tracking-[0.2em] md:tracking-[0.3em] font-bold text-xs md:text-lg">DECRYPTING SECURE DATA...</p>
                 </div>
                 
-                <div id="i-error" class="hidden text-center font-sys z-0 p-10 border border-[#ff3333] bg-[#ff3333]/5 max-w-lg shadow-[inset_0_0_40px_rgba(255,51,51,0.05)]">
-                    <span class="text-6xl font-bold text-[#ff3333] block mb-6 drop-shadow-[0_0_15px_rgba(255,51,51,0.5)]">!</span>
-                    <h3 class="text-3xl font-bold text-white mb-3 tracking-widest">DATA NOT FOUND</h3>
-                    <p class="text-gray-400 text-base mb-8 leading-relaxed">The physical file is missing from the server databank.</p>
-                    <p id="i-path" class="text-xs text-gray-500 bg-black p-4 border border-gray-800 break-all select-all font-mono">path/to/file.pdf</p>
+                <div id="i-error" class="hidden text-center font-sys z-0 p-6 md:p-10 border border-[#ff3333] bg-[#ff3333]/5 max-w-[90%] md:max-w-lg shadow-[inset_0_0_40px_rgba(255,51,51,0.05)]">
+                    <span class="text-4xl md:text-6xl font-bold text-[#ff3333] block mb-4 md:mb-6 drop-shadow-[0_0_15px_rgba(255,51,51,0.5)]">!</span>
+                    <h3 class="text-xl md:text-3xl font-bold text-white mb-2 md:mb-3 tracking-widest">DATA NOT FOUND</h3>
+                    <p class="text-gray-400 text-xs md:text-base mb-6 md:mb-8 leading-relaxed">The physical file is missing from the server databank.</p>
+                    <p id="i-path" class="text-[9px] md:text-xs text-gray-500 bg-black p-3 md:p-4 border border-gray-800 break-all select-all font-mono">path/to/file.pdf</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- GLOBAL ALERT -->
-    <div id="sys-msg" class="fixed bottom-8 left-1/2 -translate-x-1/2 sys-alert-box py-4 px-8 z-[9999] opacity-0 pointer-events-none transform translate-y-4 transition-all duration-300 flex items-center gap-4 border-[#ff3333] border-t-0 border-l-4 shadow-[0_10px_30px_rgba(255,51,51,0.2)]">
-        <div class="w-3 h-3 bg-[#ff3333] rounded-full animate-pulse shadow-[0_0_10px_#ff3333]"></div>
-        <p id="sys-msg-text" class="font-sys text-white text-sm tracking-widest m-0 uppercase font-bold"></p>
+    <div id="sys-msg" class="fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 sys-alert-box py-3 md:py-4 px-6 md:px-8 z-[9999] opacity-0 pointer-events-none transform translate-y-4 transition-all duration-300 flex items-center gap-3 md:gap-4 border-[#ff3333] border-t-0 border-l-4 shadow-[0_10px_30px_rgba(255,51,51,0.2)] max-w-[90vw] w-max">
+        <div class="w-2 h-2 md:w-3 md:h-3 bg-[#ff3333] rounded-full animate-pulse shadow-[0_0_10px_#ff3333] shrink-0"></div>
+        <p id="sys-msg-text" class="font-sys text-white text-[10px] md:text-sm tracking-widest m-0 uppercase font-bold text-center"></p>
     </div>
 
     <script>
@@ -897,8 +945,12 @@ Press '~' (tilde/backtick) to close terminal.</div>
         ];
 
         /* =========================================
-           CINEMATIC SPATIAL AUDIO ENGINE 
+           CINEMATIC SPATIAL AUDIO & HAPTIC ENGINE 
         ========================================= */
+        const vibrate = (ms) => {
+            if(navigator.vibrate) navigator.vibrate(ms);
+        };
+
         const AudioSys = {
             ctx: null,
             droneGain: null,
@@ -915,10 +967,12 @@ Press '~' (tilde/backtick) to close terminal.</div>
                     gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.03, t + 0.01); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05); 
                     osc.start(t); osc.stop(t + 0.05);
                 } else if (type === 'click') {
+                    vibrate(15); // Haptic click
                     osc.type = 'square'; osc.frequency.setValueAtTime(400, t); osc.frequency.exponentialRampToValueAtTime(100, t + 0.1); 
                     gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.1, t + 0.01); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
                     osc.start(t); osc.stop(t + 0.1);
                 } else if (type === 'alert') {
+                    vibrate([30, 50, 30]); // Haptic double ping
                     osc.type = 'sine'; osc.frequency.setValueAtTime(1200, t);
                     gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.1, t + 0.05); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
                     osc.start(t); osc.stop(t + 0.4);
@@ -928,6 +982,7 @@ Press '~' (tilde/backtick) to close terminal.</div>
                     gain2.gain.setValueAtTime(0, t+0.1); gain2.gain.linearRampToValueAtTime(0.1, t + 0.15); gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
                     osc2.start(t+0.1); osc2.stop(t + 0.5);
                 } else if (type === 'error') {
+                    vibrate(50); // Haptic error
                     osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, t); osc.frequency.linearRampToValueAtTime(80, t + 0.3);
                     gain.gain.setValueAtTime(0.1, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
                     osc.start(t); osc.stop(t + 0.3);
@@ -938,7 +993,7 @@ Press '~' (tilde/backtick) to close terminal.</div>
                 const osc = this.ctx.createOscillator();
                 this.droneGain = this.ctx.createGain();
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(45, this.ctx.currentTime); // Ultra low frequency drone
+                osc.frequency.setValueAtTime(45, this.ctx.currentTime); 
                 
                 this.droneGain.gain.setValueAtTime(0, this.ctx.currentTime);
                 this.droneGain.gain.linearRampToValueAtTime(0.015, this.ctx.currentTime + 3); 
@@ -966,7 +1021,7 @@ Press '~' (tilde/backtick) to close terminal.</div>
             let h = canvas.height = window.innerHeight;
             
             const particles = [];
-            const pCount = w < 768 ? 30 : 70;
+            const pCount = w < 768 ? 20 : 60; // Optimized for mobile
             for(let i=0; i< pCount; i++) {
                 particles.push({
                     x: Math.random() * w, y: Math.random() * h,
@@ -986,10 +1041,10 @@ Press '~' (tilde/backtick) to close terminal.</div>
                         let dy = particles[i].y - particles[j].y;
                         let dist = Math.sqrt(dx*dx + dy*dy);
                         
-                        if(dist < 140) {
+                        if(dist < (w < 768 ? 100 : 140)) {
                             ctx.beginPath();
                             ctx.strokeStyle = `rgba(0, 210, 255, ${0.15 - dist/900})`;
-                            ctx.lineWidth = 0.6;
+                            ctx.lineWidth = w < 768 ? 0.4 : 0.6;
                             ctx.moveTo(particles[i].x, particles[i].y);
                             ctx.lineTo(particles[j].x, particles[j].y);
                             ctx.stroke();
@@ -1020,10 +1075,12 @@ Press '~' (tilde/backtick) to close terminal.</div>
                 .then(r => r.json())
                 .then(data => {
                     const city = data.city ? data.city.toUpperCase() : 'UNKNOWN';
-                    document.getElementById('sys-node').innerText = `NODE: ${city}`;
+                    const nodeEl = document.getElementById('sys-node');
+                    if(nodeEl) nodeEl.innerText = `NODE: ${city}`;
                 })
                 .catch(() => {
-                    document.getElementById('sys-node').innerText = `NODE: SECURE UPLINK`;
+                    const nodeEl = document.getElementById('sys-node');
+                    if(nodeEl) nodeEl.innerText = `NODE: SECURE UPLINK`;
                 });
         };
 
@@ -1058,6 +1115,7 @@ Press '~' (tilde/backtick) to close terminal.</div>
 
             document.querySelectorAll('.sys-panel').forEach(panel => {
                 const glare = panel.querySelector('.panel-glare');
+                if(!glare) return;
                 panel.addEventListener('mousemove', (e) => {
                     const rect = panel.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -1070,15 +1128,11 @@ Press '~' (tilde/backtick) to close terminal.</div>
                     const rotateY = ((x - centerX) / centerX) * 10;
 
                     gsap.to(panel, {rotateX, rotateY, duration: 0.3, ease: "power2.out"});
-                    if(glare) {
-                        glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.2), transparent 50%)`;
-                    }
+                    glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.2), transparent 50%)`;
                 });
                 panel.addEventListener('mouseleave', () => {
                     gsap.to(panel, {rotateX: 0, rotateY: 0, duration: 0.7, ease: "power3.out"});
-                    if(glare) {
-                        glare.style.background = `radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05), transparent 50%)`;
-                    }
+                    glare.style.background = `radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05), transparent 50%)`;
                 });
             });
         };
@@ -1115,27 +1169,27 @@ Press '~' (tilde/backtick) to close terminal.</div>
             let sHtml = '';
             skillsData.forEach(cat => {
                 sHtml += `
-                <div class="mb-14 gs-reveal">
-                    <div class="flex justify-between items-end border-b border-gray-800 pb-3 mb-6">
+                <div class="mb-10 md:mb-14 gs-reveal">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end border-b border-gray-800 pb-2 md:pb-3 mb-4 md:mb-6 gap-2">
                         <div>
-                            <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest mb-1">> SYS_DOMAIN</p>
-                            <h3 class="font-bold text-xl md:text-2xl text-white tracking-widest uppercase">${cat.title}</h3>
+                            <p class="font-sys text-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest mb-1">> SYS_DOMAIN</p>
+                            <h3 class="font-bold text-lg md:text-xl lg:text-2xl text-white tracking-widest uppercase">${cat.title}</h3>
                         </div>
-                        <div class="text-right">
-                            <span class="rank-badge rank-${cat.rank.toLowerCase()} text-xs">RANK: ${cat.rank}</span>
-                            <div class="font-sys text-gray-400 text-xs mt-1">CAPACITY: ${cat.percent}</div>
+                        <div class="sm:text-right flex sm:block items-center justify-between mt-2 sm:mt-0">
+                            <span class="rank-badge rank-${cat.rank.toLowerCase()} text-[10px] md:text-xs">RANK: ${cat.rank}</span>
+                            <div class="font-sys text-gray-400 text-[10px] md:text-xs sm:mt-1 ml-4 sm:ml-0">CAPACITY: ${cat.percent}</div>
                         </div>
                     </div>
-                    <div class="stat-bar-bg mb-8"><div class="stat-bar-fill w-0" data-width="${cat.percent}"></div></div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">`;
+                    <div class="stat-bar-bg mb-6 md:mb-8"><div class="stat-bar-fill w-0" data-width="${cat.percent}"></div></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">`;
                 cat.items.forEach(item => {
-                    let tags = item.tags.map(t => `<span class="bg-black px-2 py-1 text-[9px] text-gray-400 border border-gray-700 tracking-widest uppercase">${t}</span>`).join(' ');
+                    let tags = item.tags.map(t => `<span class="bg-black px-2 py-1 text-[8px] md:text-[9px] text-gray-400 border border-gray-700 tracking-widest uppercase">${t}</span>`).join(' ');
                     sHtml += `
-                        <div class="sys-panel p-6 cursor-none interactive group flex flex-col justify-between magnetic">
+                        <div class="sys-panel p-5 md:p-6 cursor-none interactive group flex flex-col justify-between magnetic">
                             <div class="panel-glare"></div>
                             <div class="relative z-10">
-                                <h4 class="font-bold text-sm md:text-base text-white group-hover:text-[var(--sys-blue)] transition-colors mb-3 tracking-wide">${item.name}</h4>
-                                <div class="flex flex-wrap gap-2 mt-3">${tags}</div>
+                                <h4 class="font-bold text-sm md:text-base text-white group-hover:text-[var(--sys-blue)] transition-colors mb-2 md:mb-3 tracking-wide">${item.name}</h4>
+                                <div class="flex flex-wrap gap-1.5 md:gap-2 mt-2 md:mt-3">${tags}</div>
                             </div>
                         </div>`;
                 });
@@ -1147,9 +1201,9 @@ Press '~' (tilde/backtick) to close terminal.</div>
             let iHtml = ''; let count = 0;
             certCategoryData.forEach(cat => {
                 iHtml += `
-                <div class="mb-12 gs-reveal">
-                    <h3 class="font-sys text-[var(--sys-blue)] text-sm md:text-base mb-6 border-b border-gray-800 pb-3 tracking-widest">> DOMAIN: ${cat.title}</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">`;
+                <div class="mb-10 md:mb-12 gs-reveal">
+                    <h3 class="font-sys text-[var(--sys-blue)] text-xs md:text-sm lg:text-base mb-4 md:mb-6 border-b border-gray-800 pb-2 md:pb-3 tracking-widest">> DOMAIN: ${cat.title}</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">`;
                 
                 cat.items.forEach(item => {
                     count++;
@@ -1158,13 +1212,13 @@ Press '~' (tilde/backtick) to close terminal.</div>
                     const safeFile = item.file.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     
                     iHtml += `
-                        <div class="sys-panel p-6 cursor-none interactive group flex flex-col justify-between min-h-[150px] magnetic" onclick="openItem('${safeName}', '${safeCat}', '${safeFile}')">
+                        <div class="sys-panel p-5 md:p-6 cursor-none interactive group flex flex-col justify-between min-h-[120px] md:min-h-[150px] magnetic" onclick="openItem('${safeName}', '${safeCat}', '${safeFile}')">
                             <div class="panel-glare"></div>
                             <div class="relative z-10 h-full flex flex-col justify-between">
-                                <h4 class="font-bold text-sm text-gray-300 group-hover:text-white leading-relaxed tracking-wide drop-shadow-sm">${item.name}</h4>
-                                <div class="mt-5 pt-3 border-t border-gray-800 flex justify-between items-center opacity-60 group-hover:opacity-100 transition-opacity">
-                                    <span class="font-sys text-[10px] text-gray-500 tracking-widest uppercase">FILE_${count.toString().padStart(3, '0')}</span>
-                                    <span class="font-sys text-[11px] text-[var(--sys-blue)] tracking-widest font-bold">[ VERIFY ]</span>
+                                <h4 class="font-bold text-xs md:text-sm text-gray-300 group-hover:text-white leading-relaxed tracking-wide drop-shadow-sm">${item.name}</h4>
+                                <div class="mt-4 md:mt-5 pt-3 border-t border-gray-800 flex justify-between items-center opacity-60 group-hover:opacity-100 transition-opacity">
+                                    <span class="font-sys text-[9px] md:text-[10px] text-gray-500 tracking-widest uppercase">FILE_${count.toString().padStart(3, '0')}</span>
+                                    <span class="font-sys text-[10px] md:text-[11px] text-[var(--sys-blue)] tracking-widest font-bold">[ VERIFY ]</span>
                                 </div>
                             </div>
                         </div>`;
@@ -1174,31 +1228,6 @@ Press '~' (tilde/backtick) to close terminal.</div>
             ic.innerHTML = iHtml;
             document.getElementById('item-count').innerText = count;
         }
-
-        window.switchQuestTab = (tab) => {
-            playSfx('hover');
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-
-            const cWeb = document.getElementById('quests-web');
-            const cApp = document.getElementById('quests-app');
-            
-            if(tab === 'web') {
-                cApp.style.opacity = 0;
-                setTimeout(() => {
-                    cApp.classList.add('hidden');
-                    cWeb.classList.remove('hidden');
-                    setTimeout(() => cWeb.style.opacity = 1, 50);
-                }, 300);
-            } else {
-                cWeb.style.opacity = 0;
-                setTimeout(() => {
-                    cWeb.classList.add('hidden');
-                    cApp.classList.remove('hidden');
-                    setTimeout(() => cApp.style.opacity = 1, 50);
-                }, 300);
-            }
-        };
 
         function typeWriter(elementId, text, speed, callback) {
             let i = 0;
@@ -1236,8 +1265,16 @@ Press '~' (tilde/backtick) to close terminal.</div>
                         document.getElementById('main-content').classList.remove('hidden');
                         
                         gsap.fromTo('#main-header', {y: -50, opacity: 0}, {y: 0, opacity: 1, duration: 0.6});
-                        animateSection('status');
                         
+                        // Mobile Nav entry
+                        if(window.innerWidth <= 768) {
+                            const mobNav = document.getElementById('mobile-nav');
+                            mobNav.classList.remove('hidden');
+                            mobNav.style.display = 'flex';
+                            setTimeout(() => { mobNav.style.transform = 'translateY(0)'; }, 100);
+                        }
+
+                        animateSection('status');
                         fetchGeoData();
                     }});
                 }, 500);
@@ -1246,6 +1283,11 @@ Press '~' (tilde/backtick) to close terminal.</div>
 
         window.navTo = (id) => {
             playSfx('click');
+            
+            // Update active states on Desktop & Mobile Navigation
+            document.querySelectorAll('.desk-nav-btn, .mob-nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll(`[data-target="${id}"]`).forEach(btn => btn.classList.add('active'));
+
             const overlay = document.getElementById('transition-overlay');
             gsap.to(overlay, {opacity: 1, duration: 0.3, pointerEvents: 'auto', onComplete: () => {
                 document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
@@ -1260,8 +1302,12 @@ Press '~' (tilde/backtick) to close terminal.</div>
 
         function animateSection(id) {
             const section = document.getElementById(id);
+            // Disable 3D rotation on mobile for better performance and look
+            const rotX = window.innerWidth > 768 ? 15 : 0;
+            const yOffset = window.innerWidth > 768 ? 60 : 30;
+
             gsap.fromTo(section.querySelectorAll('.gs-reveal'), 
-                {y: 60, opacity: 0, scale: 0.9, rotationX: 15}, 
+                {y: yOffset, opacity: 0, scale: 0.95, rotationX: rotX}, 
                 {y: 0, opacity: 1, scale: 1, rotationX: 0, duration: 1.2, stagger: 0.08, ease: "expo.out"}
             );
             
@@ -1284,7 +1330,7 @@ Press '~' (tilde/backtick) to close terminal.</div>
             document.getElementById('q-res').innerText = res;
             
             const rBadge = document.getElementById('q-rank');
-            rBadge.className = `rank-badge rank-${rank.toLowerCase()} text-sm`;
+            rBadge.className = `rank-badge rank-${rank.toLowerCase()} text-xs md:text-sm self-start md:self-auto`;
             rBadge.innerText = `RANK: ${rank}`;
 
             const linkBtn = document.getElementById('q-link');
@@ -1294,7 +1340,7 @@ Press '~' (tilde/backtick) to close terminal.</div>
             const modal = document.getElementById('quest-modal');
             modal.classList.remove('hidden', 'pointer-events-none');
             gsap.to(modal, {opacity: 1, duration: 0.4});
-            gsap.fromTo('#quest-modal-content', {scale: 0.9, y: 40}, {scale: 1, y: 0, duration: 0.6, ease: "back.out(1.2)"});
+            gsap.fromTo('#quest-modal-content', {scale: 0.9, y: window.innerWidth > 768 ? 40 : 100}, {scale: 1, y: 0, duration: 0.6, ease: "back.out(1.2)"});
         };
 
         window.openItem = (title, type, file) => {
@@ -1314,7 +1360,7 @@ Press '~' (tilde/backtick) to close terminal.</div>
             const modal = document.getElementById('item-modal');
             modal.classList.remove('hidden', 'pointer-events-none');
             gsap.to(modal, {opacity: 1, duration: 0.4});
-            gsap.fromTo('#item-modal-content', {scale: 0.9, y: 40}, {scale: 1, y: 0, duration: 0.6, ease: "back.out(1.2)"});
+            gsap.fromTo('#item-modal-content', {scale: 0.9, y: window.innerWidth > 768 ? 40 : 100}, {scale: 1, y: 0, duration: 0.6, ease: "back.out(1.2)"});
 
             setTimeout(async () => {
                 const pdfPath = `assets/certificates/${file}`;
@@ -1346,17 +1392,42 @@ Press '~' (tilde/backtick) to close terminal.</div>
             document.getElementById('comms-msg').value = '';
 
             gsap.to(modal, {opacity: 1, duration: 0.4});
-            gsap.fromTo('#comms-modal-content', {scale: 0.9, y: 40}, {scale: 1, y: 0, duration: 0.6, ease: "back.out(1.2)"});
+            gsap.fromTo('#comms-modal-content', {scale: 0.9, y: window.innerWidth > 768 ? 40 : 100}, {scale: 1, y: 0, duration: 0.6, ease: "back.out(1.2)"});
         };
 
+        window.closeModals = () => {
+            playSfx('hover');
+            gsap.to('.fixed.inset-0.z-\\[100\\]', {opacity: 0, duration: 0.3, onComplete: () => {
+                document.querySelectorAll('.fixed.inset-0.z-\\[100\\]').forEach(m => m.classList.add('hidden', 'pointer-events-none'));
+                document.getElementById('i-frame').src = '';
+            }});
+        };
+        
         window.closeCommsModal = () => {
             playSfx('hover');
             const modal = document.getElementById('comms-modal');
-            gsap.to('#comms-modal-content', {scale: 0.9, y: 40, duration: 0.4});
+            gsap.to('#comms-modal-content', {scale: 0.9, y: window.innerWidth > 768 ? 40 : 100, duration: 0.4});
             gsap.to(modal, {opacity: 0, duration: 0.4, onComplete: () => {
                 modal.classList.add('hidden', 'pointer-events-none');
             }});
         };
+
+        /* =========================================
+           MOBILE SWIPE TO DISMISS GESTURES 
+        ========================================= */
+        let touchStartY = 0;
+        document.addEventListener('touchstart', e => { 
+            touchStartY = e.changedTouches[0].screenY; 
+        }, {passive: true});
+
+        document.addEventListener('touchend', e => {
+            let touchEndY = e.changedTouches[0].screenY;
+            if (touchEndY - touchStartY > 80) { // Significant swipe down
+                if (!document.getElementById('quest-modal').classList.contains('hidden')) window.closeModals();
+                else if (!document.getElementById('item-modal').classList.contains('hidden')) window.closeModals();
+                else if (!document.getElementById('comms-modal').classList.contains('hidden')) window.closeCommsModal();
+            }
+        }, {passive: true});
 
         window.sendTransmission = () => {
             const name = document.getElementById('comms-name').value;
@@ -1386,19 +1457,10 @@ Press '~' (tilde/backtick) to close terminal.</div>
                 loader.querySelector('div').classList.add('border-[#00ffcc]');
                 
                 setTimeout(() => {
-                    closeCommsModal();
-                    // Fallback trigger real mailto
+                    window.closeCommsModal();
                     window.location.href = `mailto:Syedahmed.sa43@gmail.com?subject=Secure Transmission from ${name}&body=${msg}%0A%0AContact: ${email}`;
                 }, 1500);
             }, 3000);
-        };
-
-        window.closeModals = () => {
-            playSfx('hover');
-            gsap.to('.fixed.inset-0.z-\\[100\\]', {opacity: 0, duration: 0.3, onComplete: () => {
-                document.querySelectorAll('.fixed.inset-0.z-\\[100\\]').forEach(m => m.classList.add('hidden', 'pointer-events-none'));
-                document.getElementById('i-frame').src = '';
-            }});
         };
 
         window.alertSystem = (msg) => {
@@ -1423,15 +1485,12 @@ Press '~' (tilde/backtick) to close terminal.</div>
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 
-                // Deep Dark Background
                 doc.setFillColor(2, 5, 10);
                 doc.rect(0, 0, 210, 297, 'F');
                 
-                // System Cyan Header Line
                 doc.setFillColor(0, 210, 255);
                 doc.rect(0, 0, 210, 5, 'F');
 
-                // Title Section
                 doc.setTextColor(0, 210, 255);
                 doc.setFont("courier", "bold");
                 doc.setFontSize(26);
@@ -1445,13 +1504,11 @@ Press '~' (tilde/backtick) to close terminal.</div>
                 doc.setLineWidth(0.5);
                 doc.line(20, 38, 190, 38);
 
-                // Contact Section
                 doc.setFontSize(10);
                 doc.setTextColor(170, 170, 170);
                 doc.text("UPLINK: +91 8019416016   |   NODE: HYDERABAD, INDIA", 20, 48);
                 doc.text("MAIL: syedahmed.sa43@gmail.com   |   LINKEDIN: linkedin.com/in/syedahmedpro", 20, 54);
 
-                // Architect Profile
                 doc.setTextColor(0, 210, 255);
                 doc.setFontSize(14);
                 doc.text("> ARCHITECT PROFILE", 20, 70);
@@ -1462,7 +1519,6 @@ Press '~' (tilde/backtick) to close terminal.</div>
                 const profileStr = "With over 9 years of experience in the IT ecosystem, I bridge the gap between\ntechnical operations and business strategy. I apply systems logic to build elite\ndigital platforms, high-performance web applications, and powerful data\nintelligence solutions that replace static legacy environments.";
                 doc.text(profileStr, 20, 80);
 
-                // Core Attributes (Skills)
                 doc.setTextColor(0, 210, 255);
                 doc.setFontSize(14);
                 doc.setFont("courier", "bold");
@@ -1476,7 +1532,6 @@ Press '~' (tilde/backtick) to close terminal.</div>
                 doc.text("[RANK A] AI & ADVANCED TECH: Generative AI, Python, Prompt Engineering", 20, 134);
                 doc.text("[RANK A] SYSTEM INFRASTRUCTURE: IT Operations, Hardware, Cybersecurity", 20, 142);
 
-                // Experience & Deployments
                 doc.setTextColor(0, 210, 255);
                 doc.setFontSize(14);
                 doc.setFont("courier", "bold");
@@ -1496,7 +1551,6 @@ Press '~' (tilde/backtick) to close terminal.</div>
                 doc.setTextColor(170, 170, 170);
                 doc.text("Managed IT operations for 200+ systems with excellent uptime tracking.", 20, 190);
 
-                // Education
                 doc.setTextColor(0, 210, 255);
                 doc.setFontSize(14);
                 doc.setFont("courier", "bold");
@@ -1510,7 +1564,6 @@ Press '~' (tilde/backtick) to close terminal.</div>
                 doc.text("- Bachelor of Fine Arts (Animation/Interactive Tech) - JNIAS", 20, 232);
                 doc.text("- Over 52+ Verified Industry Certifications (AI, Analytics, Infrastructure)", 20, 240);
 
-                // System Footer
                 doc.setFillColor(0, 210, 255);
                 doc.rect(20, 275, 170, 0.5, 'F');
                 doc.setTextColor(0, 210, 255);
@@ -1525,19 +1578,23 @@ Press '~' (tilde/backtick) to close terminal.</div>
         /* =========================================
            TERMINAL LOGIC
         ========================================= */
+        window.toggleTerminal = () => {
+            const term = document.getElementById('sys-terminal');
+            if (term.classList.contains('active')) {
+                term.classList.remove('active');
+                gsap.to(term, {autoAlpha: 0, y: "-100%", duration: 0.4, ease: "power3.in"});
+            } else {
+                term.classList.add('active');
+                gsap.to(term, {autoAlpha: 1, y: "0%", duration: 0.4, ease: "power4.out"});
+                document.getElementById('term-input').focus();
+                playSfx('hover');
+            }
+        };
+
         window.addEventListener('keydown', (e) => {
             if (e.key === '`' || e.key === '~') {
                 e.preventDefault();
-                const term = document.getElementById('sys-terminal');
-                if (term.classList.contains('active')) {
-                    term.classList.remove('active');
-                    gsap.to(term, {autoAlpha: 0, y: "-100%", duration: 0.4, ease: "power3.in"});
-                } else {
-                    term.classList.add('active');
-                    gsap.to(term, {autoAlpha: 1, y: "0%", duration: 0.4, ease: "power4.out"});
-                    document.getElementById('term-input').focus();
-                    playSfx('hover');
-                }
+                toggleTerminal();
             }
         });
 
@@ -1548,8 +1605,8 @@ Press '~' (tilde/backtick) to close terminal.</div>
                 output.innerText += `\nroot@architect:~# ${val}`;
                 
                 if(val === 'help') output.innerText += `\nCommands:\n- status : View Architect Status\n- clear  : Wipe Terminal\n- hack   : Bypass mainframe`;
-                else if (val === 'clear') output.innerText = `ARCHITECT OS v4.0 (QUANTUM EDITION)\nType 'help' to view available system commands.\nPress '~' (tilde/backtick) to close terminal.`;
-                else if (val === 'status') { navTo('status'); document.dispatchEvent(new KeyboardEvent('keydown', {'key': '`'})); }
+                else if (val === 'clear') output.innerText = `ARCHITECT OS v4.0 (QUANTUM EDITION)\nType 'help' to view available system commands.\n[Desktop] Press '~' to close. [Mobile] Tap terminal icon to close.`;
+                else if (val === 'status') { navTo('status'); toggleTerminal(); }
                 else if (val === 'hack') { output.innerText += `\n> INITIATING OVERRIDE...\n> ACCESS DENIED. NICE TRY.`; playSfx('error'); }
                 else if (val !== '') { output.innerText += `\nCommand not found: ${val}`; }
                 
