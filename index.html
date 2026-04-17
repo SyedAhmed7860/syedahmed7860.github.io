@@ -8,6 +8,7 @@
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -66,7 +67,7 @@
         .cinematic-overlay { position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 0%, var(--sys-dark) 100%), linear-gradient(to bottom, rgba(2,5,10,0.7), rgba(2,5,10,0.9)); z-index: -15; }
         #aura-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; pointer-events: none; opacity: 0.4; mix-blend-mode: screen; }
 
-        /* Solo Leveling Professional Panel */
+        /* Holographic 3D Tilt Panels */
         .sys-panel {
             background: var(--sys-panel);
             backdrop-filter: blur(12px);
@@ -74,14 +75,15 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 210, 255, 0.03);
             clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
             position: relative;
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
         
         .sys-panel:hover {
             background: var(--sys-panel-hover);
             border-color: var(--sys-blue);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(0, 210, 255, 0.15);
-            transform: translateY(-4px) scale(1.01);
+            z-index: 20;
         }
 
         .sys-panel::before {
@@ -93,10 +95,18 @@
             border-bottom: 2px solid var(--sys-blue); border-right: 2px solid var(--sys-blue);
         }
 
+        /* Dynamic Hologram Glare inside Panel */
+        .panel-glare {
+            position: absolute; inset: 0; pointer-events: none; z-index: 10;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.15), transparent 50%);
+            opacity: 0; transition: opacity 0.3s; mix-blend-mode: overlay;
+        }
+        .sys-panel:hover .panel-glare { opacity: 1; }
+
         /* Avatar System Frame */
         .avatar-cut { clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px); }
 
-        /* Rank Badges - Professionalized */
+        /* Rank Badges */
         .rank-badge { font-family: 'Share Tech Mono', monospace; font-weight: bold; border: 1px solid; padding: 2px 8px; font-size: 0.75rem; letter-spacing: 1px; }
         .rank-s { color: #ffcc00; border-color: rgba(255, 204, 0, 0.5); background: rgba(255, 204, 0, 0.1); box-shadow: 0 0 10px rgba(255,204,0,0.2); }
         .rank-a { color: var(--sys-blue); border-color: rgba(0, 210, 255, 0.5); background: var(--sys-blue-bg); box-shadow: 0 0 10px rgba(0,210,255,0.2); }
@@ -111,7 +121,7 @@
             clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
             display: inline-flex; align-items: center; justify-content: center; font-weight: bold;
             box-shadow: inset 0 0 15px rgba(0, 210, 255, 0.1);
-            white-space: nowrap; /* Fixes brackets dropping to new lines */
+            white-space: nowrap; 
         }
         .sys-btn::before {
             content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
@@ -175,11 +185,48 @@
         
         .sys-alert-box { border: 1px solid rgba(0, 210, 255, 0.3); background: rgba(8, 12, 18, 0.95); box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(0, 210, 255, 0.05); border-top: 3px solid var(--sys-blue); }
 
+        /* System Command Terminal Override */
+        #sys-terminal {
+            position: fixed; top: 0; left: 0; w: 100vw; height: 35vh; background: rgba(3, 7, 14, 0.98);
+            backdrop-filter: blur(20px); border-bottom: 2px solid var(--sys-blue); z-index: 10001;
+            transform: translateY(-100%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+            font-family: 'Share Tech Mono', monospace; padding: 20px; color: #00d2ff; display: flex; flex-direction: column;
+            opacity: 0; visibility: hidden; pointer-events: none; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+        #sys-terminal.active { transform: translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
+        #term-output { flex-grow: 1; overflow-y: auto; margin-bottom: 10px; font-size: 14px; white-space: pre-wrap; text-shadow: 0 0 5px rgba(0, 210, 255, 0.5); }
+        #term-input-line { display: flex; align-items: center; border-top: 1px solid rgba(0, 210, 255, 0.2); padding-top: 10px; }
+        #term-input { background: transparent; border: none; color: #fff; flex-grow: 1; outline: none; font-family: inherit; font-size: 14px; margin-left: 10px; }
+
+        /* Floating COMMS Widget */
+        #comms-fab {
+            position: fixed; bottom: 30px; right: 30px; z-index: 8000;
+            background: rgba(0,0,0,0.8); border: 1px solid var(--sys-blue);
+            box-shadow: 0 0 20px rgba(0,210,255,0.4), inset 0 0 15px rgba(0,210,255,0.2);
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 12px 24px; color: var(--sys-blue); font-family: 'Share Tech Mono', monospace;
+            font-weight: bold; tracking: widest; text-transform: uppercase;
+            transition: all 0.3s ease; animation: pulse-glow 2s infinite;
+        }
+        #comms-fab:hover { background: var(--sys-blue); color: black; box-shadow: 0 0 30px rgba(0,210,255,0.8); }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(0,210,255,0.4); } 50% { box-shadow: 0 0 40px rgba(0,210,255,0.8); } }
+
+        /* Form Inputs */
+        .sys-input {
+            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(0, 210, 255, 0.3);
+            color: white; font-family: 'Share Tech Mono', monospace; padding: 12px 16px;
+            outline: none; transition: all 0.3s;
+        }
+        .sys-input:focus { border-color: var(--sys-blue); box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); background: rgba(0, 210, 255, 0.05); }
+
         @media (max-width: 768px) {
             * { cursor: auto !important; }
             #cursor-dot, #cursor-ring { display: none !important; }
-            .sys-panel { clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+            .sys-panel { clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); transform: none !important; }
+            .panel-glare { display: none; }
             .scanlines { display: none; }
+            #comms-fab { bottom: 20px; right: 20px; padding: 10px 16px; font-size: 10px; }
         }
     </style>
 </head>
@@ -189,7 +236,6 @@
 
     <!-- LIVE MOVIE / CGI CINEMATIC BACKGROUND -->
     <div class="cinematic-bg">
-        <!-- Abstract Ink/Aura swirling. Behaves like high-end realistic CGI shadow/mana portal -->
         <video autoplay loop muted playsinline class="cinematic-video">
             <source src="https://assets.mixkit.co/videos/preview/mixkit-ink-swirling-in-blue-and-light-blue-colors-4158-large.mp4" type="video/mp4">
         </video>
@@ -201,6 +247,17 @@
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
 
+    <!-- SECURE OVERRIDE TERMINAL -->
+    <div id="sys-terminal" class="fixed top-0 left-0 w-full h-[35vh]">
+        <div id="term-output">ARCHITECT OS v4.0 (QUANTUM EDITION)
+Type 'help' to view available system commands.
+Press '~' (tilde/backtick) to close terminal.</div>
+        <div id="term-input-line">
+            <span class="text-gray-500">root@architect:~#</span>
+            <input type="text" id="term-input" autocomplete="off" spellcheck="false" class="interactive">
+        </div>
+    </div>
+
     <!-- BOOT SCREEN -->
     <div id="boot-screen">
         <div class="sys-alert-box p-8 md:p-12 max-w-2xl w-11/12 mx-auto relative overflow-hidden">
@@ -209,7 +266,7 @@
             <div id="boot-text" class="font-sys text-base md:text-lg text-gray-300 mb-8 min-h-[100px] leading-relaxed"></div>
             <div class="flex justify-between items-center opacity-0 border-t border-gray-800 pt-6 mt-4" id="boot-action">
                 <div class="font-sys text-xs text-gray-500">CLIENT CLEARANCE: <span class="text-white">REQUIRED</span></div>
-                <button class="sys-btn sys-btn-solid interactive text-sm" onclick="acceptQuest()">[ GRANT ACCESS ]</button>
+                <button class="sys-btn sys-btn-solid interactive text-sm magnetic" onclick="acceptQuest()">[ GRANT ACCESS ]</button>
             </div>
         </div>
     </div>
@@ -223,7 +280,7 @@
     <!-- MAIN NAV HEADER -->
     <header class="fixed top-0 w-full z-50 bg-[rgba(2,5,10,0.85)] backdrop-blur-md border-b border-gray-800 hidden" id="main-header">
         <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-2">
-            <div class="flex items-center gap-4 cursor-pointer interactive group" onclick="navTo('status')">
+            <div class="flex items-center gap-4 cursor-pointer interactive group magnetic" onclick="navTo('status')">
                 <div class="w-10 h-10 border border-[var(--sys-blue)] flex items-center justify-center bg-[var(--sys-blue-bg)] group-hover:bg-[var(--sys-blue)] transition-colors duration-300">
                     <span class="font-bold text-white leading-none">SA</span>
                 </div>
@@ -234,26 +291,28 @@
             </div>
             
             <nav class="flex flex-wrap gap-1 md:gap-4 font-sys text-xs md:text-sm">
-                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group" onclick="navTo('status')">
+                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group magnetic" onclick="navTo('status')">
                     STATUS
                     <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
                 </button>
-                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group" onclick="navTo('abilities')">
+                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group magnetic" onclick="navTo('abilities')">
                     ABILITIES
                     <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
                 </button>
-                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group" onclick="navTo('quests')">
+                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group magnetic" onclick="navTo('quests')">
                     DEPLOYMENTS
                     <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
                 </button>
-                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group" onclick="navTo('inventory')">
+                <button class="text-gray-400 hover:text-white transition-colors interactive px-2 md:px-3 py-2 relative group magnetic" onclick="navTo('inventory')">
                     CREDENTIALS
                     <div class="absolute bottom-0 left-0 w-full h-[2px] bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
                 </button>
             </nav>
 
-            <div id="sys-time" class="hidden lg:flex font-sys text-[10px] text-[var(--sys-blue)] bg-black/50 border border-[var(--sys-blue)] px-4 py-2 items-center gap-2 tracking-[0.2em] shadow-[0_0_10px_rgba(0,210,255,0.2)]">
-                SYS.TIME: 00:00:00
+            <div class="hidden lg:flex font-sys text-[10px] text-[var(--sys-blue)] bg-black/50 border border-[var(--sys-blue)] px-4 py-2 items-center gap-4 tracking-[0.2em] shadow-[0_0_10px_rgba(0,210,255,0.2)]">
+                <span id="sys-node" class="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]">NODE: DETECTING...</span>
+                <span class="w-px h-3 bg-[var(--sys-blue)]/50"></span>
+                <span id="sys-time">SYS.TIME: 00:00:00</span>
             </div>
         </div>
     </header>
@@ -264,7 +323,8 @@
         <section id="status" class="view-section active">
             <div class="flex flex-col items-center pt-12 md:pt-20">
                 <div class="sys-panel p-6 md:p-14 w-full max-w-6xl gs-reveal mb-10">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-800 pb-6 mb-8 gap-4">
+                    <div class="panel-glare"></div>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-800 pb-6 mb-8 gap-4 relative z-10">
                         <div>
                             <p class="font-sys text-[var(--sys-blue)] text-sm tracking-widest mb-2">> IDENTITY CONFIRMED</p>
                             <h1 class="text-4xl md:text-6xl font-bold tracking-widest text-white glitch-text uppercase" data-text="STATUS WINDOW">STATUS WINDOW</h1>
@@ -274,32 +334,25 @@
                         </span>
                     </div>
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 relative z-10">
                         <!-- Left Col: Elite Identity Frame -->
                         <div class="lg:col-span-5 flex flex-col">
-                            
                             <!-- MASSSIVE EXCELLENT SYSTEM AVATAR -->
                             <div class="flex flex-col items-center justify-center border border-gray-800 p-8 md:p-10 bg-black/40 relative mb-8 overflow-hidden">
-                                <!-- Background grid detail -->
                                 <div class="absolute inset-0 bg-[linear-gradient(rgba(0,210,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,210,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
                                 
                                 <div class="relative w-40 h-40 md:w-56 md:h-56 shrink-0 group z-10 mb-6">
-                                    <!-- Animated outer high-tech rings -->
                                     <div class="absolute -inset-6 border-2 border-[var(--sys-blue)] rounded-full border-t-transparent border-b-transparent animate-[spin_6s_linear_infinite] opacity-40 shadow-[0_0_20px_var(--sys-blue)]"></div>
                                     <div class="absolute -inset-3 border border-white/50 rounded-full border-l-transparent border-r-transparent animate-[spin_8s_linear_infinite_reverse] opacity-30"></div>
                                     
-                                    <!-- Angled Image Container -->
                                     <div class="absolute inset-0 bg-black border-2 border-[var(--sys-blue)] overflow-hidden z-10 shadow-[0_0_40px_rgba(0,210,255,0.4)] avatar-cut group-hover:border-[#00ffcc] transition-colors duration-500">
                                         <img src="assets/images/profile.jpg" alt="Syed Ahmed" class="w-full h-full object-cover object-top scale-105 group-hover:scale-100 transition-transform duration-700 filter brightness-110 contrast-105" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full bg-[var(--sys-blue-bg)] flex items-center justify-center font-sys text-sm text-[var(--sys-blue)] tracking-widest\'>[ IMG_NULL ]</div>'">
-                                        <!-- Overlay filter made lighter so face is totally clear -->
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
                                     </div>
 
-                                    <!-- HUD Overlays (Targeting Corners) -->
                                     <div class="absolute -top-3 -left-3 w-8 h-8 border-t-2 border-l-2 border-[var(--sys-blue)] z-20"></div>
                                     <div class="absolute -bottom-3 -right-3 w-8 h-8 border-b-2 border-r-2 border-[var(--sys-blue)] z-20"></div>
                                     
-                                    <!-- Rank Badge Overlapping Bottom -->
                                     <div class="absolute -bottom-5 left-1/2 transform -translate-x-1/2 z-30 bg-black border border-[var(--sys-blue)] px-6 py-1.5 font-sys text-white text-[10px] md:text-xs tracking-[0.2em] font-bold shadow-[0_0_20px_rgba(0,210,255,0.6)] whitespace-nowrap">
                                         LVL. MAX
                                     </div>
@@ -313,14 +366,24 @@
                                 </div>
                             </div>
                             
+                            <!-- NEW: IMPACT METRICS (CLIENT VALUE PROOF) -->
+                            <div class="grid grid-cols-2 gap-4 mb-8">
+                                <div class="bg-black/50 border border-gray-800 p-4 text-center relative overflow-hidden group">
+                                    <div class="absolute bottom-0 left-0 w-full h-1 bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                                    <div class="text-3xl md:text-4xl font-bold text-[var(--sys-blue)] font-display tracking-tighter counter" data-target="9">+</div>
+                                    <div class="font-sys text-[10px] md:text-xs text-gray-400 mt-2 tracking-widest">YEARS EXP</div>
+                                </div>
+                                <div class="bg-black/50 border border-gray-800 p-4 text-center relative overflow-hidden group">
+                                    <div class="absolute bottom-0 left-0 w-full h-1 bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                                    <div class="text-3xl md:text-4xl font-bold text-[var(--sys-blue)] font-display tracking-tighter counter" data-target="52">+</div>
+                                    <div class="font-sys text-[10px] md:text-xs text-gray-400 mt-2 tracking-widest">CREDENTIALS</div>
+                                </div>
+                            </div>
+                            
                             <div class="space-y-4 font-sys text-xs md:text-sm text-gray-400 bg-black/40 p-6 border border-gray-800 relative flex-grow">
                                 <div class="absolute top-0 right-0 w-3 h-3 border-t border-r border-[var(--sys-blue)] opacity-50"></div>
-                                
                                 <div class="flex justify-between border-b border-gray-800/80 pb-3">
                                     <span>CLASS</span> <span class="text-white font-bold tracking-wide">FULL-STACK & DATA LEAD</span>
-                                </div>
-                                <div class="flex justify-between border-b border-gray-800/80 pb-3">
-                                    <span>EXPERIENCE</span> <span class="text-[var(--sys-blue)] font-bold tracking-wide">9+ YEARS (MAX)</span>
                                 </div>
                                 <div class="flex justify-between border-b border-gray-800/80 pb-3">
                                     <span>LOCATION</span> <span class="text-white tracking-wide">HYDERABAD (INDIA)</span>
@@ -331,14 +394,14 @@
                             </div>
                         </div>
                         
-                        <!-- Right Col: Attributes & Bio -->
+                        <!-- Right Col: Attributes & Solutions -->
                         <div class="lg:col-span-7 flex flex-col justify-between">
                             <div class="bg-black/40 p-6 md:p-8 border border-gray-800 mb-8">
                                 <div class="flex flex-wrap justify-between items-end border-b border-gray-800 pb-4 mb-6 gap-4">
                                     <h3 class="font-sys text-[var(--sys-blue)] text-sm md:text-base tracking-[0.2em]">> SYSTEM ATTRIBUTES</h3>
-                                    <a href="assets/certificates/Syed Ahmed Resume.pdf" target="_blank" class="sys-btn sys-btn-solid text-[10px] md:text-xs py-2 px-4 shadow-[0_0_15px_rgba(0,210,255,0.4)] interactive">
-                                        [ EXTRACT DOSSIER ]
-                                    </a>
+                                    <button onclick="generateResumePDF()" class="sys-btn sys-btn-solid text-[10px] md:text-xs py-2 px-4 shadow-[0_0_15px_rgba(0,210,255,0.4)] interactive magnetic">
+                                        [ EXTRACT RESUME ]
+                                    </button>
                                 </div>
                                 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-8 font-sys">
@@ -352,48 +415,41 @@
                                         <div class="stat-bar-bg"><div class="stat-bar-fill w-0" data-width="95%"></div></div>
                                         <p class="text-[10px] text-gray-500 mt-2 leading-relaxed tracking-wide">Power BI, data models, automating workflows.</p>
                                     </div>
-                                    <div>
-                                        <div class="flex justify-between text-xs mb-2 tracking-widest"><span class="text-gray-400">UI/UX ENGINEERING (AGI)</span><span class="text-white font-bold">LVL. 92</span></div>
-                                        <div class="stat-bar-bg"><div class="stat-bar-fill w-0" data-width="92%"></div></div>
-                                        <p class="text-[10px] text-gray-500 mt-2 leading-relaxed tracking-wide">Fluid interactions, GSAP, modern aesthetics.</p>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-xs mb-2 tracking-widest"><span class="text-gray-400">INFRASTRUCTURE (VIT)</span><span class="text-white font-bold">LVL. 90</span></div>
-                                        <div class="stat-bar-bg"><div class="stat-bar-fill w-0" data-width="90%"></div></div>
-                                        <p class="text-[10px] text-gray-500 mt-2 leading-relaxed tracking-wide">Hardware-level root cause analysis & scaling.</p>
-                                    </div>
                                 </div>
-                                
-                                <div class="mt-8 pt-6 border-t border-gray-800 space-y-5">
-                                    <div>
-                                        <div class="flex justify-between font-sys text-[10px] md:text-xs text-gray-400 tracking-widest mb-2">
-                                            <span>SYSTEM BANDWIDTH (STAMINA)</span> <span class="text-white font-bold">99.9% UPTIME</span>
-                                        </div>
-                                        <div class="stat-bar-bg h-2"><div class="stat-bar-fill" style="width: 100%; background: #00ffcc; box-shadow: 0 0 15px #00ffcc;"></div></div>
+                            </div>
+
+                            <!-- NEW: ARCHITECT SOLUTIONS (WHAT CLIENTS BUY) -->
+                            <div class="mb-8">
+                                <h3 class="font-sys text-white text-lg md:text-xl tracking-widest mb-4 uppercase drop-shadow-md">Architect Solutions</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="bg-black/60 border border-[var(--sys-blue)]/30 p-5 group hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-all">
+                                        <div class="text-[var(--sys-blue)] mb-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg></div>
+                                        <h4 class="font-bold text-white text-sm tracking-wide mb-2 uppercase">Web Architecture</h4>
+                                        <p class="font-sys text-[10px] text-gray-400 leading-relaxed">Building scalable, high-performance web systems and portals that dominate markets.</p>
                                     </div>
-                                    <div>
-                                        <div class="flex justify-between font-sys text-[10px] md:text-xs text-gray-400 tracking-widest mb-2">
-                                            <span>PROCESSING POWER (MANA)</span> <span class="text-white font-bold">MAX CAPACITY</span>
-                                        </div>
-                                        <div class="stat-bar-bg h-2"><div class="stat-bar-fill" style="width: 100%; background: var(--sys-blue); box-shadow: 0 0 15px var(--sys-blue);"></div></div>
+                                    <div class="bg-black/60 border border-[var(--sys-blue)]/30 p-5 group hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-all">
+                                        <div class="text-[var(--sys-blue)] mb-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg></div>
+                                        <h4 class="font-bold text-white text-sm tracking-wide mb-2 uppercase">Data Intelligence</h4>
+                                        <p class="font-sys text-[10px] text-gray-400 leading-relaxed">Transforming chaotic spreadsheets into automated Power BI pipelines and real-time dashboards.</p>
+                                    </div>
+                                    <div class="bg-black/60 border border-[var(--sys-blue)]/30 p-5 group hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-all">
+                                        <div class="text-[var(--sys-blue)] mb-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
+                                        <h4 class="font-bold text-white text-sm tracking-wide mb-2 uppercase">Process Automation</h4>
+                                        <p class="font-sys text-[10px] text-gray-400 leading-relaxed">Engineering digital workflows that eliminate bottlenecks and save enterprises hundreds of manual hours.</p>
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- Bio / Comms Hub -->
+                            <!-- Bio Hub -->
                             <div class="bg-[var(--sys-blue-bg)] border border-[var(--sys-blue)] p-6 md:p-8 relative shadow-[inset_0_0_40px_rgba(0,210,255,0.05)]">
                                 <div class="absolute top-0 left-0 w-1.5 h-full bg-[var(--sys-blue)] shadow-[0_0_15px_var(--sys-blue)]"></div>
                                 <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-6 font-medium">
-                                    With over <span class="text-white font-bold drop-shadow-md">9 years in the IT ecosystem</span>, I bridge the gap between technical operations and business strategy. My journey began in infrastructure—developing a "problem-first" mindset. Today, I apply that logic to build elite digital platforms, high-performance web applications, and powerful data intelligence solutions that save enterprises hundreds of manual hours. 
-                                    <br><br>
-                                    <span class="text-[var(--sys-blue)] font-sys text-xs md:text-sm tracking-widest font-bold drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]">> I DON'T JUST WRITE CODE; I BUILD INFRASTRUCTURE.</span>
+                                    With a "problem-first" mindset developed from hardware infrastructure, I apply systems logic to build elite digital platforms. I don't just analyze numbers or write simple code; <span class="text-white font-bold drop-shadow-md">I build the infrastructure that allows leadership to make decisions instantly.</span>
                                 </p>
-                                
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
-                                    <a href="mailto:Syedahmed.sa43@gmail.com" class="sys-btn sys-btn-solid interactive text-[11px] md:text-xs w-full py-3">[ HIRE THE ARCHITECT ]</a>
-                                    <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="sys-btn interactive text-[11px] md:text-xs w-full py-3">[ LINKEDIN NODE ]</a>
-                                    <a href="https://wa.me/918019416016" target="_blank" class="sys-btn interactive text-[11px] md:text-xs w-full py-3 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-black hover:shadow-[0_0_20px_#25D366]">[ WHATSAPP COMMS ]</a>
-                                    <a href="tel:+918019416016" class="sys-btn interactive text-[11px] md:text-xs w-full py-3">[ DIRECT UPLINK (CALL) ]</a>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                                    <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="sys-btn interactive text-[11px] md:text-xs w-full py-3 magnetic">[ LINKEDIN NODE ]</a>
+                                    <a href="https://wa.me/918019416016" target="_blank" class="sys-btn interactive text-[11px] md:text-xs w-full py-3 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-black hover:shadow-[0_0_20px_#25D366] magnetic">[ WHATSAPP ]</a>
+                                    <a href="tel:+918019416016" class="sys-btn interactive text-[11px] md:text-xs w-full py-3 magnetic border-[var(--sys-blue)] text-[var(--sys-blue)] hover:bg-[var(--sys-blue)] hover:text-black hover:shadow-[0_0_20px_var(--sys-blue)]">[ CALL: 8019416016 ]</a>
                                 </div>
                             </div>
                         </div>
@@ -431,11 +487,11 @@
 
                 <!-- Dual Tabs -->
                 <div class="flex gap-2 mb-10 border-b border-gray-800 pb-px gs-reveal">
-                    <button class="tab-btn active interactive flex items-center gap-3" onclick="switchQuestTab('web')">
+                    <button class="tab-btn active interactive flex items-center gap-3 magnetic" onclick="switchQuestTab('web')">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         ENTERPRISE WEBSITES
                     </button>
-                    <button class="tab-btn interactive flex items-center gap-3" onclick="switchQuestTab('app')">
+                    <button class="tab-btn interactive flex items-center gap-3 magnetic" onclick="switchQuestTab('app')">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                         NATIVE APPLICATIONS
                     </button>
@@ -444,61 +500,73 @@
                 <!-- Web Deployments -->
                 <div id="quests-web" class="grid grid-cols-1 lg:grid-cols-2 gap-10 quest-container transition-opacity duration-300">
                     <div class="sys-panel p-6 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Crownz Barbershop', 'Complete digital overhaul for high-end barbershop. Enhanced user booking flow and brand presence.', 'React, Tailwind CSS, System Architecture', '40% increase in user retention & booking efficiency.', 'S', 'https://crownzbarbershop.github.io')">
-                        <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
-                            <h3 class="text-2xl md:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Crownz Barbershop</h3>
-                            <span class="rank-badge rank-s text-sm">RANK: S</span>
-                        </div>
-                        <div class="h-56 md:h-64 w-full bg-black border border-gray-800 mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
-                            <img src="assets/images/crownz.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80'">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">REACT</span><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">UI/UX</span></div>
-                            <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
+                        <div class="panel-glare"></div>
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
+                                <h3 class="text-2xl md:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Crownz Barbershop</h3>
+                                <span class="rank-badge rank-s text-sm">RANK: S</span>
+                            </div>
+                            <div class="h-56 md:h-64 w-full bg-black border border-gray-800 mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
+                                <img src="assets/images/crownz.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">REACT</span><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">UI/UX</span></div>
+                                <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="sys-panel p-6 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Clip Kings', 'Premium digital experience showcase for multimedia brand. Focus on fluid animations and performance.', 'GSAP, Custom JS, HTML5/CSS3', 'Elevated brand authority and user engagement time.', 'A', 'https://clipkings.github.io/clip-kings-website/')">
-                        <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
-                            <h3 class="text-2xl md:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Clip Kings</h3>
-                            <span class="rank-badge rank-a text-sm">RANK: A</span>
-                        </div>
-                        <div class="h-56 md:h-64 w-full bg-black border border-gray-800 mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
-                            <img src="assets/images/clipkings.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80'">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">ANIMATION</span><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">FRONT-END</span></div>
-                            <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
+                        <div class="panel-glare"></div>
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
+                                <h3 class="text-2xl md:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Clip Kings</h3>
+                                <span class="rank-badge rank-a text-sm">RANK: A</span>
+                            </div>
+                            <div class="h-56 md:h-64 w-full bg-black border border-gray-800 mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
+                                <img src="assets/images/clipkings.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">ANIMATION</span><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">FRONT-END</span></div>
+                                <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="sys-panel p-6 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Opus Al Qudsi', 'Corporate portal designed for specialized services. Required high security, fast load times, and CMS integration.', 'Enterprise CMS, Web Architecture', 'Zero downtime deployment, streamlined client acquisition.', 'A', 'https://opusalqudsi.com')">
-                        <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
-                            <h3 class="text-2xl md:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Opus Al Qudsi</h3>
-                            <span class="rank-badge rank-a text-sm">RANK: A</span>
-                        </div>
-                        <div class="h-56 md:h-64 w-full bg-black border border-gray-800 mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
-                            <img src="assets/images/opus.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80'">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">CORPORATE</span><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">CMS</span></div>
-                            <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
+                        <div class="panel-glare"></div>
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
+                                <h3 class="text-2xl md:text-3xl font-bold text-white group-hover:text-[var(--sys-blue)] transition-colors uppercase tracking-wide drop-shadow-md">Opus Al Qudsi</h3>
+                                <span class="rank-badge rank-a text-sm">RANK: A</span>
+                            </div>
+                            <div class="h-56 md:h-64 w-full bg-black border border-gray-800 mb-6 relative overflow-hidden group-hover:border-[var(--sys-blue)] transition-colors shadow-inner">
+                                <img src="assets/images/opus.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex flex-wrap gap-2"><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">CORPORATE</span><span class="bg-gray-800/80 text-white text-[10px] px-3 py-1.5 font-sys border border-gray-600 tracking-widest">CMS</span></div>
+                                <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest font-bold drop-shadow-[0_0_5px_var(--sys-blue)]">> INSPECT LOG</p>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="sys-panel p-6 md:p-8 cursor-none interactive group gs-reveal" onclick="openQuest('Quantum System OS', 'Design an immersive, high-performance portfolio mimicking a system interface without performance loss.', 'Vanilla JS, Canvas API, Tailwind', 'Ultimate client retention and technical demonstration.', 'S', '#')">
-                        <div class="flex justify-between items-start mb-5 border-b border-[var(--sys-blue)] pb-4">
-                            <h3 class="text-2xl md:text-3xl font-bold text-[var(--sys-blue)] uppercase tracking-wide drop-shadow-md">System Portfolio</h3>
-                            <span class="rank-badge rank-s text-sm">RANK: S</span>
-                        </div>
-                        <div class="h-56 md:h-64 w-full bg-[var(--sys-blue-bg)] border border-[var(--sys-blue)] mb-6 flex items-center justify-center relative overflow-hidden shadow-[inset_0_0_50px_rgba(0,210,255,0.15)] group-hover:bg-[var(--sys-blue)]/20 transition-colors">
-                            <span class="font-sys text-2xl font-bold text-[var(--sys-blue)] animate-pulse tracking-[0.3em] drop-shadow-[0_0_10px_rgba(0,210,255,0.8)]">[ CURRENT SYSTEM ACTIVE ]</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex flex-wrap gap-2"><span class="bg-[var(--sys-blue)] text-black font-bold text-[10px] px-3 py-1.5 font-sys tracking-widest">ARCHITECTURE</span></div>
-                            <p class="font-sys text-white text-xs tracking-widest font-bold">> YOU ARE HERE</p>
+                        <div class="panel-glare"></div>
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-5 border-b border-[var(--sys-blue)] pb-4">
+                                <h3 class="text-2xl md:text-3xl font-bold text-[var(--sys-blue)] uppercase tracking-wide drop-shadow-md">System Portfolio</h3>
+                                <span class="rank-badge rank-s text-sm">RANK: S</span>
+                            </div>
+                            <div class="h-56 md:h-64 w-full bg-[var(--sys-blue-bg)] border border-[var(--sys-blue)] mb-6 flex items-center justify-center relative overflow-hidden shadow-[inset_0_0_50px_rgba(0,210,255,0.15)] group-hover:bg-[var(--sys-blue)]/20 transition-colors">
+                                <span class="font-sys text-2xl font-bold text-[var(--sys-blue)] animate-pulse tracking-[0.3em] drop-shadow-[0_0_10px_rgba(0,210,255,0.8)]">[ CURRENT SYSTEM ACTIVE ]</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex flex-wrap gap-2"><span class="bg-[var(--sys-blue)] text-black font-bold text-[10px] px-3 py-1.5 font-sys tracking-widest">ARCHITECTURE</span></div>
+                                <p class="font-sys text-white text-xs tracking-widest font-bold">> YOU ARE HERE</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -506,27 +574,33 @@
                 <!-- App Deployments (Hidden by default) -->
                 <div id="quests-app" class="grid grid-cols-1 lg:grid-cols-2 gap-10 quest-container hidden transition-opacity duration-300 opacity-0">
                     <div class="sys-panel p-6 md:p-8 cursor-none interactive group border-[#ff3333]/50 bg-[#ff3333]/5" onclick="alertSystem('RESTRICTED. CLIENT NDA IN EFFECT.')">
-                        <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
-                            <h3 class="text-2xl md:text-3xl font-bold text-[#ff3333] uppercase tracking-wide drop-shadow-[0_0_10px_rgba(255,51,51,0.4)]">Classified Mobile Build</h3>
-                            <span class="rank-badge rank-locked text-sm">LOCKED</span>
-                        </div>
-                        <div class="h-56 md:h-64 w-full bg-black border border-[#ff3333]/30 mb-6 flex items-center justify-center relative overflow-hidden shadow-inner">
-                            <div class="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_15px,rgba(255,51,51,0.08)_15px,rgba(255,51,51,0.08)_30px)]"></div>
-                            <span class="font-sys text-xl font-bold text-[#ff3333] tracking-widest relative z-10 bg-[#1a0505] px-6 py-3 border border-[#ff3333] shadow-[0_0_20px_rgba(255,51,51,0.5)]">[ CLASSIFIED ARCHITECTURE ]</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex flex-wrap gap-2"><span class="bg-[#2a0808] text-gray-400 text-[10px] px-3 py-1.5 font-sys border border-gray-800 tracking-widest">NATIVE APP</span></div>
-                            <p class="font-sys text-gray-500 text-xs tracking-widest">> COMMISSION ONLY</p>
+                        <div class="panel-glare"></div>
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-5 border-b border-gray-800 pb-4">
+                                <h3 class="text-2xl md:text-3xl font-bold text-[#ff3333] uppercase tracking-wide drop-shadow-[0_0_10px_rgba(255,51,51,0.4)]">Classified Mobile Build</h3>
+                                <span class="rank-badge rank-locked text-sm">LOCKED</span>
+                            </div>
+                            <div class="h-56 md:h-64 w-full bg-black border border-[#ff3333]/30 mb-6 flex items-center justify-center relative overflow-hidden shadow-inner">
+                                <div class="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_15px,rgba(255,51,51,0.08)_15px,rgba(255,51,51,0.08)_30px)]"></div>
+                                <span class="font-sys text-xl font-bold text-[#ff3333] tracking-widest relative z-10 bg-[#1a0505] px-6 py-3 border border-[#ff3333] shadow-[0_0_20px_rgba(255,51,51,0.5)]">[ CLASSIFIED ARCHITECTURE ]</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex flex-wrap gap-2"><span class="bg-[#2a0808] text-gray-400 text-[10px] px-3 py-1.5 font-sys border border-gray-800 tracking-widest">NATIVE APP</span></div>
+                                <p class="font-sys text-gray-500 text-xs tracking-widest">> COMMISSION ONLY</p>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="sys-panel p-6 md:p-8 cursor-none flex flex-col justify-center items-center bg-[rgba(0,0,0,0.6)] border border-[var(--sys-blue)]">
-                        <div class="w-20 h-20 border-2 border-[var(--sys-blue)] flex items-center justify-center rounded-full mb-6 bg-[var(--sys-blue-bg)] group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(0,210,255,0.2)] relative">
-                            <div class="absolute inset-0 border border-white/50 rounded-full animate-ping opacity-20"></div>
-                            <svg class="w-10 h-10 text-[var(--sys-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <div class="panel-glare"></div>
+                        <div class="relative z-10 flex flex-col items-center w-full">
+                            <div class="w-20 h-20 border-2 border-[var(--sys-blue)] flex items-center justify-center rounded-full mb-6 bg-[var(--sys-blue-bg)] group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(0,210,255,0.2)] relative">
+                                <div class="absolute inset-0 border border-white/50 rounded-full animate-ping opacity-20"></div>
+                                <svg class="w-10 h-10 text-[var(--sys-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            </div>
+                            <p class="font-sys text-[var(--sys-blue)] text-base md:text-lg tracking-widest mb-8 text-center font-bold drop-shadow-md">> CUSTOM APP PIPELINE OPEN</p>
+                            <a href="mailto:Syedahmed.sa43@gmail.com?subject=Custom+App+Build" class="sys-btn sys-btn-solid interactive text-sm w-full max-w-sm py-4 shadow-[0_0_20px_rgba(0,210,255,0.4)] magnetic">[ INITIATE APP CONTRACT ]</a>
                         </div>
-                        <p class="font-sys text-[var(--sys-blue)] text-base md:text-lg tracking-widest mb-8 text-center font-bold drop-shadow-md">> CUSTOM APP PIPELINE OPEN</p>
-                        <a href="mailto:Syedahmed.sa43@gmail.com?subject=Custom+App+Build" class="sys-btn sys-btn-solid interactive text-sm w-full max-w-sm py-4 shadow-[0_0_20px_rgba(0,210,255,0.4)]">[ INITIATE APP CONTRACT ]</a>
                     </div>
                 </div>
 
@@ -550,11 +624,53 @@
         </section>
     </main>
 
+    <!-- NEW FEATURE: FLOATING COMMS HUB (Always Accessible) -->
+    <button id="comms-fab" class="interactive magnetic z-50" onclick="openCommsModal()">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        <span class="hidden md:inline">INITIATE COMMS</span>
+    </button>
+
+    <!-- NEW FEATURE: SECURE TRANSMISSION MODAL (Contact Form) -->
+    <div id="comms-modal" class="fixed inset-0 z-[105] hidden flex items-center justify-center opacity-0 pointer-events-none p-4">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-xl interactive" onclick="closeCommsModal()"></div>
+        <div class="sys-alert-box p-8 md:p-12 w-full max-w-2xl relative z-10 transform scale-95 transition-transform border border-[var(--sys-blue)]" id="comms-modal-content">
+            <div class="absolute top-6 right-6 border border-[var(--sys-blue)]/50 text-[var(--sys-blue)] font-sys px-4 py-2 text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors magnetic" onclick="closeCommsModal()">[ ESC ]</div>
+            
+            <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest mb-3">> ESTABLISHING SECURE UPLINK...</p>
+            <h2 class="text-3xl md:text-5xl font-bold text-white uppercase tracking-wide drop-shadow-lg mb-8">Transmission</h2>
+            
+            <div id="comms-form-wrapper" class="space-y-5">
+                <div>
+                    <label class="block font-sys text-gray-400 text-xs tracking-widest mb-2">> CLIENT_IDENTIFIER (NAME)</label>
+                    <input type="text" id="comms-name" class="sys-input interactive" placeholder="Enter Designation">
+                </div>
+                <div>
+                    <label class="block font-sys text-gray-400 text-xs tracking-widest mb-2">> RETURN_SIGNAL_PATH (EMAIL)</label>
+                    <input type="email" id="comms-email" class="sys-input interactive" placeholder="Enter Secure Mail">
+                </div>
+                <div>
+                    <label class="block font-sys text-gray-400 text-xs tracking-widest mb-2">> DIRECTIVE_SCOPE (MESSAGE)</label>
+                    <textarea id="comms-msg" rows="4" class="sys-input interactive resize-none" placeholder="Enter Project Parameters..."></textarea>
+                </div>
+                <div class="mt-8 pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button class="sys-btn sys-btn-solid w-full interactive text-sm py-4 tracking-widest" onclick="sendTransmission()">[ EXECUTE TRANSMISSION ]</button>
+                    <a href="tel:+918019416016" class="sys-btn w-full interactive text-sm py-4 tracking-widest text-center border-[var(--sys-blue)] text-[var(--sys-blue)] hover:bg-[var(--sys-blue)] hover:text-black shadow-[inset_0_0_15px_rgba(0,210,255,0.1)]">[ CALL: 8019416016 ]</a>
+                </div>
+            </div>
+
+            <!-- Sending State -->
+            <div id="comms-loading" class="hidden py-10 flex flex-col items-center text-center">
+                <div class="w-16 h-16 border-2 border-t-[var(--sys-blue)] border-r-transparent border-b-[var(--sys-blue)] border-l-transparent rounded-full animate-spin mb-6"></div>
+                <p class="font-sys text-[var(--sys-blue)] tracking-[0.3em] font-bold" id="comms-status-text">ENCRYPTING DATA_PACKET...</p>
+            </div>
+        </div>
+    </div>
+
     <!-- QUEST MODAL -->
     <div id="quest-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none p-4">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-xl interactive" onclick="closeModals()"></div>
         <div class="sys-alert-box p-8 md:p-12 w-full max-w-4xl relative z-10 transform scale-95 transition-transform" id="quest-modal-content">
-            <div class="absolute top-6 right-6 border border-gray-600 text-gray-400 font-sys px-4 py-2 text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:text-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors" onclick="closeModals()">[ ESC ]</div>
+            <div class="absolute top-6 right-6 border border-gray-600 text-gray-400 font-sys px-4 py-2 text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:text-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors magnetic" onclick="closeModals()">[ ESC ]</div>
             
             <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest mb-3">> DEPLOYMENT DETAILS DECRYPTED</p>
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-gray-800 pb-6">
@@ -570,7 +686,7 @@
             </div>
             
             <div class="mt-10 flex justify-end">
-                <a id="q-link" href="#" target="_blank" class="sys-btn sys-btn-solid interactive text-sm py-4 px-8 shadow-[0_0_20px_rgba(0,210,255,0.4)]">[ INITIALIZE DEPLOYMENT (LIVE URL) ]</a>
+                <a id="q-link" href="#" target="_blank" class="sys-btn sys-btn-solid interactive text-sm py-4 px-8 shadow-[0_0_20px_rgba(0,210,255,0.4)] magnetic">[ INITIALIZE DEPLOYMENT (LIVE URL) ]</a>
             </div>
         </div>
     </div>
@@ -579,7 +695,7 @@
     <div id="item-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none p-4">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-xl interactive" onclick="closeModals()"></div>
         <div class="sys-alert-box p-6 md:p-10 w-full max-w-6xl h-[90vh] flex flex-col relative z-10 transform scale-95 transition-transform" id="item-modal-content">
-            <div class="absolute top-6 right-6 border border-gray-600 text-gray-400 font-sys px-4 py-2 text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:text-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors z-20" onclick="closeModals()">[ ESC ]</div>
+            <div class="absolute top-6 right-6 border border-gray-600 text-gray-400 font-sys px-4 py-2 text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:text-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors z-20 magnetic" onclick="closeModals()">[ ESC ]</div>
             
             <div class="mb-6 pr-24 shrink-0">
                 <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest mb-2 mt-4 md:mt-0">> CREDENTIAL VERIFICATION</p>
@@ -613,7 +729,7 @@
 
     <script>
         /* =========================================
-           DATA STRUCTURES (Full Set Restored)
+           DATA STRUCTURES 
         ========================================= */
         const skillsData = [
             { title: "AI & MACHINE LEARNING", percent: "95%", rank: "S", items: [
@@ -781,10 +897,11 @@
         ];
 
         /* =========================================
-           AUDIO SYNTHESIZER ENGINE (No 404s)
+           CINEMATIC SPATIAL AUDIO ENGINE 
         ========================================= */
         const AudioSys = {
             ctx: null,
+            droneGain: null,
             init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
             play(type) {
                 if(!this.ctx) return;
@@ -815,13 +932,32 @@
                     gain.gain.setValueAtTime(0.1, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
                     osc.start(t); osc.stop(t + 0.3);
                 }
+            },
+            startDrone() {
+                if(!this.ctx || this.droneGain) return;
+                const osc = this.ctx.createOscillator();
+                this.droneGain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(45, this.ctx.currentTime); // Ultra low frequency drone
+                
+                this.droneGain.gain.setValueAtTime(0, this.ctx.currentTime);
+                this.droneGain.gain.linearRampToValueAtTime(0.015, this.ctx.currentTime + 3); 
+                
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 150;
+
+                osc.connect(filter);
+                filter.connect(this.droneGain);
+                this.droneGain.connect(this.ctx.destination);
+                osc.start();
             }
         };
 
         const playSfx = (type) => AudioSys.play(type);
 
         /* =========================================
-           AURA CANVAS (Neural Network Upgraded)
+           AURA CANVAS (Neural Network)
         ========================================= */
         const initAura = () => {
             const canvas = document.getElementById('aura-canvas');
@@ -830,7 +966,6 @@
             let h = canvas.height = window.innerHeight;
             
             const particles = [];
-            // More particles for network lines
             const pCount = w < 768 ? 30 : 70;
             for(let i=0; i< pCount; i++) {
                 particles.push({
@@ -845,7 +980,6 @@
             const animate = () => {
                 ctx.clearRect(0,0,w,h);
                 
-                // Draw connecting neural lines
                 for(let i=0; i<particles.length; i++) {
                     for(let j=i+1; j<particles.length; j++) {
                         let dx = particles[i].x - particles[j].x;
@@ -866,8 +1000,6 @@
                 ctx.fillStyle = '#00d2ff';
                 particles.forEach(p => {
                     p.x += p.vx; p.y += p.vy;
-                    
-                    // Bounce off walls
                     if(p.x < 0 || p.x > w) p.vx *= -1;
                     if(p.y < 0 || p.y > h) p.vy *= -1;
 
@@ -877,8 +1009,22 @@
                 requestAnimationFrame(animate);
             };
             animate();
-
             window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+        };
+
+        /* =========================================
+           REAL-TIME GEO TRACKING 
+        ========================================= */
+        const fetchGeoData = () => {
+            fetch('https://ipapi.co/json/')
+                .then(r => r.json())
+                .then(data => {
+                    const city = data.city ? data.city.toUpperCase() : 'UNKNOWN';
+                    document.getElementById('sys-node').innerText = `NODE: ${city}`;
+                })
+                .catch(() => {
+                    document.getElementById('sys-node').innerText = `NODE: SECURE UPLINK`;
+                });
         };
 
         /* =========================================
@@ -893,10 +1039,78 @@
         }, 1000);
 
         /* =========================================
+           MAGNETIC AND HOLOGRAPHIC PHYSICS
+        ========================================= */
+        const initHoloPhysics = () => {
+            if(window.innerWidth <= 768) return; 
+
+            document.querySelectorAll('.magnetic').forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = (e.clientX - rect.left - rect.width/2) * 0.3;
+                    const y = (e.clientY - rect.top - rect.height/2) * 0.3;
+                    gsap.to(btn, {x, y, duration: 0.3, ease: "power2.out"});
+                });
+                btn.addEventListener('mouseleave', () => {
+                    gsap.to(btn, {x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.3)"});
+                });
+            });
+
+            document.querySelectorAll('.sys-panel').forEach(panel => {
+                const glare = panel.querySelector('.panel-glare');
+                panel.addEventListener('mousemove', (e) => {
+                    const rect = panel.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = ((y - centerY) / centerY) * -10;
+                    const rotateY = ((x - centerX) / centerX) * 10;
+
+                    gsap.to(panel, {rotateX, rotateY, duration: 0.3, ease: "power2.out"});
+                    if(glare) {
+                        glare.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 255, 255, 0.2), transparent 50%)`;
+                    }
+                });
+                panel.addEventListener('mouseleave', () => {
+                    gsap.to(panel, {rotateX: 0, rotateY: 0, duration: 0.7, ease: "power3.out"});
+                    if(glare) {
+                        glare.style.background = `radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05), transparent 50%)`;
+                    }
+                });
+            });
+        };
+
+        /* =========================================
+           IMPACT METRICS COUNTER ANIMATION
+        ========================================= */
+        const runCounters = () => {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const duration = 1500; 
+                const increment = target / (duration / 16); 
+                
+                let current = 0;
+                const updateCounter = () => {
+                    current += increment;
+                    if(current < target) {
+                        counter.innerText = Math.ceil(current);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                updateCounter();
+            });
+        };
+
+        /* =========================================
            UI RENDERING & LOGIC
         ========================================= */
         function renderData() {
-            // Render Abilities / Skills
             const sc = document.getElementById('skills-container');
             let sHtml = '';
             skillsData.forEach(cat => {
@@ -917,18 +1131,18 @@
                 cat.items.forEach(item => {
                     let tags = item.tags.map(t => `<span class="bg-black px-2 py-1 text-[9px] text-gray-400 border border-gray-700 tracking-widest uppercase">${t}</span>`).join(' ');
                     sHtml += `
-                        <div class="sys-panel p-6 cursor-none interactive group flex flex-col justify-between">
-                            <div>
+                        <div class="sys-panel p-6 cursor-none interactive group flex flex-col justify-between magnetic">
+                            <div class="panel-glare"></div>
+                            <div class="relative z-10">
                                 <h4 class="font-bold text-sm md:text-base text-white group-hover:text-[var(--sys-blue)] transition-colors mb-3 tracking-wide">${item.name}</h4>
+                                <div class="flex flex-wrap gap-2 mt-3">${tags}</div>
                             </div>
-                            <div class="flex flex-wrap gap-2 mt-3">${tags}</div>
                         </div>`;
                 });
                 sHtml += `</div></div>`;
             });
             sc.innerHTML = sHtml;
 
-            // Render Inventory / Certificates
             const ic = document.getElementById('inventory-container');
             let iHtml = ''; let count = 0;
             certCategoryData.forEach(cat => {
@@ -944,11 +1158,14 @@
                     const safeFile = item.file.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     
                     iHtml += `
-                        <div class="sys-panel p-6 cursor-none interactive group flex flex-col justify-between min-h-[150px]" onclick="openItem('${safeName}', '${safeCat}', '${safeFile}')">
-                            <h4 class="font-bold text-sm text-gray-300 group-hover:text-white leading-relaxed tracking-wide drop-shadow-sm">${item.name}</h4>
-                            <div class="mt-5 pt-3 border-t border-gray-800 flex justify-between items-center opacity-60 group-hover:opacity-100 transition-opacity">
-                                <span class="font-sys text-[10px] text-gray-500 tracking-widest uppercase">FILE_${count.toString().padStart(3, '0')}</span>
-                                <span class="font-sys text-[11px] text-[var(--sys-blue)] tracking-widest font-bold">[ VERIFY ]</span>
+                        <div class="sys-panel p-6 cursor-none interactive group flex flex-col justify-between min-h-[150px] magnetic" onclick="openItem('${safeName}', '${safeCat}', '${safeFile}')">
+                            <div class="panel-glare"></div>
+                            <div class="relative z-10 h-full flex flex-col justify-between">
+                                <h4 class="font-bold text-sm text-gray-300 group-hover:text-white leading-relaxed tracking-wide drop-shadow-sm">${item.name}</h4>
+                                <div class="mt-5 pt-3 border-t border-gray-800 flex justify-between items-center opacity-60 group-hover:opacity-100 transition-opacity">
+                                    <span class="font-sys text-[10px] text-gray-500 tracking-widest uppercase">FILE_${count.toString().padStart(3, '0')}</span>
+                                    <span class="font-sys text-[11px] text-[var(--sys-blue)] tracking-widest font-bold">[ VERIFY ]</span>
+                                </div>
                             </div>
                         </div>`;
                 });
@@ -958,15 +1175,11 @@
             document.getElementById('item-count').innerText = count;
         }
 
-        // Tab Switch Logic
         window.switchQuestTab = (tab) => {
             playSfx('hover');
-            
-            // Handle buttons
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
 
-            // Handle containers
             const cWeb = document.getElementById('quests-web');
             const cApp = document.getElementById('quests-app');
             
@@ -1008,16 +1221,27 @@
 
         window.acceptQuest = () => {
             playSfx('alert');
-            document.getElementById('boot-action').style.display = 'none';
-            gsap.to('#boot-screen', {opacity: 0, duration: 0.6, delay: 0.3, onComplete: () => {
-                document.getElementById('boot-screen').style.display = 'none';
-                document.getElementById('main-header').classList.remove('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
-                
-                // Entrance animation
-                gsap.fromTo('#main-header', {y: -50, opacity: 0}, {y: 0, opacity: 1, duration: 0.6});
-                animateSection('status');
-            }});
+            const btn = document.getElementById('boot-action');
+            const text = document.getElementById('boot-text');
+            btn.style.display = 'none';
+            text.innerHTML = '';
+            
+            typeWriter('boot-text', "> INITIATING SYSTEM BYPASS...\n> OVERRIDING SECURITY PROTOCOLS...\n> ACCESS GRANTED.", 30, () => {
+                setTimeout(() => {
+                    AudioSys.startDrone(); 
+                    
+                    gsap.to('#boot-screen', {opacity: 0, duration: 0.6, onComplete: () => {
+                        document.getElementById('boot-screen').style.display = 'none';
+                        document.getElementById('main-header').classList.remove('hidden');
+                        document.getElementById('main-content').classList.remove('hidden');
+                        
+                        gsap.fromTo('#main-header', {y: -50, opacity: 0}, {y: 0, opacity: 1, duration: 0.6});
+                        animateSection('status');
+                        
+                        fetchGeoData();
+                    }});
+                }, 500);
+            });
         };
 
         window.navTo = (id) => {
@@ -1036,17 +1260,19 @@
 
         function animateSection(id) {
             const section = document.getElementById(id);
-            // Upgraded GSAP Reveal Animation with Scale & 3D Rotate for ultra-premium feel
             gsap.fromTo(section.querySelectorAll('.gs-reveal'), 
                 {y: 60, opacity: 0, scale: 0.9, rotationX: 15}, 
                 {y: 0, opacity: 1, scale: 1, rotationX: 0, duration: 1.2, stagger: 0.08, ease: "expo.out"}
             );
             
-            // Animate bars
             section.querySelectorAll('.stat-bar-fill').forEach(bar => {
                 const w = bar.getAttribute('data-width');
                 if(w) gsap.fromTo(bar, {width: '0%'}, {width: w, duration: 1.5, delay: 0.4, ease: "expo.out"});
             });
+
+            if(id === 'status') {
+                setTimeout(runCounters, 800);
+            }
         }
 
         /* MODALS */
@@ -1090,10 +1316,8 @@
             gsap.to(modal, {opacity: 1, duration: 0.4});
             gsap.fromTo('#item-modal-content', {scale: 0.9, y: 40}, {scale: 1, y: 0, duration: 0.6, ease: "back.out(1.2)"});
 
-            // Loading system that ignores pre-check network errors in sandboxed environments
             setTimeout(async () => {
                 const pdfPath = `assets/certificates/${file}`;
-                
                 try {
                     const res = await fetch(pdfPath, {method: 'HEAD'});
                     if(res.status === 404) {
@@ -1102,14 +1326,71 @@
                         err.classList.remove('hidden');
                         return;
                     }
-                } catch(e) {
-                    // Safe Catch: Bypass isolated canvas iframe CORS/network errors
-                }
+                } catch(e) {}
                 
                 iframe.src = pdfPath;
                 iframe.classList.remove('hidden');
                 state.classList.add('hidden');
             }, 1200);
+        };
+
+        window.openCommsModal = () => {
+            playSfx('click');
+            const modal = document.getElementById('comms-modal');
+            modal.classList.remove('hidden', 'pointer-events-none');
+            
+            document.getElementById('comms-form-wrapper').classList.remove('hidden');
+            document.getElementById('comms-loading').classList.add('hidden');
+            document.getElementById('comms-name').value = '';
+            document.getElementById('comms-email').value = '';
+            document.getElementById('comms-msg').value = '';
+
+            gsap.to(modal, {opacity: 1, duration: 0.4});
+            gsap.fromTo('#comms-modal-content', {scale: 0.9, y: 40}, {scale: 1, y: 0, duration: 0.6, ease: "back.out(1.2)"});
+        };
+
+        window.closeCommsModal = () => {
+            playSfx('hover');
+            const modal = document.getElementById('comms-modal');
+            gsap.to('#comms-modal-content', {scale: 0.9, y: 40, duration: 0.4});
+            gsap.to(modal, {opacity: 0, duration: 0.4, onComplete: () => {
+                modal.classList.add('hidden', 'pointer-events-none');
+            }});
+        };
+
+        window.sendTransmission = () => {
+            const name = document.getElementById('comms-name').value;
+            const email = document.getElementById('comms-email').value;
+            const msg = document.getElementById('comms-msg').value;
+
+            if(!name || !email || !msg) {
+                alertSystem("INCOMPLETE DATA_PACKET. FILL ALL FIELDS.");
+                return;
+            }
+
+            playSfx('click');
+            document.getElementById('comms-form-wrapper').classList.add('hidden');
+            const loader = document.getElementById('comms-loading');
+            loader.classList.remove('hidden');
+            const status = document.getElementById('comms-status-text');
+
+            status.innerText = "ENCRYPTING DATA_PACKET...";
+            setTimeout(() => { playSfx('hover'); status.innerText = "ESTABLISHING UPLINK TO ARCHITECT NODE..."; }, 1000);
+            setTimeout(() => { playSfx('hover'); status.innerText = "BYPASSING FIREWALLS..."; }, 2000);
+            setTimeout(() => { 
+                playSfx('alert'); 
+                status.classList.remove('text-[var(--sys-blue)]');
+                status.classList.add('text-[#00ffcc]');
+                status.innerText = "TRANSMISSION SUCCESSFUL."; 
+                loader.querySelector('div').classList.remove('animate-spin', 'border-t-[var(--sys-blue)]', 'border-b-[var(--sys-blue)]');
+                loader.querySelector('div').classList.add('border-[#00ffcc]');
+                
+                setTimeout(() => {
+                    closeCommsModal();
+                    // Fallback trigger real mailto
+                    window.location.href = `mailto:Syedahmed.sa43@gmail.com?subject=Secure Transmission from ${name}&body=${msg}%0A%0AContact: ${email}`;
+                }, 1500);
+            }, 3000);
         };
 
         window.closeModals = () => {
@@ -1131,6 +1412,153 @@
             }, 4000);
         };
 
+        /* =========================================
+           CUSTOM PDF GENERATOR (SOLO LEVELING THEME)
+        ========================================= */
+        window.generateResumePDF = () => {
+            playSfx('alert');
+            alertSystem("GENERATING ARCHITECT DOSSIER...");
+
+            setTimeout(() => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Deep Dark Background
+                doc.setFillColor(2, 5, 10);
+                doc.rect(0, 0, 210, 297, 'F');
+                
+                // System Cyan Header Line
+                doc.setFillColor(0, 210, 255);
+                doc.rect(0, 0, 210, 5, 'F');
+
+                // Title Section
+                doc.setTextColor(0, 210, 255);
+                doc.setFont("courier", "bold");
+                doc.setFontSize(26);
+                doc.text("SYED AHMED", 20, 25);
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(12);
+                doc.text("SYSTEM ARCHITECT // FULL-STACK & DATA LEAD", 20, 33);
+                
+                doc.setDrawColor(0, 210, 255);
+                doc.setLineWidth(0.5);
+                doc.line(20, 38, 190, 38);
+
+                // Contact Section
+                doc.setFontSize(10);
+                doc.setTextColor(170, 170, 170);
+                doc.text("UPLINK: +91 8019416016   |   NODE: HYDERABAD, INDIA", 20, 48);
+                doc.text("MAIL: syedahmed.sa43@gmail.com   |   LINKEDIN: linkedin.com/in/syedahmedpro", 20, 54);
+
+                // Architect Profile
+                doc.setTextColor(0, 210, 255);
+                doc.setFontSize(14);
+                doc.text("> ARCHITECT PROFILE", 20, 70);
+                
+                doc.setTextColor(220, 220, 220);
+                doc.setFontSize(10);
+                doc.setFont("courier", "normal");
+                const profileStr = "With over 9 years of experience in the IT ecosystem, I bridge the gap between\ntechnical operations and business strategy. I apply systems logic to build elite\ndigital platforms, high-performance web applications, and powerful data\nintelligence solutions that replace static legacy environments.";
+                doc.text(profileStr, 20, 80);
+
+                // Core Attributes (Skills)
+                doc.setTextColor(0, 210, 255);
+                doc.setFontSize(14);
+                doc.setFont("courier", "bold");
+                doc.text("> CORE ATTRIBUTES (SKILL TREE)", 20, 108);
+
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(10);
+                doc.setFont("courier", "normal");
+                doc.text("[RANK S] WEB ARCHITECTURE: React, Next.js, Node.js, HTML/CSS, Tailwind", 20, 118);
+                doc.text("[RANK S] DATA INTELLIGENCE: Power BI, Data Analytics, Dashboards, SQL", 20, 126);
+                doc.text("[RANK A] AI & ADVANCED TECH: Generative AI, Python, Prompt Engineering", 20, 134);
+                doc.text("[RANK A] SYSTEM INFRASTRUCTURE: IT Operations, Hardware, Cybersecurity", 20, 142);
+
+                // Experience & Deployments
+                doc.setTextColor(0, 210, 255);
+                doc.setFontSize(14);
+                doc.setFont("courier", "bold");
+                doc.text("> SYSTEM DEPLOYMENTS (EXPERIENCE)", 20, 158);
+
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(11);
+                doc.text("Data Analytics Lead | Power BI Specialist", 20, 168);
+                doc.setFontSize(9);
+                doc.setTextColor(170, 170, 170);
+                doc.text("Transforming manual workflows into automated, interactive Power BI dashboards.", 20, 174);
+
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(11);
+                doc.text("Senior Desktop Support Engineer", 20, 184);
+                doc.setFontSize(9);
+                doc.setTextColor(170, 170, 170);
+                doc.text("Managed IT operations for 200+ systems with excellent uptime tracking.", 20, 190);
+
+                // Education
+                doc.setTextColor(0, 210, 255);
+                doc.setFontSize(14);
+                doc.setFont("courier", "bold");
+                doc.text("> ACQUIRED TITLES (EDUCATION)", 20, 206);
+                
+                doc.setTextColor(220, 220, 220);
+                doc.setFontSize(10);
+                doc.setFont("courier", "normal");
+                doc.text("- Master of Computer Applications (Data Science) - SMU", 20, 216);
+                doc.text("- Bachelor of Commerce (Accounting) - DBRAU", 20, 224);
+                doc.text("- Bachelor of Fine Arts (Animation/Interactive Tech) - JNIAS", 20, 232);
+                doc.text("- Over 52+ Verified Industry Certifications (AI, Analytics, Infrastructure)", 20, 240);
+
+                // System Footer
+                doc.setFillColor(0, 210, 255);
+                doc.rect(20, 275, 170, 0.5, 'F');
+                doc.setTextColor(0, 210, 255);
+                doc.setFontSize(8);
+                doc.text("SYSTEM ARCHITECT LOG // GENERATED SECURELY // SYED AHMED", 20, 282);
+
+                doc.save("Syed_Ahmed_Architect_Dossier.pdf");
+                playSfx('alert');
+            }, 1200);
+        };
+
+        /* =========================================
+           TERMINAL LOGIC
+        ========================================= */
+        window.addEventListener('keydown', (e) => {
+            if (e.key === '`' || e.key === '~') {
+                e.preventDefault();
+                const term = document.getElementById('sys-terminal');
+                if (term.classList.contains('active')) {
+                    term.classList.remove('active');
+                    gsap.to(term, {autoAlpha: 0, y: "-100%", duration: 0.4, ease: "power3.in"});
+                } else {
+                    term.classList.add('active');
+                    gsap.to(term, {autoAlpha: 1, y: "0%", duration: 0.4, ease: "power4.out"});
+                    document.getElementById('term-input').focus();
+                    playSfx('hover');
+                }
+            }
+        });
+
+        document.getElementById('term-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const val = this.value.trim().toLowerCase();
+                const output = document.getElementById('term-output');
+                output.innerText += `\nroot@architect:~# ${val}`;
+                
+                if(val === 'help') output.innerText += `\nCommands:\n- status : View Architect Status\n- clear  : Wipe Terminal\n- hack   : Bypass mainframe`;
+                else if (val === 'clear') output.innerText = `ARCHITECT OS v4.0 (QUANTUM EDITION)\nType 'help' to view available system commands.\nPress '~' (tilde/backtick) to close terminal.`;
+                else if (val === 'status') { navTo('status'); document.dispatchEvent(new KeyboardEvent('keydown', {'key': '`'})); }
+                else if (val === 'hack') { output.innerText += `\n> INITIATING OVERRIDE...\n> ACCESS DENIED. NICE TRY.`; playSfx('error'); }
+                else if (val !== '') { output.innerText += `\nCommand not found: ${val}`; }
+                
+                this.value = '';
+                output.scrollTop = output.scrollHeight;
+                playSfx('click');
+            }
+        });
+
         /* CURSOR LOGIC */
         document.addEventListener('mousemove', e => {
             if(window.innerWidth <= 768) return;
@@ -1149,19 +1577,17 @@
             AudioSys.init();
             initAura();
             renderData();
+            initHoloPhysics(); 
             
-            // Boot sequence
             setTimeout(() => {
-                typeWriter('boot-text', "System Architecture scanning physical realm...\nConnecting to Node: HYDERABAD.\nIdentifying Architect profile: SYED_AHMED.\nClearance Level: MAXIMUM.\n\nDo you wish to initialize the portfolio framework?", 25, () => {
+                typeWriter('boot-text', "System Architecture scanning physical realm...\nConnecting to Network Node...\nIdentifying Architect profile: SYED_AHMED.\nClearance Level: MAXIMUM.\n\nDo you wish to initialize the portfolio framework?", 25, () => {
                     playSfx('alert');
                     gsap.to('#boot-action', {opacity: 1, duration: 0.8});
                 });
             }, 800);
 
-            // Add interactive class dynamically
-            document.querySelectorAll('button, a, .sys-panel').forEach(el => el.classList.add('interactive'));
+            document.querySelectorAll('button, a, .sys-panel, input, textarea').forEach(el => el.classList.add('interactive'));
             
-            // Ensure audio ctx is resumed on first click anywhere
             document.body.addEventListener('click', () => {
                 if(AudioSys.ctx && AudioSys.ctx.state === 'suspended') AudioSys.ctx.resume();
             }, {once: true});
