@@ -18,6 +18,7 @@
             --sys-blue: #00d2ff;
             --sys-blue-glow: rgba(0, 210, 255, 0.5);
             --sys-blue-bg: rgba(0, 210, 255, 0.08);
+            --sys-purple: #b026ff;
             --sys-red: #ff3333;
             --sys-dark: #02050a;
             --sys-panel: rgba(8, 12, 18, 0.85);
@@ -25,8 +26,13 @@
             --sys-white: #f1f5f9;
         }
 
-        * { box-sizing: border-box; cursor: none !important; -webkit-tap-highlight-color: transparent; }
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
         
+        html { scroll-behavior: smooth; }
+
         body {
             background-color: var(--sys-dark);
             color: var(--sys-white);
@@ -34,6 +40,12 @@
             overflow-x: hidden;
             margin: 0;
             -webkit-font-smoothing: antialiased;
+            overscroll-behavior-y: none; /* Prevents mobile pull-to-refresh */
+        }
+
+        /* Enforce custom cursor only on non-touch devices */
+        @media (hover: hover) and (pointer: fine) {
+            * { cursor: none !important; }
         }
 
         .font-sys { font-family: 'Share Tech Mono', monospace; }
@@ -62,10 +74,10 @@
         }
 
         /* Cinematic Backgrounds */
-        .cinematic-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -20; overflow: hidden; background: #000; }
-        .cinematic-video { position: absolute; top: 50%; left: 50%; width: 100vw; height: 100vh; object-fit: cover; transform: translate(-50%, -50%) scale(1.1); opacity: 0.7; mix-blend-mode: screen; filter: contrast(1.2) saturate(1.3) hue-rotate(-5deg); }
+        .cinematic-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: -20; overflow: hidden; background: #000; }
+        .cinematic-video { position: absolute; top: 50%; left: 50%; width: 100vw; height: 100dvh; object-fit: cover; transform: translate(-50%, -50%) scale(1.1); opacity: 0.75; mix-blend-mode: screen; filter: contrast(1.3) saturate(1.4) hue-rotate(-10deg) brightness(0.9); }
         .cinematic-overlay { position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 0%, var(--sys-dark) 100%), linear-gradient(to bottom, rgba(2,5,10,0.7), rgba(2,5,10,0.9)); z-index: -15; }
-        #aura-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -10; pointer-events: none; opacity: 0.4; mix-blend-mode: screen; }
+        #aura-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: -10; pointer-events: none; opacity: 0.5; mix-blend-mode: screen; }
 
         /* Holographic 3D Tilt Panels */
         .sys-panel {
@@ -77,14 +89,26 @@
             position: relative;
             transform-style: preserve-3d;
             perspective: 1000px;
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s, border-color 0.4s;
         }
         
-        .sys-panel:hover {
-            background: var(--sys-panel-hover);
-            border-color: var(--sys-blue);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(0, 210, 255, 0.15);
-            z-index: 20;
+        @media (hover: hover) {
+            .sys-panel:hover {
+                background: var(--sys-panel-hover);
+                border-color: var(--sys-blue);
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(0, 210, 255, 0.15);
+                z-index: 20;
+            }
+            .sys-btn:hover::before { left: 100%; }
+            .sys-btn:hover { color: #fff; background: rgba(0, 210, 255, 0.2); box-shadow: 0 0 20px var(--sys-blue-glow), inset 0 0 20px rgba(0, 210, 255, 0.4); border-color: #fff; }
+            .sys-btn-solid:hover { background: #fff; color: #000; box-shadow: 0 0 30px rgba(255,255,255,0.6); }
+            .tab-btn:hover:not(.active) { color: white; border-bottom-color: rgba(255,255,255,0.3); }
+            .sys-panel:hover .panel-glare { opacity: 1; }
+            .sys-panel:hover .stat-bar-fill { filter: brightness(1.3); }
+            #comms-fab:hover { background: var(--sys-blue); color: black; box-shadow: 0 0 30px rgba(0,210,255,0.8); }
         }
+
+        .sys-panel:active { transform: scale(0.98); }
 
         .sys-panel::before {
             content: ''; position: absolute; top: 0; left: 0; width: 20px; height: 20px;
@@ -95,13 +119,12 @@
             border-bottom: 2px solid var(--sys-blue); border-right: 2px solid var(--sys-blue);
         }
 
-        /* Dynamic Hologram Glare inside Panel */
+        /* Dynamic Hologram Glare */
         .panel-glare {
             position: absolute; inset: 0; pointer-events: none; z-index: 10;
             background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.15), transparent 50%);
             opacity: 0; transition: opacity 0.3s; mix-blend-mode: overlay;
         }
-        .sys-panel:hover .panel-glare { opacity: 1; }
 
         /* Avatar System Frame */
         .avatar-cut { clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px); }
@@ -110,7 +133,7 @@
         .rank-badge { font-family: 'Share Tech Mono', monospace; font-weight: bold; border: 1px solid; padding: 2px 8px; font-size: 0.75rem; letter-spacing: 1px; }
         .rank-s { color: #ffcc00; border-color: rgba(255, 204, 0, 0.5); background: rgba(255, 204, 0, 0.1); box-shadow: 0 0 10px rgba(255,204,0,0.2); }
         .rank-a { color: var(--sys-blue); border-color: rgba(0, 210, 255, 0.5); background: var(--sys-blue-bg); box-shadow: 0 0 10px rgba(0,210,255,0.2); }
-        .rank-b { color: #b026ff; border-color: rgba(176, 38, 255, 0.5); background: rgba(176, 38, 255, 0.1); box-shadow: 0 0 10px rgba(176,38,255,0.2); }
+        .rank-b { color: var(--sys-purple); border-color: rgba(176, 38, 255, 0.5); background: rgba(176, 38, 255, 0.1); box-shadow: 0 0 10px rgba(176,38,255,0.2); }
         .rank-locked { color: #ff3333; border-color: rgba(255, 51, 51, 0.5); background: rgba(255, 51, 51, 0.1); }
 
         /* System Buttons */
@@ -122,34 +145,34 @@
             display: inline-flex; align-items: center; justify-content: center; font-weight: bold;
             box-shadow: inset 0 0 15px rgba(0, 210, 255, 0.1);
             white-space: nowrap; 
+            touch-action: manipulation;
         }
         .sys-btn::before {
             content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(0, 210, 255, 0.4), transparent);
             transition: left 0.5s ease; z-index: -1;
         }
-        .sys-btn:hover::before { left: 100%; }
-        .sys-btn:hover { color: #fff; background: rgba(0, 210, 255, 0.2); box-shadow: 0 0 20px var(--sys-blue-glow), inset 0 0 20px rgba(0, 210, 255, 0.4); border-color: #fff; }
-
         .sys-btn-solid { background: var(--sys-blue); color: #000; border-color: #fff; box-shadow: 0 0 20px var(--sys-blue-glow); }
-        .sys-btn-solid:hover { background: #fff; color: #000; box-shadow: 0 0 30px rgba(255,255,255,0.6); }
+        .sys-btn:active { transform: scale(0.95); }
 
-        /* Tab Buttons for Quests */
+        /* Tab Buttons */
         .tab-btn {
             font-family: 'Share Tech Mono', monospace; color: gray; padding: 10px 20px; border-bottom: 2px solid transparent;
-            transition: all 0.3s; font-size: 0.9rem; letter-spacing: 2px;
+            transition: all 0.3s; font-size: 0.9rem; letter-spacing: 2px; touch-action: manipulation;
         }
         .tab-btn.active { color: var(--sys-blue); border-bottom-color: var(--sys-blue); text-shadow: 0 0 10px var(--sys-blue-glow); background: linear-gradient(to top, rgba(0,210,255,0.1), transparent); }
-        .tab-btn:hover:not(.active) { color: white; border-bottom-color: rgba(255,255,255,0.3); }
+        
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
 
         /* Mobile Bottom HUD Buttons */
-        .mob-nav-btn { position: relative; transition: all 0.3s; }
+        .mob-nav-btn { position: relative; transition: all 0.3s; touch-action: manipulation; }
         .mob-nav-btn.active { color: var(--sys-blue); text-shadow: 0 0 10px var(--sys-blue-glow); }
         .mob-nav-btn.active svg { filter: drop-shadow(0 0 5px var(--sys-blue)); transform: scale(1.1); transition: transform 0.3s; }
 
-        /* Glitch Title */
+        /* Glitch Effects */
         .glitch-text { position: relative; display: inline-block; font-weight: 700; }
-        .glitch-text::before, .glitch-text::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8; }
+        .glitch-text::before, .glitch-text::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8; pointer-events: none; }
         .glitch-text::before { left: 2px; text-shadow: -1px 0 rgba(0, 210, 255, 0.8); clip: rect(24px, 550px, 90px, 0); animation: glitch-anim 3s infinite linear alternate-reverse; }
         .glitch-text::after { left: -2px; text-shadow: -1px 0 rgba(176, 38, 255, 0.8); clip: rect(85px, 550px, 140px, 0); animation: glitch-anim 2.5s infinite linear alternate-reverse; }
         @keyframes glitch-anim {
@@ -171,28 +194,27 @@
         /* Stat Bars */
         .stat-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.05); position: relative; overflow: hidden; margin-top: 6px; border: 1px solid rgba(255,255,255,0.1); }
         .stat-bar-fill { height: 100%; background: var(--sys-blue); width: 0%; box-shadow: 0 0 10px var(--sys-blue); transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .sys-panel:hover .stat-bar-fill { filter: brightness(1.3); }
 
         /* SPA Logic */
-        .view-section { display: none; opacity: 0; min-height: 100vh; padding: 100px 0; perspective: 1000px; }
+        .view-section { display: none; opacity: 0; min-height: 100dvh; padding: 100px 0; perspective: 1000px; }
         .view-section.active { display: block; opacity: 1; }
         .gs-reveal { opacity: 0; transform: translateY(40px) scale(0.95); transform-origin: center top; }
 
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--sys-dark); }
-        ::-webkit-scrollbar-thumb { background: rgba(0,210,255,0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,210,255,0.4); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--sys-blue); }
 
         /* Overlays */
         #boot-screen, #transition-overlay { position: fixed; inset: 0; background: var(--sys-dark); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #transition-overlay { opacity: 0; pointer-events: none; z-index: 9000; background: rgba(2,5,10,0.98); backdrop-filter: blur(15px); }
         
-        .sys-alert-box { border: 1px solid rgba(0, 210, 255, 0.3); background: rgba(8, 12, 18, 0.95); box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(0, 210, 255, 0.05); border-top: 3px solid var(--sys-blue); }
+        .sys-alert-box { border: 1px solid rgba(0, 210, 255, 0.3); background: rgba(8, 12, 18, 0.95); box-shadow: 0 0 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(0, 210, 255, 0.05); border-top: 3px solid var(--sys-blue); }
 
         /* System Command Terminal Override */
         #sys-terminal {
-            position: fixed; top: 0; left: 0; w: 100vw; height: 40vh; max-height: 400px; background: rgba(3, 7, 14, 0.98);
+            position: fixed; top: 0; left: 0; width: 100vw; height: 40dvh; max-height: 400px; background: rgba(3, 7, 14, 0.98);
             backdrop-filter: blur(20px); border-bottom: 2px solid var(--sys-blue); z-index: 10001;
             transform: translateY(-100%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
             font-family: 'Share Tech Mono', monospace; padding: 20px; color: #00d2ff; display: flex; flex-direction: column;
@@ -201,7 +223,7 @@
         #sys-terminal.active { transform: translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
         #term-output { flex-grow: 1; overflow-y: auto; margin-bottom: 10px; font-size: 14px; white-space: pre-wrap; text-shadow: 0 0 5px rgba(0, 210, 255, 0.5); }
         #term-input-line { display: flex; align-items: center; border-top: 1px solid rgba(0, 210, 255, 0.2); padding-top: 10px; }
-        #term-input { background: transparent; border: none; color: #fff; flex-grow: 1; outline: none; font-family: inherit; font-size: 14px; margin-left: 10px; }
+        #term-input { background: transparent; border: none; color: #fff; flex-grow: 1; outline: none; font-family: inherit; font-size: 16px; margin-left: 10px; } /* 16px prevents iOS auto-zoom */
 
         /* Floating COMMS Widget */
         #comms-fab {
@@ -214,34 +236,35 @@
             font-weight: bold; letter-spacing: 2px; text-transform: uppercase;
             transition: all 0.3s ease; animation: pulse-glow 2s infinite;
         }
-        #comms-fab:hover { background: var(--sys-blue); color: black; box-shadow: 0 0 30px rgba(0,210,255,0.8); }
         @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(0,210,255,0.4); } 50% { box-shadow: 0 0 40px rgba(0,210,255,0.8); } }
 
         /* Form Inputs */
         .sys-input {
             width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(0, 210, 255, 0.3);
             color: white; font-family: 'Share Tech Mono', monospace; padding: 12px 16px;
-            outline: none; transition: all 0.3s;
+            outline: none; transition: all 0.3s; font-size: 16px !important; /* Prevent iOS zoom */
         }
         .sys-input:focus { border-color: var(--sys-blue); box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); background: rgba(0, 210, 255, 0.05); }
 
+        /* Disable Body Scroll Class */
+        .no-scroll { overflow: hidden; height: 100dvh; }
+
         /* Mobile specific optimizations */
         @media (max-width: 768px) {
-            * { cursor: auto !important; }
             #cursor-dot, #cursor-ring { display: none !important; }
             .sys-panel { clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); transform: none !important; }
             .panel-glare { display: none; }
             .scanlines { display: none; }
+            .interactive { cursor: pointer !important; }
             
-            /* Bottom HUD spacing and adjustments */
+            /* Bottom HUD spacing */
             #main-content { padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px)); }
-            .view-section { padding: 90px 0 20px 0; }
+            .view-section { padding: 90px 0 20px 0; min-height: calc(100dvh - 90px); }
             
-            /* Move FAB above bottom HUD */
-            #comms-fab { bottom: calc(85px + env(safe-area-inset-bottom, 20px)); right: 16px; padding: 10px 14px; }
+            #comms-fab { bottom: calc(85px + env(safe-area-inset-bottom, 20px)); right: 16px; padding: 10px 14px; animation: pulse-glow-mobile 2s infinite; }
+            @keyframes pulse-glow-mobile { 0%, 100% { box-shadow: 0 0 10px rgba(0,210,255,0.4); } 50% { box-shadow: 0 0 20px rgba(0,210,255,0.8); } }
             
-            /* Swipe handles */
-            .swipe-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; margin: 0 auto 15px auto; }
+            .swipe-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; margin: 0 auto 15px auto; pointer-events: none; }
         }
     </style>
 </head>
@@ -259,16 +282,18 @@
 
     <!-- System Neural Network Canvas -->
     <canvas id="aura-canvas"></canvas>
+    
+    <!-- Custom Cursors (Desktop only) -->
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
 
     <!-- SECURE OVERRIDE TERMINAL -->
-    <div id="sys-terminal" class="fixed top-0 left-0 w-full h-[40vh]">
+    <div id="sys-terminal" class="fixed top-0 left-0 w-full h-[40dvh]">
         <div id="term-output">ARCHITECT OS v4.0 (QUANTUM EDITION)
 Type 'help' to view available system commands.
 [Desktop] Press '~' to close. [Mobile] Tap terminal icon to close.</div>
         <div id="term-input-line">
-            <span class="text-gray-500">root@architect:~#</span>
+            <span class="text-[var(--sys-blue)]">root@architect:~#</span>
             <input type="text" id="term-input" autocomplete="off" spellcheck="false" class="interactive">
         </div>
     </div>
@@ -276,11 +301,11 @@ Type 'help' to view available system commands.
     <!-- BOOT SCREEN -->
     <div id="boot-screen">
         <div class="sys-alert-box p-8 md:p-12 max-w-2xl w-11/12 mx-auto relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--sys-blue)] to-transparent"></div>
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[var(--sys-blue)] to-transparent"></div>
             <p class="font-sys text-[var(--sys-blue)] text-xs tracking-widest mb-4">> SYSTEM ARCHITECTURE INITIALIZATION</p>
             <div id="boot-text" class="font-sys text-base md:text-lg text-gray-300 mb-8 min-h-[100px] leading-relaxed"></div>
             <div class="flex justify-between items-center opacity-0 border-t border-gray-800 pt-6 mt-4" id="boot-action">
-                <div class="font-sys text-xs text-gray-500 hidden sm:block">CLIENT CLEARANCE: <span class="text-white">REQUIRED</span></div>
+                <div class="font-sys text-xs text-gray-500 hidden sm:block">CLIENT CLEARANCE: <span class="text-white font-bold">REQUIRED</span></div>
                 <button class="sys-btn sys-btn-solid interactive text-sm w-full sm:w-auto magnetic" onclick="acceptQuest()">[ GRANT ACCESS ]</button>
             </div>
         </div>
@@ -288,22 +313,22 @@ Type 'help' to view available system commands.
 
     <!-- TRANSITION OVERLAY -->
     <div id="transition-overlay">
-        <div class="w-16 h-16 border-2 border-t-[var(--sys-blue)] border-r-transparent border-b-transparent border-l-[var(--sys-blue)] rounded-full animate-spin mb-6 shadow-[0_0_20px_rgba(0,210,255,0.4)]"></div>
-        <div class="font-sys text-[var(--sys-blue)] text-xl tracking-[0.3em] animate-pulse font-bold">PROCESSING DATA</div>
+        <div class="w-16 h-16 border-4 border-t-[var(--sys-blue)] border-r-[var(--sys-purple)] border-b-transparent border-l-[var(--sys-blue)] rounded-full animate-spin mb-6 shadow-[0_0_20px_rgba(0,210,255,0.4)]"></div>
+        <div class="font-sys text-[var(--sys-blue)] text-xl tracking-[0.4em] animate-pulse font-bold">PROCESSING DATA</div>
     </div>
 
     <!-- MAIN NAV HEADER (TOP) -->
-    <header class="fixed top-0 w-full z-40 bg-[rgba(2,5,10,0.85)] backdrop-blur-md border-b border-gray-800 hidden" id="main-header">
+    <header class="fixed top-0 w-full z-40 bg-[rgba(2,5,10,0.85)] backdrop-blur-md border-b border-[var(--sys-blue)]/20 hidden" id="main-header">
         <div class="max-w-7xl mx-auto px-4 py-3 md:py-4 flex justify-between items-center gap-2">
             
             <!-- Architect Logo -->
             <div class="flex items-center gap-3 md:gap-4 cursor-pointer interactive group magnetic" onclick="navTo('status')">
-                <div class="w-8 h-8 md:w-10 md:h-10 border border-[var(--sys-blue)] flex items-center justify-center bg-[var(--sys-blue-bg)] group-hover:bg-[var(--sys-blue)] transition-colors duration-300">
-                    <span class="font-bold text-white text-sm md:text-base leading-none">SA</span>
+                <div class="w-8 h-8 md:w-10 md:h-10 border border-[var(--sys-blue)] flex items-center justify-center bg-[var(--sys-blue-bg)] group-hover:bg-[var(--sys-blue)] transition-colors duration-300 shadow-[0_0_10px_rgba(0,210,255,0.2)]">
+                    <span class="font-bold text-white text-sm md:text-base leading-none group-hover:text-black">SA</span>
                 </div>
                 <div>
-                    <div class="font-bold text-sm md:text-sm tracking-[0.2em] text-white glitch-periodic">SYED AHMED</div>
-                    <div class="font-sys text-[9px] md:text-[10px] text-[var(--sys-blue)] tracking-widest">ARCHITECT_LEVEL: MAX</div>
+                    <div class="font-bold text-sm md:text-sm tracking-[0.2em] text-white glitch-periodic drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">SYED AHMED</div>
+                    <div class="font-sys text-[9px] md:text-[10px] text-[var(--sys-blue)] tracking-widest font-bold">ARCHITECT_LEVEL: MAX</div>
                 </div>
             </div>
             
@@ -330,9 +355,9 @@ Type 'help' to view available system commands.
             <!-- Mobile Terminal Trigger & Geo Data -->
             <div class="flex items-center gap-3">
                 <div class="hidden lg:flex font-sys text-[10px] text-[var(--sys-blue)] bg-black/50 border border-[var(--sys-blue)] px-4 py-2 items-center gap-4 tracking-[0.2em] shadow-[0_0_10px_rgba(0,210,255,0.2)]">
-                    <span id="sys-node" class="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]">NODE: DETECTING...</span>
+                    <span id="sys-node" class="text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.8)] font-bold">NODE: DETECTING...</span>
                     <span class="w-px h-3 bg-[var(--sys-blue)]/50"></span>
-                    <span id="sys-time">SYS.TIME: 00:00:00</span>
+                    <span id="sys-time" class="font-bold">SYS.TIME: 00:00:00</span>
                 </div>
                 <!-- Mobile Only Terminal Toggle -->
                 <button class="md:hidden interactive p-2 text-[var(--sys-blue)] border border-[var(--sys-blue)]/30 bg-[var(--sys-blue-bg)] rounded-sm active:bg-[var(--sys-blue)] active:text-black transition-colors" onclick="toggleTerminal()">
@@ -343,22 +368,22 @@ Type 'help' to view available system commands.
     </header>
 
     <!-- MOBILE SYSTEM BOTTOM HUD -->
-    <nav id="mobile-nav" class="fixed bottom-0 left-0 w-full z-40 bg-[rgba(3,7,14,0.95)] border-t border-gray-800 backdrop-blur-xl flex md:hidden justify-around items-center pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_30px_rgba(0,0,0,0.8)] transition-transform duration-500 translate-y-full hidden font-sys">
-        <button class="mob-nav-btn active flex flex-col items-center p-3 w-1/4 text-gray-500 hover:text-[var(--sys-blue)] interactive" data-target="status" onclick="navTo('status')">
+    <nav id="mobile-nav" class="fixed bottom-0 left-0 w-full z-40 bg-[rgba(3,7,14,0.95)] border-t border-[var(--sys-blue)]/30 backdrop-blur-xl flex md:hidden justify-around items-center pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_30px_rgba(0,0,0,0.8)] transition-transform duration-500 translate-y-full hidden font-sys">
+        <button class="mob-nav-btn active flex flex-col items-center p-3 w-1/4 text-gray-500 interactive" data-target="status" onclick="navTo('status')">
             <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            <span class="text-[9px] tracking-widest">STATUS</span>
+            <span class="text-[9px] tracking-widest font-bold">STATUS</span>
         </button>
-        <button class="mob-nav-btn flex flex-col items-center p-3 w-1/4 text-gray-500 hover:text-[var(--sys-blue)] interactive" data-target="abilities" onclick="navTo('abilities')">
+        <button class="mob-nav-btn flex flex-col items-center p-3 w-1/4 text-gray-500 interactive" data-target="abilities" onclick="navTo('abilities')">
             <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            <span class="text-[9px] tracking-widest">ABILITIES</span>
+            <span class="text-[9px] tracking-widest font-bold">ABILITIES</span>
         </button>
-        <button class="mob-nav-btn flex flex-col items-center p-3 w-1/4 text-gray-500 hover:text-[var(--sys-blue)] interactive" data-target="quests" onclick="navTo('quests')">
+        <button class="mob-nav-btn flex flex-col items-center p-3 w-1/4 text-gray-500 interactive" data-target="quests" onclick="navTo('quests')">
             <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-            <span class="text-[9px] tracking-widest">QUESTS</span>
+            <span class="text-[9px] tracking-widest font-bold">QUESTS</span>
         </button>
-        <button class="mob-nav-btn flex flex-col items-center p-3 w-1/4 text-gray-500 hover:text-[var(--sys-blue)] interactive" data-target="inventory" onclick="navTo('inventory')">
+        <button class="mob-nav-btn flex flex-col items-center p-3 w-1/4 text-gray-500 interactive" data-target="inventory" onclick="navTo('inventory')">
             <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
-            <span class="text-[9px] tracking-widest">INVENTORY</span>
+            <span class="text-[9px] tracking-widest font-bold">INVENTORY</span>
         </button>
     </nav>
 
@@ -371,7 +396,7 @@ Type 'help' to view available system commands.
                     <div class="panel-glare"></div>
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-gray-800 pb-4 md:pb-6 mb-6 md:mb-8 gap-4 relative z-10">
                         <div>
-                            <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1">> IDENTITY CONFIRMED</p>
+                            <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1 font-bold">> IDENTITY CONFIRMED</p>
                             <h1 class="text-3xl md:text-6xl font-bold tracking-widest text-white glitch-text uppercase" data-text="STATUS WINDOW">STATUS WINDOW</h1>
                         </div>
                         <span class="font-sys text-[var(--sys-blue)] border border-[var(--sys-blue)] px-3 md:px-4 py-1.5 md:py-2 bg-[var(--sys-blue-bg)] text-[10px] md:text-xs font-bold tracking-widest flex items-center gap-2 shadow-[0_0_15px_rgba(0,210,255,0.2)]">
@@ -416,12 +441,12 @@ Type 'help' to view available system commands.
                                 <div class="bg-black/50 border border-gray-800 p-3 md:p-4 text-center relative overflow-hidden group">
                                     <div class="absolute bottom-0 left-0 w-full h-1 bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
                                     <div class="text-2xl md:text-4xl font-bold text-[var(--sys-blue)] font-display tracking-tighter counter" data-target="9">+</div>
-                                    <div class="font-sys text-[9px] md:text-[10px] lg:text-xs text-gray-400 mt-1 md:mt-2 tracking-widest">YEARS EXP</div>
+                                    <div class="font-sys text-[9px] md:text-[10px] lg:text-xs text-gray-400 mt-1 md:mt-2 tracking-widest font-bold">YEARS EXP</div>
                                 </div>
                                 <div class="bg-black/50 border border-gray-800 p-3 md:p-4 text-center relative overflow-hidden group">
                                     <div class="absolute bottom-0 left-0 w-full h-1 bg-[var(--sys-blue)] scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
                                     <div class="text-2xl md:text-4xl font-bold text-[var(--sys-blue)] font-display tracking-tighter counter" data-target="52">+</div>
-                                    <div class="font-sys text-[9px] md:text-[10px] lg:text-xs text-gray-400 mt-1 md:mt-2 tracking-widest">CREDENTIALS</div>
+                                    <div class="font-sys text-[9px] md:text-[10px] lg:text-xs text-gray-400 mt-1 md:mt-2 tracking-widest font-bold">CREDENTIALS</div>
                                 </div>
                             </div>
                             
@@ -443,7 +468,7 @@ Type 'help' to view available system commands.
                         <div class="lg:col-span-7 flex flex-col justify-between">
                             <div class="bg-black/40 p-5 md:p-8 border border-gray-800 mb-6 md:mb-8">
                                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end border-b border-gray-800 pb-4 mb-5 md:mb-6 gap-3">
-                                    <h3 class="font-sys text-[var(--sys-blue)] text-xs md:text-sm lg:text-base tracking-[0.2em]">> SYSTEM ATTRIBUTES</h3>
+                                    <h3 class="font-sys text-[var(--sys-blue)] text-xs md:text-sm lg:text-base tracking-[0.2em] font-bold">> SYSTEM ATTRIBUTES</h3>
                                     <button onclick="generateResumePDF()" class="sys-btn sys-btn-solid text-[9px] md:text-[10px] lg:text-xs py-2 px-4 shadow-[0_0_15px_rgba(0,210,255,0.4)] interactive magnetic w-full sm:w-auto">
                                         [ EXTRACT RESUME ]
                                     </button>
@@ -465,7 +490,7 @@ Type 'help' to view available system commands.
 
                             <!-- ARCHITECT SOLUTIONS -->
                             <div class="mb-6 md:mb-8">
-                                <h3 class="font-sys text-white text-base md:text-lg lg:text-xl tracking-widest mb-3 md:mb-4 uppercase drop-shadow-md">Architect Solutions</h3>
+                                <h3 class="font-sys text-white text-base md:text-lg lg:text-xl tracking-widest mb-3 md:mb-4 uppercase drop-shadow-md font-bold">Architect Solutions</h3>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
                                     <div class="bg-black/60 border border-[var(--sys-blue)]/30 p-4 md:p-5 group hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-all">
                                         <div class="text-[var(--sys-blue)] mb-2 md:mb-3"><svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg></div>
@@ -508,10 +533,10 @@ Type 'help' to view available system commands.
             <div class="pt-8 md:pt-16 max-w-7xl mx-auto">
                 <div class="border-b border-gray-800 pb-4 md:pb-6 mb-8 md:mb-12 gs-reveal flex flex-col md:flex-row md:items-end justify-between gap-3 md:gap-4">
                     <div>
-                        <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1 md:mb-2">> SKILL TREE EXTRACTED</p>
-                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Architect Abilities</h2>
+                        <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1 md:mb-2 font-bold">> SKILL TREE EXTRACTED</p>
+                        <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Architect Abilities</h2>
                     </div>
-                    <div class="font-sys text-[10px] md:text-xs text-gray-500 border border-[var(--sys-blue)]/30 px-3 py-1.5 md:px-4 md:py-2 bg-black/60 shadow-inner">
+                    <div class="font-sys text-[10px] md:text-xs text-gray-500 border border-[var(--sys-blue)]/30 px-3 py-1.5 md:px-4 md:py-2 bg-black/60 shadow-inner font-bold">
                         EVALUATION BASED ON 9+ YEARS EXP
                     </div>
                 </div>
@@ -524,19 +549,19 @@ Type 'help' to view available system commands.
             <div class="pt-8 md:pt-16 max-w-7xl mx-auto">
                 <div class="border-b border-gray-800 pb-4 md:pb-6 mb-6 md:mb-8 gs-reveal flex flex-col md:flex-row md:items-end justify-between gap-3 md:gap-4">
                     <div>
-                        <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1 md:mb-2">> SYSTEM DEPLOYMENTS</p>
-                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Completed Quests</h2>
+                        <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1 md:mb-2 font-bold">> SYSTEM DEPLOYMENTS</p>
+                        <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Completed Quests</h2>
                     </div>
-                    <div class="font-sys text-[10px] md:text-xs text-[var(--sys-blue)] tracking-widest">SELECT A SECTOR TO VIEW LOGS</div>
+                    <div class="font-sys text-[10px] md:text-xs text-[var(--sys-blue)] tracking-widest font-bold">SELECT A SECTOR TO VIEW LOGS</div>
                 </div>
 
                 <!-- Dual Tabs -->
-                <div class="flex gap-1 md:gap-2 mb-8 md:mb-10 border-b border-gray-800 pb-px gs-reveal overflow-x-auto whitespace-nowrap">
-                    <button class="tab-btn active interactive flex items-center gap-2 md:gap-3 magnetic flex-shrink-0" onclick="switchQuestTab('web')">
+                <div class="flex gap-2 md:gap-4 mb-8 md:mb-10 border-b border-gray-800 pb-px gs-reveal overflow-x-auto whitespace-nowrap hide-scrollbar">
+                    <button class="tab-btn active interactive flex items-center gap-2 md:gap-3 magnetic flex-shrink-0" onclick="switchQuestTab('web', this)">
                         <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         ENTERPRISE WEBSITES
                     </button>
-                    <button class="tab-btn interactive flex items-center gap-2 md:gap-3 magnetic flex-shrink-0" onclick="switchQuestTab('app')">
+                    <button class="tab-btn interactive flex items-center gap-2 md:gap-3 magnetic flex-shrink-0" onclick="switchQuestTab('app', this)">
                         <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                         NATIVE APPLICATIONS
                     </button>
@@ -606,7 +631,7 @@ Type 'help' to view available system commands.
                                 <span class="rank-badge rank-s text-xs md:text-sm">RANK: S</span>
                             </div>
                             <div class="h-48 md:h-56 lg:h-64 w-full bg-[var(--sys-blue-bg)] border border-[var(--sys-blue)] mb-5 md:mb-6 flex items-center justify-center relative overflow-hidden shadow-[inset_0_0_50px_rgba(0,210,255,0.15)] group-hover:bg-[var(--sys-blue)]/20 transition-colors">
-                                <span class="font-sys text-lg md:text-2xl font-bold text-[var(--sys-blue)] animate-pulse tracking-[0.2em] md:tracking-[0.3em] drop-shadow-[0_0_10px_rgba(0,210,255,0.8)] text-center px-4">[ CURRENT SYSTEM ACTIVE ]</span>
+                                <span class="font-sys text-lg md:text-2xl lg:text-3xl font-bold text-[var(--sys-blue)] animate-pulse tracking-[0.2em] md:tracking-[0.3em] drop-shadow-[0_0_10px_rgba(0,210,255,0.8)] text-center px-4">[ CURRENT SYSTEM ACTIVE ]</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <div class="flex flex-wrap gap-2"><span class="bg-[var(--sys-blue)] text-black font-bold text-[9px] md:text-[10px] px-2 md:px-3 py-1 md:py-1.5 font-sys tracking-widest">ARCHITECTURE</span></div>
@@ -627,11 +652,11 @@ Type 'help' to view available system commands.
                             </div>
                             <div class="h-48 md:h-56 lg:h-64 w-full bg-black border border-[#ff3333]/30 mb-5 md:mb-6 flex items-center justify-center relative overflow-hidden shadow-inner">
                                 <div class="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_15px,rgba(255,51,51,0.08)_15px,rgba(255,51,51,0.08)_30px)]"></div>
-                                <span class="font-sys text-sm md:text-xl font-bold text-[#ff3333] tracking-widest relative z-10 bg-[#1a0505] px-4 md:px-6 py-2 md:py-3 border border-[#ff3333] shadow-[0_0_20px_rgba(255,51,51,0.5)] text-center">[ CLASSIFIED ARCHITECTURE ]</span>
+                                <span class="font-sys text-sm md:text-xl lg:text-2xl font-bold text-[#ff3333] tracking-widest relative z-10 bg-[#1a0505] px-4 md:px-6 py-2 md:py-3 border border-[#ff3333] shadow-[0_0_20px_rgba(255,51,51,0.5)] text-center">[ CLASSIFIED ARCHITECTURE ]</span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <div class="flex flex-wrap gap-2"><span class="bg-[#2a0808] text-gray-400 text-[9px] md:text-[10px] px-2 md:px-3 py-1 md:py-1.5 font-sys border border-gray-800 tracking-widest">NATIVE APP</span></div>
-                                <p class="font-sys text-gray-500 text-[10px] md:text-xs tracking-widest">> COMMISSION ONLY</p>
+                                <p class="font-sys text-gray-500 text-[10px] md:text-xs tracking-widest font-bold">> COMMISSION ONLY</p>
                             </div>
                         </div>
                     </div>
@@ -657,11 +682,11 @@ Type 'help' to view available system commands.
             <div class="pt-8 md:pt-16 max-w-7xl mx-auto">
                 <div class="border-b border-gray-800 pb-4 md:pb-6 mb-8 md:mb-10 gs-reveal flex flex-col md:flex-row md:items-end justify-between gap-3 md:gap-4">
                     <div>
-                        <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1 md:mb-2">> VERIFIED TITLES & CREDENTIALS DATABANK</p>
-                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Inventory</h2>
+                        <p class="font-sys text-[var(--sys-blue)] text-xs md:text-sm tracking-widest mb-1 md:mb-2 font-bold">> VERIFIED TITLES & CREDENTIALS DATABANK</p>
+                        <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-widest text-white uppercase glitch-periodic drop-shadow-[0_0_15px_rgba(0,210,255,0.2)]">Inventory</h2>
                     </div>
                     <div class="font-sys text-[var(--sys-blue)] bg-[var(--sys-blue-bg)] px-3 py-1.5 md:px-4 md:py-2 border border-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest font-bold shadow-[0_0_10px_rgba(0,210,255,0.1)] self-start md:self-auto">
-                        ACQUIRED ITEMS: <span id="item-count" class="text-white text-sm ml-2">0</span>
+                        ACQUIRED ITEMS: <span id="item-count" class="text-white text-sm md:text-base ml-2">0</span>
                     </div>
                 </div>
                 <div id="inventory-container" class="space-y-12 md:space-y-16"></div>
@@ -678,11 +703,11 @@ Type 'help' to view available system commands.
     <!-- SECURE TRANSMISSION MODAL (Contact Form) -->
     <div id="comms-modal" class="fixed inset-0 z-[105] hidden flex items-center justify-center opacity-0 pointer-events-none p-4">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-xl interactive" onclick="closeCommsModal()"></div>
-        <div class="sys-alert-box p-6 md:p-8 lg:p-12 w-full max-w-2xl relative z-10 transform scale-95 transition-transform border border-[var(--sys-blue)] max-h-[90vh] overflow-y-auto" id="comms-modal-content">
-            <div class="md:hidden swipe-handle"></div>
+        <div class="sys-alert-box p-6 md:p-8 lg:p-12 w-full max-w-2xl relative z-10 transform scale-95 transition-transform border border-[var(--sys-blue)] max-h-[90dvh] overflow-y-auto" id="comms-modal-content">
+            <div class="md:hidden swipe-handle mt-1"></div>
             <div class="absolute top-4 right-4 md:top-6 md:right-6 border border-[var(--sys-blue)]/50 text-[var(--sys-blue)] font-sys px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors magnetic" onclick="closeCommsModal()">[ X ]</div>
             
-            <p class="font-sys text-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest mb-2 md:mb-3">> ESTABLISHING SECURE UPLINK...</p>
+            <p class="font-sys text-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest mb-2 md:mb-3 font-bold">> ESTABLISHING SECURE UPLINK...</p>
             <h2 class="text-2xl md:text-4xl lg:text-5xl font-bold text-white uppercase tracking-wide drop-shadow-lg mb-6 md:mb-8">Transmission</h2>
             
             <div id="comms-form-wrapper" class="space-y-4 md:space-y-5">
@@ -713,13 +738,13 @@ Type 'help' to view available system commands.
     </div>
 
     <!-- QUEST MODAL -->
-    <div id="quest-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none p-4">
+    <div id="quest-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none p-4 pb-[env(safe-area-inset-bottom)]">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-xl interactive" onclick="closeModals()"></div>
-        <div class="sys-alert-box p-6 md:p-8 lg:p-12 w-full max-w-4xl relative z-10 transform scale-95 transition-transform max-h-[90vh] overflow-y-auto" id="quest-modal-content">
-            <div class="md:hidden swipe-handle"></div>
+        <div class="sys-alert-box p-6 md:p-8 lg:p-12 w-full max-w-4xl relative z-10 transform scale-95 transition-transform max-h-[90dvh] overflow-y-auto" id="quest-modal-content">
+            <div class="md:hidden swipe-handle mt-1"></div>
             <div class="absolute top-4 right-4 md:top-6 md:right-6 border border-gray-600 text-gray-400 font-sys px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:text-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors magnetic" onclick="closeModals()">[ X ]</div>
             
-            <p class="font-sys text-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest mb-2 md:mb-3">> DEPLOYMENT DETAILS DECRYPTED</p>
+            <p class="font-sys text-[var(--sys-blue)] text-[10px] md:text-xs tracking-widest mb-2 md:mb-3 font-bold">> DEPLOYMENT DETAILS DECRYPTED</p>
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4 mb-6 md:mb-8 border-b border-gray-800 pb-4 md:pb-6">
                 <h2 id="q-title" class="text-2xl md:text-4xl lg:text-5xl font-bold text-white uppercase tracking-wide drop-shadow-lg">Quest Title</h2>
                 <span id="q-rank" class="rank-badge rank-s text-xs md:text-sm self-start md:self-auto">RANK: S</span>
@@ -741,12 +766,12 @@ Type 'help' to view available system commands.
     <!-- ITEM MODAL (Certs) -->
     <div id="item-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center opacity-0 pointer-events-none p-4 pb-[env(safe-area-inset-bottom)]">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-xl interactive" onclick="closeModals()"></div>
-        <div class="sys-alert-box p-4 md:p-8 lg:p-10 w-full max-w-6xl h-[85vh] md:h-[90vh] flex flex-col relative z-10 transform scale-95 transition-transform" id="item-modal-content">
+        <div class="sys-alert-box p-4 md:p-8 lg:p-10 w-full max-w-6xl h-[85dvh] md:h-[90dvh] flex flex-col relative z-10 transform scale-95 transition-transform" id="item-modal-content">
             <div class="md:hidden swipe-handle mt-1"></div>
             <div class="absolute top-4 right-4 md:top-6 md:right-6 border border-gray-600 text-gray-400 font-sys px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs cursor-none interactive hover:border-[var(--sys-blue)] hover:text-[var(--sys-blue)] hover:bg-[var(--sys-blue-bg)] transition-colors z-20 magnetic" onclick="closeModals()">[ X ]</div>
             
             <div class="mb-4 md:mb-6 pr-16 md:pr-24 shrink-0">
-                <p class="font-sys text-[var(--sys-blue)] text-[9px] md:text-xs tracking-widest mb-1 md:mb-2 mt-2 md:mt-0">> CREDENTIAL VERIFICATION</p>
+                <p class="font-sys text-[var(--sys-blue)] text-[9px] md:text-xs tracking-widest mb-1 md:mb-2 mt-2 md:mt-0 font-bold">> CREDENTIAL VERIFICATION</p>
                 <h2 id="i-title" class="text-lg md:text-3xl lg:text-4xl font-bold text-white uppercase mb-2 md:mb-3 truncate drop-shadow-md">Item Title</h2>
                 <span id="i-type" class="font-sys bg-[var(--sys-blue)] text-black px-2 py-1 md:px-4 md:py-1.5 text-[8px] md:text-[10px] lg:text-xs font-bold tracking-widest inline-block truncate max-w-full">DOMAIN: UNKNOWN</span>
             </div>
@@ -755,7 +780,7 @@ Type 'help' to view available system commands.
                 <iframe id="i-frame" src="" class="w-full h-full absolute inset-0 z-10 hidden bg-white border-0"></iframe>
                 
                 <div id="i-state" class="text-center font-sys z-0">
-                    <div class="w-16 h-16 md:w-24 md:h-24 border-4 border-t-[var(--sys-blue)] border-r-transparent border-b-transparent border-l-[var(--sys-blue)] rounded-full animate-spin mx-auto mb-4 md:mb-6 shadow-[0_0_20px_rgba(0,210,255,0.2)]"></div>
+                    <div class="w-16 h-16 md:w-24 md:h-24 border-4 border-t-[var(--sys-blue)] border-r-[var(--sys-purple)] border-b-transparent border-l-[var(--sys-blue)] rounded-full animate-spin mx-auto mb-4 md:mb-6 shadow-[0_0_20px_rgba(0,210,255,0.2)]"></div>
                     <p class="text-[var(--sys-blue)] animate-pulse tracking-[0.2em] md:tracking-[0.3em] font-bold text-xs md:text-lg">DECRYPTING SECURE DATA...</p>
                 </div>
                 
@@ -776,6 +801,36 @@ Type 'help' to view available system commands.
     </div>
 
     <script>
+        /* =========================================
+           TAB SWITCH LOGIC
+        ========================================= */
+        window.switchQuestTab = (tab, el) => {
+            playSfx('hover');
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if(el) el.classList.add('active');
+            else if(event && event.currentTarget) event.currentTarget.classList.add('active');
+
+            const cWeb = document.getElementById('quests-web');
+            const cApp = document.getElementById('quests-app');
+            
+            if(tab === 'web') {
+                cApp.style.opacity = 0;
+                setTimeout(() => {
+                    cApp.classList.add('hidden');
+                    cWeb.classList.remove('hidden');
+                    setTimeout(() => cWeb.style.opacity = 1, 50);
+                }, 300);
+            } else {
+                cWeb.style.opacity = 0;
+                setTimeout(() => {
+                    cWeb.classList.add('hidden');
+                    cApp.classList.remove('hidden');
+                    setTimeout(() => cApp.style.opacity = 1, 50);
+                }, 300);
+            }
+        };
+
         /* =========================================
            DATA STRUCTURES 
         ========================================= */
@@ -957,6 +1012,8 @@ Type 'help' to view available system commands.
             init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
             play(type) {
                 if(!this.ctx) return;
+                if(this.ctx.state === 'suspended') this.ctx.resume();
+                
                 const t = this.ctx.currentTime;
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
@@ -967,12 +1024,12 @@ Type 'help' to view available system commands.
                     gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.03, t + 0.01); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05); 
                     osc.start(t); osc.stop(t + 0.05);
                 } else if (type === 'click') {
-                    vibrate(15); // Haptic click
+                    vibrate(15); 
                     osc.type = 'square'; osc.frequency.setValueAtTime(400, t); osc.frequency.exponentialRampToValueAtTime(100, t + 0.1); 
                     gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.1, t + 0.01); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
                     osc.start(t); osc.stop(t + 0.1);
                 } else if (type === 'alert') {
-                    vibrate([30, 50, 30]); // Haptic double ping
+                    vibrate([30, 50, 30]); 
                     osc.type = 'sine'; osc.frequency.setValueAtTime(1200, t);
                     gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(0.1, t + 0.05); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
                     osc.start(t); osc.stop(t + 0.4);
@@ -982,7 +1039,7 @@ Type 'help' to view available system commands.
                     gain2.gain.setValueAtTime(0, t+0.1); gain2.gain.linearRampToValueAtTime(0.1, t + 0.15); gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
                     osc2.start(t+0.1); osc2.stop(t + 0.5);
                 } else if (type === 'error') {
-                    vibrate(50); // Haptic error
+                    vibrate(50); 
                     osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, t); osc.frequency.linearRampToValueAtTime(80, t + 0.3);
                     gain.gain.setValueAtTime(0.1, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
                     osc.start(t); osc.stop(t + 0.3);
@@ -990,6 +1047,8 @@ Type 'help' to view available system commands.
             },
             startDrone() {
                 if(!this.ctx || this.droneGain) return;
+                if(this.ctx.state === 'suspended') this.ctx.resume();
+                
                 const osc = this.ctx.createOscillator();
                 this.droneGain = this.ctx.createGain();
                 osc.type = 'triangle';
@@ -1012,7 +1071,7 @@ Type 'help' to view available system commands.
         const playSfx = (type) => AudioSys.play(type);
 
         /* =========================================
-           AURA CANVAS (Neural Network)
+           AURA CANVAS (Arise Shadow Network)
         ========================================= */
         const initAura = () => {
             const canvas = document.getElementById('aura-canvas');
@@ -1021,14 +1080,17 @@ Type 'help' to view available system commands.
             let h = canvas.height = window.innerHeight;
             
             const particles = [];
-            const pCount = w < 768 ? 20 : 60; // Optimized for mobile
+            const pCount = w < 768 ? 25 : 65; 
+            const colors = ['#00d2ff', '#00d2ff', '#00d2ff', '#b026ff', '#00ffcc']; // Solo Leveling Shadow Aura Mix
+
             for(let i=0; i< pCount; i++) {
                 particles.push({
                     x: Math.random() * w, y: Math.random() * h,
                     s: Math.random() * 2 + 0.5,
                     vx: (Math.random() - 0.5) * 0.6,
                     vy: (Math.random() - 0.5) * 0.6,
-                    alpha: Math.random() * 0.5 + 0.1
+                    alpha: Math.random() * 0.5 + 0.1,
+                    color: colors[Math.floor(Math.random() * colors.length)]
                 });
             }
 
@@ -1043,7 +1105,12 @@ Type 'help' to view available system commands.
                         
                         if(dist < (w < 768 ? 100 : 140)) {
                             ctx.beginPath();
-                            ctx.strokeStyle = `rgba(0, 210, 255, ${0.15 - dist/900})`;
+                            // Gradient line between colors
+                            let grad = ctx.createLinearGradient(particles[i].x, particles[i].y, particles[j].x, particles[j].y);
+                            grad.addColorStop(0, particles[i].color.replace(')', `, ${0.15 - dist/900})`).replace('rgb', 'rgba'));
+                            grad.addColorStop(1, particles[j].color.replace(')', `, ${0.15 - dist/900})`).replace('rgb', 'rgba'));
+                            
+                            ctx.strokeStyle = grad;
                             ctx.lineWidth = w < 768 ? 0.4 : 0.6;
                             ctx.moveTo(particles[i].x, particles[i].y);
                             ctx.lineTo(particles[j].x, particles[j].y);
@@ -1052,12 +1119,12 @@ Type 'help' to view available system commands.
                     }
                 }
 
-                ctx.fillStyle = '#00d2ff';
                 particles.forEach(p => {
                     p.x += p.vx; p.y += p.vy;
                     if(p.x < 0 || p.x > w) p.vx *= -1;
                     if(p.y < 0 || p.y > h) p.vy *= -1;
 
+                    ctx.fillStyle = p.color;
                     ctx.globalAlpha = p.alpha;
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
                 });
@@ -1255,6 +1322,9 @@ Type 'help' to view available system commands.
             btn.style.display = 'none';
             text.innerHTML = '';
             
+            // Simulating System Awakening with Red Flash
+            gsap.to('#boot-screen', { backgroundColor: 'rgba(255, 0, 0, 0.2)', duration: 0.1, yoyo: true, repeat: 1 });
+
             typeWriter('boot-text', "> INITIATING SYSTEM BYPASS...\n> OVERRIDING SECURITY PROTOCOLS...\n> ACCESS GRANTED.", 30, () => {
                 setTimeout(() => {
                     AudioSys.startDrone(); 
@@ -1321,9 +1391,13 @@ Type 'help' to view available system commands.
             }
         }
 
-        /* MODALS */
+        /* MODALS & SCROLL LOCKING */
+        const lockScroll = () => document.body.classList.add('no-scroll');
+        const unlockScroll = () => document.body.classList.remove('no-scroll');
+
         window.openQuest = (title, obj, tech, res, rank, link) => {
             playSfx('click');
+            lockScroll();
             document.getElementById('q-title').innerText = title;
             document.getElementById('q-obj').innerText = obj;
             document.getElementById('q-tech').innerText = tech;
@@ -1345,6 +1419,7 @@ Type 'help' to view available system commands.
 
         window.openItem = (title, type, file) => {
             playSfx('click');
+            lockScroll();
             document.getElementById('i-title').innerText = title;
             document.getElementById('i-type').innerText = `DOMAIN: ${type}`;
             document.getElementById('i-path').innerText = `assets/certificates/${file}`;
@@ -1382,6 +1457,7 @@ Type 'help' to view available system commands.
 
         window.openCommsModal = () => {
             playSfx('click');
+            lockScroll();
             const modal = document.getElementById('comms-modal');
             modal.classList.remove('hidden', 'pointer-events-none');
             
@@ -1397,6 +1473,7 @@ Type 'help' to view available system commands.
 
         window.closeModals = () => {
             playSfx('hover');
+            unlockScroll();
             gsap.to('.fixed.inset-0.z-\\[100\\]', {opacity: 0, duration: 0.3, onComplete: () => {
                 document.querySelectorAll('.fixed.inset-0.z-\\[100\\]').forEach(m => m.classList.add('hidden', 'pointer-events-none'));
                 document.getElementById('i-frame').src = '';
@@ -1405,6 +1482,7 @@ Type 'help' to view available system commands.
         
         window.closeCommsModal = () => {
             playSfx('hover');
+            unlockScroll();
             const modal = document.getElementById('comms-modal');
             gsap.to('#comms-modal-content', {scale: 0.9, y: window.innerWidth > 768 ? 40 : 100, duration: 0.4});
             gsap.to(modal, {opacity: 0, duration: 0.4, onComplete: () => {
@@ -1413,19 +1491,30 @@ Type 'help' to view available system commands.
         };
 
         /* =========================================
-           MOBILE SWIPE TO DISMISS GESTURES 
+           MOBILE SWIPE TO DISMISS GESTURES (UPGRADED)
         ========================================= */
         let touchStartY = 0;
+        let touchStartX = 0;
         document.addEventListener('touchstart', e => { 
             touchStartY = e.changedTouches[0].screenY; 
+            touchStartX = e.changedTouches[0].screenX;
         }, {passive: true});
 
         document.addEventListener('touchend', e => {
             let touchEndY = e.changedTouches[0].screenY;
-            if (touchEndY - touchStartY > 80) { // Significant swipe down
-                if (!document.getElementById('quest-modal').classList.contains('hidden')) window.closeModals();
-                else if (!document.getElementById('item-modal').classList.contains('hidden')) window.closeModals();
-                else if (!document.getElementById('comms-modal').classList.contains('hidden')) window.closeCommsModal();
+            let touchEndX = e.changedTouches[0].screenX;
+            let deltaY = touchEndY - touchStartY;
+            let deltaX = Math.abs(touchEndX - touchStartX);
+
+            // Ensure it's a downward swipe, not a sideways swipe
+            if (deltaY > 80 && deltaX < 50) { 
+                // Check if user is inside a scrollable div and not at the top
+                const scrollableArea = e.target.closest('.overflow-y-auto');
+                if (!scrollableArea || scrollableArea.scrollTop <= 5) {
+                    if (!document.getElementById('quest-modal').classList.contains('hidden')) window.closeModals();
+                    else if (!document.getElementById('item-modal').classList.contains('hidden')) window.closeModals();
+                    else if (!document.getElementById('comms-modal').classList.contains('hidden')) window.closeCommsModal();
+                }
             }
         }, {passive: true});
 
@@ -1604,10 +1693,11 @@ Type 'help' to view available system commands.
                 const output = document.getElementById('term-output');
                 output.innerText += `\nroot@architect:~# ${val}`;
                 
-                if(val === 'help') output.innerText += `\nCommands:\n- status : View Architect Status\n- clear  : Wipe Terminal\n- hack   : Bypass mainframe`;
+                if(val === 'help') output.innerText += `\nCommands:\n- status : View Architect Status\n- clear  : Wipe Terminal\n- hack   : Bypass mainframe\n- arise  : ?????`;
                 else if (val === 'clear') output.innerText = `ARCHITECT OS v4.0 (QUANTUM EDITION)\nType 'help' to view available system commands.\n[Desktop] Press '~' to close. [Mobile] Tap terminal icon to close.`;
                 else if (val === 'status') { navTo('status'); toggleTerminal(); }
                 else if (val === 'hack') { output.innerText += `\n> INITIATING OVERRIDE...\n> ACCESS DENIED. NICE TRY.`; playSfx('error'); }
+                else if (val === 'arise') { output.innerText += `\n> EXTRACTING SHADOWS...\n> THE MONARCH HAS RETURNED.`; playSfx('alert'); }
                 else if (val !== '') { output.innerText += `\nCommand not found: ${val}`; }
                 
                 this.value = '';
@@ -1622,12 +1712,24 @@ Type 'help' to view available system commands.
             gsap.to('#cursor-dot', {x: e.clientX, y: e.clientY, duration: 0});
             gsap.to('#cursor-ring', {x: e.clientX, y: e.clientY, duration: 0.15});
         });
-        document.addEventListener('mouseover', e => {
-            if(e.target.closest('.interactive')) document.body.classList.add('cursor-hover');
-        });
-        document.addEventListener('mouseout', e => {
-            if(e.target.closest('.interactive')) document.body.classList.remove('cursor-hover');
-        });
+
+        /* =========================================
+           IOS AUDIO UNLOCKER 
+           Forces Audio API to unlock on first mobile tap
+        ========================================= */
+        const unlockAudio = () => {
+            if(AudioSys.ctx && AudioSys.ctx.state === 'suspended') {
+                AudioSys.ctx.resume();
+                const osc = AudioSys.ctx.createOscillator();
+                osc.connect(AudioSys.ctx.destination);
+                osc.start(0);
+                osc.stop(0.001); // Silent micro-beep unblocks iOS
+            }
+            document.body.removeEventListener('touchstart', unlockAudio);
+            document.body.removeEventListener('click', unlockAudio);
+        };
+        document.body.addEventListener('touchstart', unlockAudio, {once:true});
+        document.body.addEventListener('click', unlockAudio, {once:true});
 
         /* INITIALIZE */
         window.onload = () => {
@@ -1644,10 +1746,6 @@ Type 'help' to view available system commands.
             }, 800);
 
             document.querySelectorAll('button, a, .sys-panel, input, textarea').forEach(el => el.classList.add('interactive'));
-            
-            document.body.addEventListener('click', () => {
-                if(AudioSys.ctx && AudioSys.ctx.state === 'suspended') AudioSys.ctx.resume();
-            }, {once: true});
         };
     </script>
 </body>
