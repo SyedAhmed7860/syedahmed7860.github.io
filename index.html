@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Syed Ahmed | High-Performance Digital Systems</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>Freelance Website Developer in Hyderabad, India | Syed Ahmed</title>
+    <meta name="description" content="Hire the best freelance website designer & app developer in India. I build high-converting landing pages & business web solutions. Get a free consultation!">
+    <meta name="keywords" content="best website designer, website developer near me, freelance web developer India, landing page designer, app developer for business, professional website developer, business website solutions, custom website development services, UI UX designer for business, website designer in Hyderabad">
+    <meta name="author" content="Syed Ahmed">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph for Social Sharing -->
+    <meta property="og:title" content="Freelance Website Developer in Hyderabad | Syed Ahmed">
+    <meta property="og:description" content="Expert freelance web developer & landing page designer in India. Transforming businesses with scalable web and mobile app solutions.">
+    <meta property="og:type" content="website">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -166,13 +177,18 @@
         .stat-bar-fill { height: 100%; width: 0%; border-radius: 10px; }
         body.architect-mode .stat-bar-bg, body.architect-mode .stat-bar-fill { border-radius: 0; }
         
-        /* Subtle breathing animation for profile pic */
         @keyframes subtleBreathe {
             0% { box-shadow: 0 0 20px var(--accent-glow); }
             50% { box-shadow: 0 0 40px var(--accent-glow); }
             100% { box-shadow: 0 0 20px var(--accent-glow); }
         }
         .profile-glow { animation: subtleBreathe 4s infinite ease-in-out; }
+
+        /* FAQ Accordion */
+        .faq-answer { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; }
+        .faq-answer > div { overflow: hidden; }
+        .faq-item.active .faq-answer { grid-template-rows: 1fr; }
+        .faq-item.active .faq-icon { transform: rotate(45deg); }
     </style>
 </head>
 <body class="antialiased selection:bg-white/20 selection:text-white">
@@ -203,9 +219,9 @@
                 <button onclick="navigate('certificates')" class="nav-link hover:text-[var(--accent)] transition-colors" data-target="certificates">Certificates</button>
             </nav>
 
-            <button onclick="navigate('contact')" class="hidden lg:flex btn-primary py-2.5 px-6 text-sm nav-link shadow-none" data-target="contact">Start Project</button>
+            <button onclick="navigate('contact')" class="hidden lg:flex btn-primary py-2.5 px-6 text-sm nav-link shadow-none" data-target="contact">Hire Me</button>
             
-            <button class="lg:hidden text-white outline-none" id="mobile-menu-btn">
+            <button class="lg:hidden text-white outline-none" id="mobile-menu-btn" aria-label="Toggle Navigation">
                 <i class="ph ph-list text-3xl"></i>
             </button>
         </div>
@@ -216,61 +232,58 @@
         <button onclick="navigate('home'); toggleMenu();" class="text-2xl font-medium text-[var(--text-muted)] hover:text-white transition-colors">Home</button>
         <button onclick="navigate('services'); toggleMenu();" class="text-2xl font-medium text-[var(--text-muted)] hover:text-white transition-colors">Services</button>
         <button onclick="navigate('portfolio'); toggleMenu();" class="text-2xl font-medium text-[var(--text-muted)] hover:text-white transition-colors">Portfolio</button>
-        <button onclick="navigate('applications'); toggleMenu();" class="text-2xl font-medium text-[var(--text-muted)] hover:text-white transition-colors">Applications</button>
+        <button onclick="navigate('applications'); toggleMenu();" class="text-2xl font-medium text-[var(--text-muted)] hover:text-white transition-colors">Apps</button>
         <button onclick="navigate('skills'); toggleMenu();" class="text-2xl font-medium text-[var(--text-muted)] hover:text-white transition-colors">Skills</button>
-        <button onclick="navigate('youtube'); toggleMenu();" class="text-2xl font-medium text-[var(--text-muted)] hover:text-white transition-colors">YouTube</button>
+        <button onclick="navigate('youtube'); toggleMenu();" class="text-2xl font-medium text-[var(--text-muted)] hover:text-white transition-colors">Media</button>
         <button onclick="navigate('certificates'); toggleMenu();" class="text-2xl font-medium text-[var(--text-muted)] hover:text-white transition-colors">Certificates</button>
-        <button onclick="navigate('contact'); toggleMenu();" class="text-2xl font-medium text-[var(--accent)] mt-4">Start Project</button>
+        <button onclick="navigate('contact'); toggleMenu();" class="text-2xl font-medium text-[var(--accent)] mt-4">Get Free Quote</button>
     </div>
 
-    <!-- SPA CONTAINER -->
+    <!-- MAIN APP CONTAINER -->
     <main id="app-container" class="relative">
         
         <!-- ==============================================
-             HOME PAGE (Full Sales Funnel)
+             HOME PAGE (SEO Optimized Landing Page)
              ============================================== -->
-        <section id="home" class="page-section relative z-10 !pt-24 !pb-0">
+        <section id="home" class="page-section relative z-10 !pt-24 !pb-0 block">
             
-            <!-- 1. HERO SECTION -->
+            <!-- 1. HERO SECTION (Target: "Top Freelance Website Developer India") -->
             <div class="max-w-7xl mx-auto px-6 w-full min-h-[85vh] flex items-center mb-24">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center w-full">
                     
                     <div class="lg:col-span-7 text-center lg:text-left order-2 lg:order-1">
                         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[var(--border-color)] bg-[var(--card-bg)] text-xs md:text-sm font-medium text-[var(--text-muted)] mb-8 page-anim" style="border-radius: var(--radius);">
                             <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_10px_#4ade80]"></span>
-                            Available for new projects & collaborations
+                            Available for freelance web development in India & globally
                         </div>
                         
                         <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1] page-anim max-w-4xl mx-auto lg:mx-0">
-                            I Build Systems That Turn Businesses Into <span class="text-gradient">Scalable Machines.</span>
+                            Top Freelance <span class="text-gradient">Website Developer</span> & App Designer.
                         </h1>
                         
                         <p class="text-lg md:text-xl text-[var(--text-muted)] max-w-xl mb-10 leading-relaxed page-anim font-light mx-auto lg:mx-0">
-                            Websites, Landing Pages, Android Apps, and Data Dashboards — engineered end-to-end to drive growth, efficiency, and revenue.
+                            Looking for the best website designer? I architect custom business websites, high-converting landing pages, and native Android apps that turn local traffic into scalable revenue. Based in Hyderabad, building for the world.
                         </p>
                         
                         <div class="flex flex-col sm:flex-row gap-4 page-anim justify-center lg:justify-start mb-10">
-                            <button onclick="navigate('contact')" class="btn-primary">Start a Project <i class="ph ph-arrow-right text-lg"></i></button>
-                            <button onclick="navigate('portfolio')" class="btn-outline">View Case Studies</button>
+                            <button onclick="navigate('contact')" class="btn-primary">Get a Free Consultation <i class="ph ph-arrow-right text-lg"></i></button>
+                            <button onclick="navigate('portfolio')" class="btn-outline">View My Portfolio</button>
                         </div>
 
                         <div class="flex flex-wrap justify-center lg:justify-start gap-6 text-sm font-mono text-[var(--text-muted)] page-anim">
                             <span class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-[var(--accent)] text-lg"></i> 9+ Years Experience</span>
+                            <span class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-[var(--accent)] text-lg"></i> Custom Website Solutions</span>
                             <span class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-[var(--accent)] text-lg"></i> 50+ Certifications</span>
-                            <span class="flex items-center gap-2"><i class="ph-fill ph-check-circle text-[var(--accent)] text-lg"></i> End-to-End Solutions</span>
                         </div>
                     </div>
 
                     <div class="lg:col-span-5 flex justify-center page-anim order-1 lg:order-2">
-                        <!-- Clean, Professional Profile Image -->
+                        <!-- Profile Image -->
                         <div class="relative w-56 h-56 md:w-80 md:h-80 group">
-                            <!-- Soft ambient glow -->
                             <div class="absolute inset-0 bg-[var(--accent)] rounded-full blur-[60px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
-                            
-                            <!-- Image Container -->
                             <div class="relative w-full h-full rounded-full border border-white/20 p-2 profile-glow bg-gradient-to-b from-white/10 to-transparent transition-transform duration-500 group-hover:scale-[1.02]">
                                 <div class="w-full h-full rounded-full overflow-hidden bg-black relative">
-                                    <img src="assets/images/profile.jpg" alt="Syed Ahmed" class="w-full h-full object-cover object-top filter contrast-110" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80'">
+                                    <img src="assets/images/profile.jpg" alt="Syed Ahmed - Best Freelance Website Developer in Hyderabad, India" class="w-full h-full object-cover object-top filter contrast-110" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80'">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                                 </div>
                             </div>
@@ -280,110 +293,170 @@
                 </div>
             </div>
 
-            <!-- 2. STORY SECTION (Short & Impactful) -->
+            <!-- 2. STORY SECTION (SEO Context & Trust) -->
             <div class="max-w-4xl mx-auto px-6 w-full py-20 text-center page-anim border-t border-[var(--border-color)]">
-                <h2 class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4">The Architect's Origin</h2>
-                <h3 class="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">From Hardware Logic to Elite Digital Ecosystems.</h3>
+                <span class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4 block">About The Developer</span>
+                <h2 class="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">From Hardware Logic to Elite Digital Ecosystems.</h2>
                 
                 <div class="text-lg text-[var(--text-muted)] font-light leading-relaxed space-y-6 max-w-3xl mx-auto">
-                    <p>My journey in tech didn't begin in a boardroom—it started hands-on. By managing and troubleshooting over 200 physical IT systems, I mastered the very foundation of how technology operates under pressure.</p>
-                    <p>Driven by an intense curiosity, I taught myself to code, transitioning from hardware infrastructure to software development. I evolved into a Data Analytics Lead, streamlining enterprise workflows, and architecting custom digital platforms from scratch.</p>
+                    <p>As a leading <strong>freelance web developer in India</strong>, my journey didn't begin in a boardroom—it started hands-on. By managing and troubleshooting over 200 physical IT systems, I mastered the very foundation of how technology operates under pressure.</p>
+                    <p>Today, I partner with businesses as a dedicated <strong>UI/UX designer and app developer</strong>. I transition complex enterprise workflows into clean, high-converting digital platforms. Whether you need a local business website in Hyderabad or a scalable web app deployed globally, I engineer solutions from scratch.</p>
                     <p class="text-white font-medium text-xl border-l-2 border-[var(--accent)] pl-6 py-2 text-left mt-8 max-w-2xl mx-auto">
-                        "I don't just build websites or apps — I engineer complete systems that solve real business bottlenecks and drive revenue."
+                        "I don't just build websites. I engineer complete business web solutions that solve real bottlenecks and generate ROI."
                     </p>
                 </div>
             </div>
 
-            <!-- 3. WHY CHOOSE ME SECTION -->
-            <div class="max-w-7xl mx-auto px-6 w-full py-24 page-anim">
-                <div class="text-center mb-16">
-                    <h2 class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4">The Advantage</h2>
-                    <h3 class="text-3xl md:text-5xl font-bold text-white">Why Clients Choose Me</h3>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="glass-panel p-8 text-center group">
-                        <div class="w-14 h-14 mx-auto rounded-full bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-500">
-                            <i class="ph ph-hourglass-high text-2xl"></i>
-                        </div>
-                        <h4 class="text-lg font-bold text-white mb-3">9+ Years Experience</h4>
-                        <p class="text-sm text-[var(--text-muted)]">Battle-tested across hardware, software, and enterprise data leadership.</p>
-                    </div>
-                    <div class="glass-panel p-8 text-center group">
-                        <div class="w-14 h-14 mx-auto rounded-full bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-500">
-                            <i class="ph ph-certificate text-2xl"></i>
-                        </div>
-                        <h4 class="text-lg font-bold text-white mb-3">50+ Certifications</h4>
-                        <p class="text-sm text-[var(--text-muted)]">Continuously upgraded skills validated by industry-leading institutions.</p>
-                    </div>
-                    <div class="glass-panel p-8 text-center group">
-                        <div class="w-14 h-14 mx-auto rounded-full bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-500">
-                            <i class="ph ph-trend-up text-2xl"></i>
-                        </div>
-                        <h4 class="text-lg font-bold text-white mb-3">Real Business Acumen</h4>
-                        <p class="text-sm text-[var(--text-muted)]">I think like a business owner first, ensuring every line of code generates ROI.</p>
-                    </div>
-                    <div class="glass-panel p-8 text-center group">
-                        <div class="w-14 h-14 mx-auto rounded-full bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-500">
-                            <i class="ph ph-infinity text-2xl"></i>
-                        </div>
-                        <h4 class="text-lg font-bold text-white mb-3">End-to-End Solutions</h4>
-                        <p class="text-sm text-[var(--text-muted)]">From UI design and web dev to backend databases and analytics dashboards.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. HOW I WORK (PROCESS) -->
+            <!-- 3. SERVICES PREVIEW (Keyword Rich) -->
             <div class="max-w-7xl mx-auto px-6 w-full py-24 page-anim border-t border-[var(--border-color)]">
                 <div class="text-center mb-16">
-                    <h2 class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4">Execution Protocol</h2>
-                    <h3 class="text-3xl md:text-5xl font-bold text-white">How I Work</h3>
+                    <span class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4 block">Expertise</span>
+                    <h2 class="text-3xl md:text-5xl font-bold text-white">High-Converting Digital Solutions</h2>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-                    <!-- Connecting line for desktop -->
-                    <div class="hidden md:block absolute top-[45px] left-[10%] right-[10%] h-[2px] bg-gradient-to-r from-transparent via-[var(--border-color)] to-transparent z-0"></div>
-
-                    <div class="relative z-10 flex flex-col items-center text-center">
-                        <div class="w-24 h-24 rounded-full bg-[var(--bg-color)] border-2 border-[var(--border-color)] flex items-center justify-center mb-6 text-[var(--text-muted)] shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-                            <i class="ph ph-magnifying-glass text-3xl"></i>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-panel p-8 group">
+                        <div class="w-14 h-14 rounded-full bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-500">
+                            <i class="ph ph-desktop text-2xl"></i>
                         </div>
-                        <h4 class="text-xl font-bold text-white mb-2">1. Understand Business</h4>
-                        <p class="text-sm text-[var(--text-muted)]">Deep dive into your goals, audience, and the exact bottleneck we are solving.</p>
+                        <h3 class="text-xl font-bold text-white mb-3">Custom Website Design</h3>
+                        <p class="text-sm text-[var(--text-muted)] mb-6">As a top website designer, I build blazing-fast, SEO-optimized business websites designed to dominate local and global search rankings.</p>
+                        <button onclick="navigate('services')" class="text-[var(--accent)] text-sm font-bold flex items-center gap-2 hover:gap-3 transition-all">Explore Web Dev <i class="ph ph-arrow-right"></i></button>
+                    </div>
+                    
+                    <div class="glass-panel p-8 group">
+                        <div class="w-14 h-14 rounded-full bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-500">
+                            <i class="ph ph-rocket-launch text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-3">Landing Page Design</h3>
+                        <p class="text-sm text-[var(--text-muted)] mb-6">Psychologically structured, high-converting landing pages engineered specifically to maximize your Google Ads & social media ROI.</p>
+                        <button onclick="navigate('services')" class="text-[var(--accent)] text-sm font-bold flex items-center gap-2 hover:gap-3 transition-all">Explore Landing Pages <i class="ph ph-arrow-right"></i></button>
                     </div>
 
-                    <div class="relative z-10 flex flex-col items-center text-center">
-                        <div class="w-24 h-24 rounded-full bg-[var(--bg-color)] border-2 border-[var(--border-color)] flex items-center justify-center mb-6 text-[var(--text-muted)] shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-                            <i class="ph ph-blueprint text-3xl"></i>
+                    <div class="glass-panel p-8 group">
+                        <div class="w-14 h-14 rounded-full bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-500">
+                            <i class="ph ph-device-mobile text-2xl"></i>
                         </div>
-                        <h4 class="text-xl font-bold text-white mb-2">2. Plan System</h4>
-                        <p class="text-sm text-[var(--text-muted)]">Architecting the wireframes, data models, and tech stack needed for scale.</p>
-                    </div>
-
-                    <div class="relative z-10 flex flex-col items-center text-center">
-                        <div class="w-24 h-24 rounded-full bg-[var(--bg-color)] border-2 border-[var(--border-color)] flex items-center justify-center mb-6 text-[var(--text-muted)] shadow-[0_0_20px_rgba(0,0,0,0.5)]">
-                            <i class="ph ph-code text-3xl"></i>
-                        </div>
-                        <h4 class="text-xl font-bold text-white mb-2">3. Build Solution</h4>
-                        <p class="text-sm text-[var(--text-muted)]">Clean, robust coding and system integration with regular progress transparents.</p>
-                    </div>
-
-                    <div class="relative z-10 flex flex-col items-center text-center">
-                        <div class="w-24 h-24 rounded-full bg-[var(--bg-color)] border-2 border-[var(--accent)] bg-[var(--accent-glow)] flex items-center justify-center mb-6 text-white shadow-[0_0_20px_var(--accent-glow)]">
-                            <i class="ph ph-rocket-launch text-3xl"></i>
-                        </div>
-                        <h4 class="text-xl font-bold text-white mb-2">4. Optimize & Scale</h4>
-                        <p class="text-sm text-[var(--text-muted)]">Launch, monitor analytics, and optimize performance for maximum conversion.</p>
+                        <h3 class="text-xl font-bold text-white mb-3">Android App Development</h3>
+                        <p class="text-sm text-[var(--text-muted)] mb-6">End-to-end native Android app developer for businesses. Delivering beautiful UI/UX paired with rock-solid, secure backend architectures.</p>
+                        <button onclick="navigate('applications')" class="text-[var(--accent)] text-sm font-bold flex items-center gap-2 hover:gap-3 transition-all">Explore App Dev <i class="ph ph-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
 
-            <!-- 5. PRE-FOOTER CTA -->
-            <div class="w-full py-32 bg-gradient-to-b from-transparent to-[var(--accent-glow)] border-t border-[var(--border-color)] mt-12 relative overflow-hidden">
+            <!-- 4. TESTIMONIALS (Trust Signals) -->
+            <div class="max-w-7xl mx-auto px-6 w-full py-24 page-anim border-t border-[var(--border-color)]">
+                <div class="text-center mb-16">
+                    <span class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4 block">Proven Success</span>
+                    <h2 class="text-3xl md:text-5xl font-bold text-white">Client Testimonials & Trust Signals</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="glass-panel p-8 relative">
+                        <i class="ph-fill ph-quotes text-4xl text-[var(--accent-glow)] absolute top-6 right-6"></i>
+                        <div class="flex items-center gap-1 mb-4 text-[var(--accent)]">
+                            <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                        </div>
+                        <p class="text-[var(--text-muted)] italic text-sm mb-6 leading-relaxed">"Syed is undoubtedly the best website designer we've hired in India. He completely transformed our outdated booking system into a high-converting React application. Our client retention jumped 40%."</p>
+                        <div>
+                            <p class="text-white font-bold">Crownz Barbershop</p>
+                            <p class="text-xs text-gray-500 font-mono mt-1">Custom Web Platform Client</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-panel p-8 relative">
+                        <i class="ph-fill ph-quotes text-4xl text-[var(--accent-glow)] absolute top-6 right-6"></i>
+                        <div class="flex items-center gap-1 mb-4 text-[var(--accent)]">
+                            <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                        </div>
+                        <p class="text-[var(--text-muted)] italic text-sm mb-6 leading-relaxed">"Finding a reliable freelance web developer who understands both frontend aesthetics and complex backend databases is rare. Syed delivered our enterprise CMS flawlessly."</p>
+                        <div>
+                            <p class="text-white font-bold">Opus Al Qudsi</p>
+                            <p class="text-xs text-gray-500 font-mono mt-1">Enterprise CMS Client</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-8 relative">
+                        <i class="ph-fill ph-quotes text-4xl text-[var(--accent-glow)] absolute top-6 right-6"></i>
+                        <div class="flex items-center gap-1 mb-4 text-[var(--accent)]">
+                            <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                        </div>
+                        <p class="text-[var(--text-muted)] italic text-sm mb-6 leading-relaxed">"We needed a premium modern portfolio to attract high-ticket clients. The platform Syed engineered looks incredibly sophisticated and immediately elevated my digital authority."</p>
+                        <div>
+                            <p class="text-white font-bold">Abdullah Paryani</p>
+                            <p class="text-xs text-gray-500 font-mono mt-1">Premium Portfolio Client</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. SEO FAQs SECTION -->
+            <div class="max-w-4xl mx-auto px-6 w-full py-24 page-anim border-t border-[var(--border-color)]">
+                <div class="text-center mb-16">
+                    <span class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4 block">Information Desk</span>
+                    <h2 class="text-3xl md:text-5xl font-bold text-white">Frequently Asked Questions</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- FAQ 1 -->
+                    <div class="faq-item glass-panel rounded-lg border border-[var(--border-color)] overflow-hidden">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none" onclick="this.parentElement.classList.toggle('active')">
+                            <h3 class="text-white font-bold pr-4">Why should I hire a freelance website developer instead of an agency?</h3>
+                            <i class="ph ph-plus faq-icon text-[var(--accent)] text-xl transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-answer bg-black/20">
+                            <div class="px-6 pb-5 text-sm text-[var(--text-muted)] leading-relaxed">
+                                Hiring a top freelance web developer ensures you get personalized, 1-on-1 communication without the heavy agency overhead costs. You communicate directly with the architect building your business website, ensuring faster turnaround times and highly customized, scalable solutions tailored to your exact business needs.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ 2 -->
+                    <div class="faq-item glass-panel rounded-lg border border-[var(--border-color)] overflow-hidden">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none" onclick="this.parentElement.classList.toggle('active')">
+                            <h3 class="text-white font-bold pr-4">Do you provide SEO with your custom website design services?</h3>
+                            <i class="ph ph-plus faq-icon text-[var(--accent)] text-xl transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-answer bg-black/20">
+                            <div class="px-6 pb-5 text-sm text-[var(--text-muted)] leading-relaxed">
+                                Absolutely. I don't just build visually appealing sites; I engineer them for Google. Every business website and landing page I design includes semantic HTML, technical SEO optimization, rapid load speeds (Core Web Vitals), and mobile responsiveness to ensure you rank highly for keywords like "website designer near me".
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 3 -->
+                    <div class="faq-item glass-panel rounded-lg border border-[var(--border-color)] overflow-hidden">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none" onclick="this.parentElement.classList.toggle('active')">
+                            <h3 class="text-white font-bold pr-4">Are you available for Android app development in India?</h3>
+                            <i class="ph ph-plus faq-icon text-[var(--accent)] text-xl transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-answer bg-black/20">
+                            <div class="px-6 pb-5 text-sm text-[var(--text-muted)] leading-relaxed">
+                                Yes. I am an experienced app developer for business, specializing in native Android applications. From wireframing the UI/UX design to programming the backend database architecture, I provide end-to-end mobile solutions for startups and enterprises across India and internationally.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 4 -->
+                    <div class="faq-item glass-panel rounded-lg border border-[var(--border-color)] overflow-hidden">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none" onclick="this.parentElement.classList.toggle('active')">
+                            <h3 class="text-white font-bold pr-4">How much does a custom business website cost?</h3>
+                            <i class="ph ph-plus faq-icon text-[var(--accent)] text-xl transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-answer bg-black/20">
+                            <div class="px-6 pb-5 text-sm text-[var(--text-muted)] leading-relaxed">
+                                Pricing depends entirely on the scope of the project. A high-converting landing page design will cost less than a full-scale custom web application with database integrations. I focus on providing affordable website developer rates while maintaining enterprise-grade quality. Reach out for a free, customized quote.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. PRE-FOOTER CTA -->
+            <div class="w-full py-32 bg-gradient-to-b from-transparent to-[var(--accent-glow)] border-t border-[var(--border-color)] relative overflow-hidden">
                 <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')]"></div>
                 <div class="max-w-4xl mx-auto px-6 text-center page-anim relative z-10">
                     <h2 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">Ready to build your next digital system?</h2>
-                    <p class="text-lg text-[var(--text-muted)] mb-10 max-w-2xl mx-auto">Stop settling for disjointed freelancers. Get enterprise-grade architecture, seamless design, and data-backed performance in one place.</p>
+                    <p class="text-lg text-[var(--text-muted)] mb-10 max-w-2xl mx-auto">Stop settling for disjointed freelancers. Hire a dedicated UI/UX designer and web developer to get enterprise-grade architecture, seamless design, and data-backed performance in one place.</p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <button onclick="navigate('contact')" class="btn-primary">Start Project Now</button>
                         <button onclick="navigate('portfolio')" class="btn-outline">View Case Studies</button>
@@ -393,13 +466,13 @@
         </section>
 
         <!-- ==============================================
-             SERVICES PAGE
+             SERVICES PAGE (Deep Dive)
              ============================================== -->
         <section id="services" class="page-section hidden relative z-10">
             <div class="max-w-7xl mx-auto px-6">
                 <div class="text-center mb-16 page-anim">
-                    <h2 class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4">Value Proposition</h2>
-                    <h3 class="text-4xl md:text-5xl font-bold text-white">Results-Driven Services</h3>
+                    <span class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4 block">Value Proposition</span>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white">Results-Driven Web Services</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -407,7 +480,7 @@
                         <div class="w-12 h-12 rounded-lg bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-300">
                             <i class="ph ph-desktop text-2xl"></i>
                         </div>
-                        <h4 class="text-xl font-bold text-white mb-3">High-Performance Websites</h4>
+                        <h3 class="text-xl font-bold text-white mb-3">Professional Website Developer</h3>
                         <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-4">Stop losing customers to slow load times. I build scalable, lightning-fast web systems and portals designed to dominate your market and convert visitors into paying clients.</p>
                     </div>
 
@@ -415,7 +488,7 @@
                         <div class="w-12 h-12 rounded-lg bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-300">
                             <i class="ph ph-chart-line-up text-2xl"></i>
                         </div>
-                        <h4 class="text-xl font-bold text-white mb-3">Dashboards That Drive Decisions</h4>
+                        <h3 class="text-xl font-bold text-white mb-3">Dashboards That Drive Decisions</h3>
                         <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-4 max-w-2xl">Transforming chaotic spreadsheets and raw data into automated, real-time Power BI dashboards. I provide business leadership the crystal-clear clarity needed to make split-second, data-backed decisions.</p>
                     </div>
 
@@ -423,7 +496,7 @@
                         <div class="w-12 h-12 rounded-lg bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-300">
                             <i class="ph ph-rocket-launch text-2xl"></i>
                         </div>
-                        <h4 class="text-xl font-bold text-white mb-3">Landing Pages for Ads & Sales</h4>
+                        <h3 class="text-xl font-bold text-white mb-3">Landing Page Expert</h3>
                         <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-4">Psychologically structured, high-converting landing pages engineered specifically to maximize your ROI on ad traffic and generate qualified leads.</p>
                     </div>
 
@@ -431,7 +504,7 @@
                         <div class="w-12 h-12 rounded-lg bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-300">
                             <i class="ph ph-cpu text-2xl"></i>
                         </div>
-                        <h4 class="text-xl font-bold text-white mb-3">Process Automation</h4>
+                        <h3 class="text-xl font-bold text-white mb-3">Process Automation</h3>
                         <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-4">Save time and reduce manual work. I engineer seamless digital workflows that eliminate bottlenecks and save enterprises hundreds of hours every month.</p>
                     </div>
 
@@ -439,7 +512,7 @@
                         <div class="w-12 h-12 rounded-lg bg-[var(--border-color)] flex items-center justify-center mb-6 group-hover:bg-[var(--accent)] group-hover:text-black transition-colors duration-300">
                             <i class="ph ph-device-mobile text-2xl"></i>
                         </div>
-                        <h4 class="text-xl font-bold text-white mb-3">Scalable Android Apps</h4>
+                        <h3 class="text-xl font-bold text-white mb-3">Scalable Android Apps</h3>
                         <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-4">End-to-end native Android application development. Delivering beautiful, intuitive frontend UI paired seamlessly with rock-solid, secure backend architectures.</p>
                     </div>
                 </div>
@@ -452,8 +525,8 @@
         <section id="portfolio" class="page-section hidden relative z-10">
             <div class="max-w-7xl mx-auto px-6">
                 <div class="text-center mb-16 page-anim">
-                    <h2 class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4">Proven Results</h2>
-                    <h3 class="text-4xl md:text-5xl font-bold text-white">Client Case Studies</h3>
+                    <span class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4 block">Proven Results</span>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white">Custom Web Development Portfolio</h2>
                 </div>
 
                 <div class="space-y-12">
@@ -463,10 +536,10 @@
                         <div class="grid grid-cols-1 lg:grid-cols-12 items-stretch">
                             <div class="lg:col-span-5 p-8 md:p-10 flex flex-col justify-center border-r border-[var(--border-color)] order-2 lg:order-1">
                                 <div class="flex flex-wrap gap-2 mb-6">
-                                    <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">React</span>
+                                    <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">React Web Dev</span>
                                     <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">Tailwind CSS</span>
                                 </div>
-                                <h4 class="text-2xl md:text-3xl font-bold text-white mb-6">Crownz Barbershop</h4>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white mb-6">Crownz Barbershop</h3>
                                 
                                 <div class="space-y-4 mb-8">
                                     <div class="bg-black/30 p-4 rounded-lg border border-[var(--border-color)]">
@@ -483,7 +556,7 @@
                                 <a href="https://crownzbarbershop.github.io" target="_blank" class="btn-primary w-max text-sm shadow-none">View Live Platform <i class="ph ph-arrow-up-right"></i></a>
                             </div>
                             <div class="lg:col-span-7 relative overflow-hidden aspect-video lg:aspect-auto h-full order-1 lg:order-2 bg-[#050505] p-8 flex items-center justify-center">
-                                <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80" class="w-full h-auto rounded-xl shadow-2xl group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100">
+                                <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80" alt="Custom website developer portfolio - Crownz Barbershop" class="w-full h-auto rounded-xl shadow-2xl group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100">
                             </div>
                         </div>
                     </div>
@@ -492,14 +565,14 @@
                     <div class="glass-panel overflow-hidden group page-anim transition-transform hover:-translate-y-2">
                         <div class="grid grid-cols-1 lg:grid-cols-12 items-stretch">
                             <div class="lg:col-span-7 relative overflow-hidden aspect-video lg:aspect-auto h-full bg-[#050505] p-8 flex items-center justify-center border-r border-[var(--border-color)]">
-                                <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1200&q=80" class="w-full h-auto rounded-xl shadow-2xl group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100">
+                                <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1200&q=80" alt="Professional UI UX website design for Clip Kings" class="w-full h-auto rounded-xl shadow-2xl group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100">
                             </div>
                             <div class="lg:col-span-5 p-8 md:p-10 flex flex-col justify-center">
                                 <div class="flex flex-wrap gap-2 mb-6">
-                                    <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">GSAP</span>
-                                    <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">HTML5/JS</span>
+                                    <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">GSAP Animations</span>
+                                    <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">Landing Page</span>
                                 </div>
-                                <h4 class="text-2xl md:text-3xl font-bold text-white mb-6">Clip Kings</h4>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white mb-6">Clip Kings</h3>
                                 
                                 <div class="space-y-4 mb-8">
                                     <div class="bg-black/30 p-4 rounded-lg border border-[var(--border-color)]">
@@ -526,7 +599,7 @@
                                     <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">Architecture</span>
                                     <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">UI/UX</span>
                                 </div>
-                                <h4 class="text-2xl md:text-3xl font-bold text-white mb-6">Abdullah Paryani</h4>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white mb-6">Abdullah Paryani</h3>
                                 
                                 <div class="space-y-4 mb-8">
                                     <div class="bg-black/30 p-4 rounded-lg border border-[var(--border-color)]">
@@ -543,7 +616,7 @@
                                 <a href="https://senorra.github.io/abdullahparyani.com" target="_blank" class="btn-primary w-max text-sm shadow-none">View Live Platform <i class="ph ph-arrow-up-right"></i></a>
                             </div>
                             <div class="lg:col-span-7 relative overflow-hidden aspect-video lg:aspect-auto h-full order-1 lg:order-2 bg-[#050505] p-8 flex items-center justify-center">
-                                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80" class="w-full h-auto rounded-xl shadow-2xl group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100">
+                                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80" alt="Premium Modern Portfolio UI UX - Abdullah Paryani" class="w-full h-auto rounded-xl shadow-2xl group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100">
                             </div>
                         </div>
                     </div>
@@ -552,14 +625,14 @@
                     <div class="glass-panel overflow-hidden group page-anim transition-transform hover:-translate-y-2">
                         <div class="grid grid-cols-1 lg:grid-cols-12 items-stretch">
                             <div class="lg:col-span-7 relative overflow-hidden aspect-video lg:aspect-auto h-full bg-[#050505] p-8 flex items-center justify-center border-r border-[var(--border-color)]">
-                                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80" class="w-full h-auto rounded-xl shadow-2xl group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100">
+                                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80" alt="Enterprise Business Website Solution - Opus Al Qudsi" class="w-full h-auto rounded-xl shadow-2xl group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100">
                             </div>
                             <div class="lg:col-span-5 p-8 md:p-10 flex flex-col justify-center">
                                 <div class="flex flex-wrap gap-2 mb-6">
                                     <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">Enterprise CMS</span>
-                                    <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">Architecture</span>
+                                    <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">B2B Solutions</span>
                                 </div>
-                                <h4 class="text-2xl md:text-3xl font-bold text-white mb-6">Opus Al Qudsi</h4>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white mb-6">Opus Al Qudsi</h3>
                                 
                                 <div class="space-y-4 mb-8">
                                     <div class="bg-black/30 p-4 rounded-lg border border-[var(--border-color)]">
@@ -586,7 +659,7 @@
                                     <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">Vanilla JS</span>
                                     <span class="text-[10px] font-mono uppercase tracking-widest px-3 py-1 border border-[var(--border-color)] rounded-full text-white bg-black/50">Tailwind</span>
                                 </div>
-                                <h4 class="text-2xl md:text-3xl font-bold text-white mb-6">System Portfolio (OS)</h4>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white mb-6">System Portfolio (OS)</h3>
                                 
                                 <div class="space-y-4 mb-8">
                                     <div class="bg-black/30 p-4 rounded-lg border border-[var(--border-color)]">
@@ -618,8 +691,8 @@
         <section id="applications" class="page-section hidden relative z-10">
             <div class="max-w-7xl mx-auto px-6">
                 <div class="text-center mb-16 page-anim">
-                    <h2 class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4">Mobile Solutions</h2>
-                    <h3 class="text-4xl md:text-5xl font-bold text-white">Native Android Applications</h3>
+                    <span class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4 block">Mobile Solutions</span>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white">App Developer For Business</h2>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -627,8 +700,8 @@
                     <div class="glass-panel p-8 md:p-10 page-anim group flex flex-col border-red-500/30">
                         <div class="flex justify-between items-start border-b border-gray-800 pb-6 mb-6">
                             <div>
-                                <h4 class="text-2xl font-bold text-white mb-2 group-hover:text-red-500 transition-colors">Classified Mobile Build</h4>
-                                <p class="text-[var(--text-muted)] text-sm">Native App / Commission Only</p>
+                                <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-red-500 transition-colors">Classified Mobile Build</h3>
+                                <p class="text-[var(--text-muted)] text-sm">Native Android App Developer / Commission Only</p>
                             </div>
                             <div class="px-3 py-1 border border-red-500 text-red-500 text-xs font-mono font-bold rounded-md bg-red-500/10">LOCKED</div>
                         </div>
@@ -646,9 +719,9 @@
                         <div class="w-20 h-20 rounded-full border-2 border-[var(--accent)] flex items-center justify-center mb-6 shadow-[0_0_30px_var(--accent-glow)] group-hover:scale-110 transition-transform duration-500">
                             <i class="ph ph-brackets-curly text-3xl text-[var(--accent)]"></i>
                         </div>
-                        <h4 class="text-2xl font-bold text-white mb-3">Custom App Pipeline Open</h4>
+                        <h3 class="text-2xl font-bold text-white mb-3">Custom App Pipeline Open</h3>
                         <p class="text-[var(--text-muted)] text-sm leading-relaxed mb-8 max-w-sm">
-                            Ready to engineer your next-generation secure application for Android. Complete Frontend UI & Backend server integration.
+                            Ready to engineer your next-generation secure application for Android. Complete Frontend UI & Backend server integration by a top freelance developer in India.
                         </p>
                         <a href="mailto:Syedahmed.sa43@gmail.com?subject=Custom+App+Build" class="btn-primary w-full max-w-xs text-sm shadow-none">Initiate App Contract</a>
                     </div>
@@ -663,8 +736,8 @@
             <div class="max-w-7xl mx-auto px-6">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-16 page-anim border-b border-[var(--border-color)] pb-6 gap-4">
                     <div>
-                        <h2 class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4">Technical Expertise</h2>
-                        <h3 class="text-4xl md:text-5xl font-bold text-white">Core Proficiencies</h3>
+                        <span class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4 block">Technical Expertise</span>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white">Core Proficiencies</h2>
                     </div>
                     <div class="font-mono text-xs text-[var(--text-muted)] border border-[var(--border-color)] px-4 py-2 bg-[var(--card-bg)] rounded-md">
                         EVALUATION BASED ON 9+ YEARS EXP
@@ -678,7 +751,7 @@
         </section>
 
         <!-- ==============================================
-             YOUTUBE PAGE
+             YOUTUBE PAGE (Media)
              ============================================== -->
         <section id="youtube" class="page-section hidden relative z-10">
             <div class="max-w-7xl mx-auto px-6">
@@ -736,17 +809,17 @@
             <div class="max-w-7xl mx-auto px-6">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-12 page-anim border-b border-[var(--border-color)] pb-6 gap-4">
                     <div>
-                        <h2 class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4">Elite Qualifications</h2>
-                        <h3 class="text-4xl md:text-5xl font-bold text-white">Certifications Databank</h3>
+                        <span class="text-[var(--accent)] text-sm font-mono tracking-widest uppercase mb-4 block">Elite Qualifications</span>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white">Certifications Databank</h2>
                     </div>
                     <div class="font-mono text-xs text-[var(--accent)] border border-[var(--accent)] px-4 py-2 bg-[var(--accent-glow)] font-bold rounded-md">
-                        VERIFIED CREDENTIALS: <span id="total-certs" class="text-white text-sm ml-2">52</span>
+                        VERIFIED CREDENTIALS: <span id="total-certs" class="text-white text-sm ml-2">0</span>
                     </div>
                 </div>
 
                 <!-- FEATURED CERTS (Top 5) -->
                 <div class="mb-16 page-anim">
-                    <h4 class="text-xl md:text-2xl font-bold text-white uppercase tracking-wide mb-6">Featured Accreditations</h4>
+                    <h3 class="text-xl md:text-2xl font-bold text-white uppercase tracking-wide mb-6">Featured Accreditations</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="featured-certs-container">
                         <!-- Populated by JS -->
                     </div>
@@ -772,7 +845,7 @@
                 </h2>
                 
                 <p class="text-lg md:text-xl text-[var(--text-muted)] mb-12 font-light page-anim max-w-2xl mx-auto">
-                    Currently accepting new projects, enterprise contracts, and long-term collaborations. Stop searching, start scaling.
+                    Looking for the best website designer in India? I am currently accepting new projects, enterprise web solutions, and app development contracts.
                 </p>
                 
                 <div class="flex flex-col sm:flex-row justify-center gap-4 page-anim">
@@ -793,7 +866,7 @@
         <footer class="border-t border-[var(--border-color)] bg-black/80 backdrop-blur-xl w-full">
             <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
                 <p class="text-[var(--text-muted)] text-xs font-medium">
-                    &copy; 2026 Syed Ahmed. High-Performance Digital Systems.
+                    &copy; 2026 Syed Ahmed. Expert Freelance Website Developer India. All Rights Reserved.
                 </p>
                 <div class="flex items-center gap-4">
                     <a href="https://www.linkedin.com/in/syedahmedpro/" target="_blank" class="text-[var(--text-muted)] hover:text-white transition-colors flex items-center gap-2"><i class="ph-fill ph-linkedin-logo text-xl"></i> LinkedIn Uplink</a>
@@ -829,7 +902,7 @@
                     <span id="cert-filename" class="text-[10px] text-gray-500 mt-2 font-mono relative z-10 bg-black px-3 py-1 border border-gray-800 break-all select-all max-w-[80%] rounded">filename.pdf</span>
                 </div>
 
-                <!-- EXTERNAL LINK FALLBACK (Always visible when loaded just in case of iFrame block) -->
+                <!-- EXTERNAL LINK FALLBACK -->
                 <a id="cert-ext-link" href="#" target="_blank" class="absolute bottom-4 right-4 text-[10px] bg-black/80 px-4 py-2 rounded border border-[var(--accent)] text-[var(--accent)] font-mono font-bold z-30 hover:bg-[var(--accent)] hover:text-black transition-colors drop-shadow-md hidden">
                     [ OPEN FULL PDF IN NEW TAB ]
                 </a>
@@ -839,7 +912,7 @@
 
     <script>
         /* =========================================
-           DATA INJECTION (Extracted from system file)
+           DATA INJECTION 
         ========================================= */
         const skillsData = [
             { title: "AI & MACHINE LEARNING", percent: "95%", level: "Expert", items: [
@@ -1020,7 +1093,7 @@
                 skillsHTML += `
                 <div class="mb-12 page-anim">
                     <div class="flex flex-col sm:flex-row justify-between items-end mb-4 gap-2">
-                        <h4 class="text-xl md:text-2xl font-bold text-white uppercase tracking-wide">${cat.title}</h4>
+                        <h3 class="text-xl md:text-2xl font-bold text-white uppercase tracking-wide">${cat.title}</h3>
                         <div class="flex items-center gap-4">
                             <span class="font-mono text-xs border px-3 py-1 font-bold ${levelClass} bg-black/50 rounded">LEVEL: ${cat.level.toUpperCase()}</span>
                             <span class="font-mono text-sm text-[var(--text-muted)]">${cat.percent}</span>
@@ -1033,7 +1106,7 @@
                     let tags = item.tags.map(t => `<span class="bg-[#111] text-[var(--text-muted)] border border-[var(--border-color)] px-2 py-1 text-[10px] font-mono uppercase tracking-widest rounded-sm">${t}</span>`).join(' ');
                     skillsHTML += `
                         <div class="glass-panel p-5 group flex flex-col justify-between h-full hover:bg-[var(--card-hover)]">
-                            <h5 class="text-white font-bold mb-3 group-hover:text-[var(--accent)] transition-colors leading-snug">${item.name}</h5>
+                            <h4 class="text-white font-bold mb-3 group-hover:text-[var(--accent)] transition-colors leading-snug">${item.name}</h4>
                             <div class="flex flex-wrap gap-2 mt-auto pt-4 border-t border-[var(--border-color)]">${tags}</div>
                         </div>`;
                 });
@@ -1045,14 +1118,14 @@
             const certsContainer = document.getElementById('certs-injection-container');
             const featuredContainer = document.getElementById('featured-certs-container');
             
-            let certsHTML = '<h4 class="text-xl md:text-2xl font-bold text-white uppercase tracking-wide mb-6">Complete Databank</h4>';
+            let certsHTML = '<h3 class="text-xl md:text-2xl font-bold text-white uppercase tracking-wide mb-6">Complete Databank</h3>';
             let featuredHTML = '';
             let totalCount = 0;
             
             certCategoryData.forEach(cat => {
                 certsHTML += `
                 <div class="mb-12 page-anim">
-                    <h5 class="text-sm font-mono text-[var(--text-muted)] uppercase tracking-widest mb-4 border-b border-[var(--border-color)] pb-2">${cat.title}</h5>
+                    <h4 class="text-sm font-mono text-[var(--text-muted)] uppercase tracking-widest mb-4 border-b border-[var(--border-color)] pb-2">${cat.title}</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">`;
                 
                 cat.items.forEach(item => {
@@ -1061,7 +1134,6 @@
                     const safeCat = cat.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     const safeFile = item.file.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     
-                    // Featured Render
                     if(item.featured) {
                         featuredHTML += `
                         <div class="glass-panel p-8 cursor-pointer group flex flex-col justify-between min-h-[180px] bg-gradient-to-br from-[var(--card-bg)] to-black relative overflow-hidden" onclick="openCert('${safeName}', '${safeCat}', '${safeFile}')">
@@ -1070,7 +1142,7 @@
                             </div>
                             <div class="relative z-10">
                                 <span class="font-mono text-[10px] text-[var(--accent)] mb-3 block tracking-widest uppercase">${safeCat}</span>
-                                <h5 class="text-xl font-bold text-white leading-tight group-hover:text-[var(--accent)] transition-colors">${item.name}</h5>
+                                <h4 class="text-xl font-bold text-white leading-tight group-hover:text-[var(--accent)] transition-colors">${item.name}</h4>
                             </div>
                             <div class="mt-6 pt-4 border-t border-[var(--border-color)] flex justify-between items-center relative z-10">
                                 <span class="font-mono text-[10px] text-[var(--text-muted)]">ELITE_CREDENTIAL</span>
@@ -1079,10 +1151,9 @@
                         </div>`;
                     }
 
-                    // Standard Render
                     certsHTML += `
                         <div class="glass-panel p-5 cursor-pointer group flex flex-col justify-between min-h-[140px]" onclick="openCert('${safeName}', '${safeCat}', '${safeFile}')">
-                            <h5 class="text-white font-medium text-sm leading-relaxed group-hover:text-[var(--accent)] transition-colors">${item.name}</h5>
+                            <h4 class="text-white font-medium text-sm leading-relaxed group-hover:text-[var(--accent)] transition-colors">${item.name}</h4>
                             <div class="mt-4 pt-3 border-t border-[var(--border-color)] flex justify-between items-center">
                                 <span class="font-mono text-[10px] text-[var(--text-muted)]">SYS_${totalCount.toString().padStart(3, '0')}</span>
                                 <span class="font-mono text-[10px] text-gray-400 group-hover:text-[var(--accent)] font-bold transition-colors">VIEW PDF &rarr;</span>
@@ -1103,13 +1174,11 @@
 
         function animatePageElements(section) {
             const elements = section.querySelectorAll('.page-anim');
-            // Faster, snappier animations
             gsap.fromTo(elements, 
                 { y: 25, opacity: 0 }, 
                 { y: 0, opacity: 1, duration: 0.6, stagger: 0.05, ease: "power2.out" }
             );
 
-            // Animate progress bars
             section.querySelectorAll('.stat-bar-fill').forEach(bar => {
                 const width = bar.getAttribute('data-width');
                 if(width) {
@@ -1124,7 +1193,6 @@
             const oldSection = document.getElementById(currentSectionId);
             const newSection = document.getElementById(targetId);
 
-            // Update Nav Highlighting
             navLinks.forEach(link => {
                 if (link.getAttribute('data-target') === targetId) {
                     link.classList.add('text-[var(--accent)]');
@@ -1135,7 +1203,6 @@
                 }
             });
 
-            // Transition Animation
             gsap.to(oldSection, {
                 opacity: 0, 
                 y: -15, 
@@ -1143,8 +1210,10 @@
                 ease: "power2.in",
                 onComplete: () => {
                     oldSection.classList.add('hidden');
+                    oldSection.classList.remove('block');
                     newSection.classList.remove('hidden');
-                    window.scrollTo(0, 0); // Reset scroll
+                    newSection.classList.add('block');
+                    window.scrollTo(0, 0); 
                     
                     gsap.fromTo(newSection, 
                         {opacity: 0, y: 20}, 
@@ -1157,7 +1226,6 @@
             });
         }
 
-        // Initialize
         window.addEventListener('DOMContentLoaded', () => {
             renderDynamicContent();
             const homeSection = document.getElementById('home');
@@ -1203,7 +1271,6 @@
             extLink.href = pdfPath;
             extLink.classList.remove('hidden');
             
-            // Reset Views
             iframe.classList.add('hidden');
             loading.classList.remove('hidden');
 
@@ -1211,7 +1278,6 @@
             document.body.style.overflow = 'hidden';
             gsap.to(modalContent, {scale: 1, duration: 0.4, ease: "back.out(1.2)"});
 
-            // Set iframe directly. Removing fetch check to ensure broad compatibility
             setTimeout(() => {
                 iframe.src = pdfPath;
                 setTimeout(() => {
